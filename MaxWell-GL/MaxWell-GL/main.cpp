@@ -4,7 +4,7 @@
 int main() {
 	printf("allo le monde!");
 
-	_getch();
+	//_getch();
 
 	return -1;
 }

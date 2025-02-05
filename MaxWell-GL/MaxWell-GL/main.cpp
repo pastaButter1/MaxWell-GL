@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <conio.h>
 
+#define GLEW_STATIC
 #include "Graphique.h"
 
 #include "Lib/GLFW/include/GLFW/glfw3.h"

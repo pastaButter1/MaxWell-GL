@@ -8,7 +8,7 @@
 #include "Lib/GLM/glm/glm.hpp"
 
 #ifdef OPENGL
-#define GLFW_DLL
+//#define GLFW_DLL
 
 #include "Lib/GLEW/include/GL/glew.h"
 

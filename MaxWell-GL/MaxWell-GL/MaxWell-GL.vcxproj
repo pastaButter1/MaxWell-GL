@@ -104,8 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>
-      </AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Link>
@@ -123,6 +122,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -134,9 +134,39 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Moteur Graphique\Cubemap\Cubemap.cpp" />
+    <ClCompile Include="Moteur Graphique\Framebuffer\Framebuffer.cpp" />
+    <ClCompile Include="Moteur Graphique\Indexbuffer\Indexbuffer.cpp" />
+    <ClCompile Include="Moteur Graphique\Mesh\Mesh.cpp" />
+    <ClCompile Include="Moteur Graphique\Model\DecoderFichier.cpp" />
+    <ClCompile Include="Moteur Graphique\Pipeline\Pipeline.cpp" />
+    <ClCompile Include="Moteur Graphique\Shader\Shader.cpp" />
+    <ClCompile Include="Moteur Graphique\Texture\Texture.cpp" />
+    <ClCompile Include="Moteur Graphique\Vertexarray\Vertexarray.cpp" />
+    <ClCompile Include="Moteur Graphique\Vertexbuffer\Vertexbuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Graphique.h" />
+    <ClInclude Include="Moteur Graphique\Graphique.h" />
+    <ClInclude Include="Moteur Graphique\Cubemap\Cubemap.h" />
+    <ClInclude Include="Moteur Graphique\Framebuffer\Framebuffer.h" />
+    <ClInclude Include="Moteur Graphique\Indexbuffer\Indexbuffer.h" />
+    <ClInclude Include="Moteur Graphique\Mesh\Mesh.h" />
+    <ClInclude Include="Moteur Graphique\Model\DecoderFichier.h" />
+    <ClInclude Include="Moteur Graphique\Model\Model.h" />
+    <ClInclude Include="Moteur Graphique\Pipeline\Pipeline.h" />
+    <ClInclude Include="Moteur Graphique\Shader\Shader.h" />
+    <ClInclude Include="Moteur Graphique\Texture\Texture.h" />
+    <ClInclude Include="Moteur Graphique\Vertexarray\Vertexarray.h" />
+    <ClInclude Include="Moteur Graphique\Vertexbuffer\Vertexbuffer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Moteur Graphique\Deferred rendering\Composer fragment.glsl" />
+    <None Include="Moteur Graphique\Deferred rendering\Composer vertex.glsl" />
+    <None Include="Moteur Graphique\Deferred rendering\Deferred fragment.glsl" />
+    <None Include="Moteur Graphique\Deferred rendering\Deferred geometry.glsl" />
+    <None Include="Moteur Graphique\Deferred rendering\Deferred vertex.glsl" />
+    <None Include="Moteur Graphique\Deferred rendering\Skybox fragment.glsl" />
+    <None Include="Moteur Graphique\Deferred rendering\Skybox vertex.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -42,7 +42,7 @@ void Shader::loadSubShader(const Shader& shader, const std::string& fileData, ui
 	glDeleteShader(id);
 }
 
-void Shader::build(const Shader& shader)
+void Shader::assembler(const Shader& shader)
 {
 	APPEL_GX(glLinkProgram(shader.id));
 	//glValidateProgram(shader.id);
@@ -68,37 +68,37 @@ void Shader::delier()
 	APPEL_GX(glUseProgram(0));
 }
 
-void Shader::pushConstantMat4(const Shader& shader, const std::string& name, const glm::mat4& matrix)
+void Shader::pousserConstanteMat4(const Shader& shader, const std::string& name, const glm::mat4& matrix)
 {
 	uint32_t loc = APPEL_GX(glGetUniformLocation(shader.id, name.c_str()));
 	APPEL_GX(glUniformMatrix4fv(loc, 1, GL_FALSE, (float*)&matrix));
 }
 
-void Shader::pushConstantMat3(const Shader& shader, const std::string& name, const glm::mat3& matrix)
+void Shader::pousserConstanteMat3(const Shader& shader, const std::string& name, const glm::mat3& matrix)
 {
 	uint32_t loc = APPEL_GX(glGetUniformLocation(shader.id, name.c_str()));
 	APPEL_GX(glUniformMatrix3fv(loc, 1, GL_TRUE, (float*)&matrix));
 }
 
-void Shader::pushConstantVec3(const Shader& shader, const std::string& name, glm::vec3 v)
+void Shader::pousserConstanteVec3(const Shader& shader, const std::string& name, glm::vec3 v)
 {
 	uint32_t loc = APPEL_GX(glGetUniformLocation(shader.id, name.c_str()));
 	APPEL_GX(glUniform3f(loc, v.x, v.y, v.z));
 }
 
-void Shader::pushConstantVec2(const Shader& shader, const std::string& name, glm::vec2 v)
+void Shader::pousserConstanteVec2(const Shader& shader, const std::string& name, glm::vec2 v)
 {
 	uint32_t loc = APPEL_GX(glGetUniformLocation(shader.id, name.c_str()));
 	APPEL_GX(glUniform2f(loc, v.x, v.y));
 }
 
-void Shader::pushConstantFloat(const Shader& shader, const std::string& name, float f)
+void Shader::pousserConstanteFloat(const Shader& shader, const std::string& name, float f)
 {
 	uint32_t loc = APPEL_GX(glGetUniformLocation(shader.id, name.c_str()));
 	APPEL_GX(glUniform1f(loc, f))
 }
 
-void Shader::pushTexture(const Shader& shader, const std::string& name, const uint32_t texSlot)
+void Shader::pousserTexture(const Shader& shader, const std::string& name, const uint32_t texSlot)
 {
 	uint32_t loc = APPEL_GX(glGetUniformLocation(shader.id, name.c_str()));
 	APPEL_GX(glUniform1i(loc, texSlot));

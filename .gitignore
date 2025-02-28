@@ -4,3 +4,7 @@
 *.ilk
 *.tlog
 *.idb
+*.obj
+*.pdb
+*.idb
+*.tlog

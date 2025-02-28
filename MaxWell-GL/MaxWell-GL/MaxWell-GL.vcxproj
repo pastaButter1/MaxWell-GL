@@ -136,6 +136,13 @@
   <ItemGroup>
     <ClCompile Include="Application\Application.cpp" />
     <ClCompile Include="Application\Utilitaire.cpp" />
+    <ClCompile Include="Lib\IMGUI\IMGUI\imgui.cpp" />
+    <ClCompile Include="Lib\IMGUI\IMGUI\imgui_demo.cpp" />
+    <ClCompile Include="Lib\IMGUI\IMGUI\imgui_draw.cpp" />
+    <ClCompile Include="Lib\IMGUI\IMGUI\imgui_impl_glfw.cpp" />
+    <ClCompile Include="Lib\IMGUI\IMGUI\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="Lib\IMGUI\IMGUI\imgui_tables.cpp" />
+    <ClCompile Include="Lib\IMGUI\IMGUI\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Moteur Graphique\Cubemap\Cubemap.cpp" />
     <ClCompile Include="Moteur Graphique\Framebuffer\Framebuffer.cpp" />

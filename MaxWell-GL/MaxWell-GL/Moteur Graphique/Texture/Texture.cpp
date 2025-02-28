@@ -12,25 +12,25 @@ void Texture::generer(Texture* const tex, uint32_t largeur, uint32_t hauteur, co
 	APPEL_GX(glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, largeur, hauteur, 0, format, dataType, donnee));
 }
 
-void Texture::setFiltering(const Texture tex, uint32_t magFilter, uint32_t minFilter)
+void Texture::specifierFiltre(const Texture tex, uint32_t magFilter, uint32_t minFilter)
 {
 	lier(tex);
 	APPEL_GX(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter));
 	APPEL_GX(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter));
 }
 
-void Texture::setWrapping(const Texture tex, uint32_t uWrapping, uint32_t vWrapping)
+void Texture::specifierEtirement(const Texture tex, uint32_t uWrapping, uint32_t vWrapping)
 {
 	APPEL_GX(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, uWrapping));
 	APPEL_GX(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, vWrapping));
 }
 
-void Texture::setBorderColour(const Texture tex, glm::vec3 colour)
+void Texture::specifierCouleurBordure(const Texture tex, glm::vec3 colour)
 {
 	APPEL_GX(glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, (float*)&colour));
 }
 
-void Texture::setBorderColour(const Texture tex, glm::vec4 colour)
+void Texture::specifierCouleurBordure(const Texture tex, glm::vec4 colour)
 {
 	APPEL_GX(glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, (float*)&colour));
 }

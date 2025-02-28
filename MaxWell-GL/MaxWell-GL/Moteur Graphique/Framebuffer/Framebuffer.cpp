@@ -46,13 +46,13 @@ void Framebuffer::addAttachment(Framebuffer* const fbo, uint32_t largeur, uint32
 
 	Texture::generer(&tex, largeur, hauteur, nullptr, internalFormat, format, dataType);
 
-	Texture::setWrapping(tex, TEX_ENVELOPPER_LIMITER_BORDURE, TEX_ENVELOPPER_LIMITER_BORDURE);
+	Texture::specifierEtirement(tex, TEX_ENVELOPPER_LIMITER_BORDURE, TEX_ENVELOPPER_LIMITER_BORDURE);
 
 	uint32_t zeros[] = { 0, 0, 0, 0 };
 
-	Texture::setBorderColour(tex, *(glm::vec4*)zeros);
+	Texture::specifierCouleurBordure(tex, *(glm::vec4*)zeros);
 
-	Texture::setFiltering(tex, GL_NEAREST, GL_NEAREST);
+	Texture::specifierFiltre(tex, GL_NEAREST, GL_NEAREST);
 
 	lier(*fbo);
 	APPEL_GX(glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, TEX_2D, tex.id, 0));

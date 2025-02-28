@@ -19,5 +19,5 @@ void Pipeline::init(const Pipeline& pipeline)
 void Pipeline::dessiner(const Pipeline& pipeline, const Vertexarray vao, const Model& model)
 { 
 	Vertexarray::lier(vao);
-	APPEL_GX(glDrawArrays(GL_TRIANGLES, 0, model.nbTriangle * 3));
+	APPEL_GX(glDrawArrays(GL_PATCHES, 0, model.nbTriangle * 3));
 }

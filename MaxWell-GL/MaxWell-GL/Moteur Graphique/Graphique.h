@@ -4,13 +4,17 @@
 
 #include <stdint.h>
 #include <cstdio>
+#include <string>
 
 #include "Lib/GLM/glm/glm.hpp"
 
 #ifdef OPENGL
 //#define GLFW_DLL
+#define GLEW_STATIC
 
 #include "Lib/GLEW/include/GL/glew.h"
+
+//void afficherErreur(const std::string& msg);
 
 #ifdef _DEBUG
 #define APPEL_GX(x) x; { GLuint erreur = glGetError(); while(erreur != GL_NO_ERROR) { printf("ERREUR | %s(%i) : %i\n", __FILE__, __LINE__, erreur); erreur = glGetError(); }}
@@ -19,10 +23,10 @@
 #define APPEL_GX(x) x
 #endif
 
-#define VERTEX_SHADER GL_VERTEX_SHADER
-#define FRAGMENT_SHADER GL_FRAGMENT_SHADER
-#define GEOMETRY_SHADER GL_GEOMETRY_SHADER
-#define COMPUTE_SHADER GL_COMPUTE_SHADER
+#define SHADER_VERTEX GL_VERTEX_SHADER
+#define SHADER_FRAGMENT GL_FRAGMENT_SHADER
+#define SHADER_GEOMETRIE GL_GEOMETRY_SHADER
+#define SHADER_CALCUL GL_COMPUTE_SHADER
 #define SHADER_EVAL_TESSELATION GL_TESS_EVALUATION_SHADER
 #define SHADER_CONTROLE_TESSELATION GL_TESS_CONTROL_SHADER
 
@@ -88,7 +92,7 @@
 #define FBO_ATTACHEMENT_PROFONDEUR_STENCIL GL_DEPTH_STENCIL_ATTACHMENT
 
 #define TEX_FILTRE_PROCHE GL_NEAREST
-#define TEX_FILTRE_LINAIRE GL_LINEAR
+#define TEX_FILTRE_LINEAIRE GL_LINEAR
 
 #define TEX_ENVELOPPER_REPETER GL_REPEAT
 #define TEX_ENVELOPPER_MIROIR_REPETER GL_MIRRORED_REPEAT

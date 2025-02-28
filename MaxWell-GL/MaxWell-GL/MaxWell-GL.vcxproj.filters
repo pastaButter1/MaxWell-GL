@@ -18,10 +18,107 @@
     <ClCompile Include="main.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
+    <ClCompile Include="Moteur Graphique\Cubemap\Cubemap.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Moteur Graphique\Framebuffer\Framebuffer.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Moteur Graphique\Indexbuffer\Indexbuffer.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Moteur Graphique\Mesh\Mesh.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Moteur Graphique\Model\DecoderFichier.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Moteur Graphique\Pipeline\Pipeline.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Moteur Graphique\Shader\Shader.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Moteur Graphique\Texture\Texture.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Moteur Graphique\Vertexarray\Vertexarray.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Moteur Graphique\Vertexbuffer\Vertexbuffer.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Moteur Graphique\MoteurRendu\MoteurRendu.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\Application.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\Utilitaire.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Graphique.h">
+    <ClInclude Include="Moteur Graphique\Graphique.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
+    <ClInclude Include="Moteur Graphique\Cubemap\Cubemap.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Moteur Graphique\Framebuffer\Framebuffer.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Moteur Graphique\Indexbuffer\Indexbuffer.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Moteur Graphique\Mesh\Mesh.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Moteur Graphique\Model\DecoderFichier.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Moteur Graphique\Model\Model.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Moteur Graphique\Pipeline\Pipeline.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Moteur Graphique\Shader\Shader.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Moteur Graphique\Texture\Texture.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Moteur Graphique\Vertexarray\Vertexarray.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Moteur Graphique\Vertexbuffer\Vertexbuffer.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Moteur Graphique\MoteurRendu\MoteurRendu.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Application.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Utilitaire.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Moteur Graphique\Deferred rendering\Composer fragment.glsl" />
+    <None Include="Moteur Graphique\Deferred rendering\Composer vertex.glsl" />
+    <None Include="Moteur Graphique\Deferred rendering\Deferred fragment.glsl" />
+    <None Include="Moteur Graphique\Deferred rendering\Deferred geometry.glsl" />
+    <None Include="Moteur Graphique\Deferred rendering\Deferred vertex.glsl" />
+    <None Include="Moteur Graphique\Deferred rendering\Skybox fragment.glsl" />
+    <None Include="Moteur Graphique\Deferred rendering\Skybox vertex.glsl" />
+    <None Include="Shaders\Calcul onde\Calcul onde.glsl" />
+    <None Include="Shaders\Calcul onde\Calcul gradient onde.glsl" />
+    <None Include="Shaders\Calcul onde\Calcul gradient2 onde.glsl" />
+    <None Include="Shaders\Tesselation surface\Surface tessControle.glsl" />
+    <None Include="Shaders\Tesselation surface\Surface fragment.glsl" />
+    <None Include="Shaders\Tesselation surface\Surface tessEval.glsl" />
+    <None Include="Shaders\Tesselation surface\Surface geometrie.glsl" />
   </ItemGroup>
 </Project>

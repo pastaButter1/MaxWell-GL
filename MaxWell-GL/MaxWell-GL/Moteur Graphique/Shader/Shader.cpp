@@ -92,7 +92,13 @@ void Shader::pousserConstanteVec2(const Shader& shader, const std::string& name,
 	APPEL_GX(glUniform2f(loc, v.x, v.y));
 }
 
-void Shader::pousserConstanteFloat(const Shader& shader, const std::string& name, float f)
+void Shader::pousserConstanteUVec2(const Shader& shader, const std::string& name, glm::uvec2 v)
+{
+	uint32_t loc = APPEL_GX(glGetUniformLocation(shader.id, name.c_str()));
+	APPEL_GX(glUniform2ui(loc, v.x, v.y));
+}
+
+void Shader::pousserConstanteVirgule(const Shader& shader, const std::string& name, float f)
 {
 	uint32_t loc = APPEL_GX(glGetUniformLocation(shader.id, name.c_str()));
 	APPEL_GX(glUniform1f(loc, f))

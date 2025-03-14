@@ -35,5 +35,5 @@ struct Pipeline {
 
 	static void init(const Pipeline& pipeline);
 
-	static void dessiner(const Pipeline& pipeline, const Vertexarray vao, const Model& model);
+	static void dessiner(const Pipeline& pipeline, const Vertexarray vao);
 };

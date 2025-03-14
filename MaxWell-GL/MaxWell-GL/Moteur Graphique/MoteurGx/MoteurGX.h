@@ -7,11 +7,6 @@
 
 #include <vector>
 
-struct Mesh
-{
-	
-};
-
 struct MoteurGX
 {
 	typedef uint16_t Ressource;

@@ -5,6 +5,7 @@
 struct Vertexarray
 {
 	int32_t id = -1;
+	uint32_t nbTriangles = 0;
 
 	static void generer(Vertexarray* const vao);
 

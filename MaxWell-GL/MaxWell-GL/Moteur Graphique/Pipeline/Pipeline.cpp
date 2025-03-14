@@ -16,8 +16,8 @@ void Pipeline::init(const Pipeline& pipeline)
 	APPEL_GX(glStencilOp(pipeline.stencilEchec, pipeline.profondeurEchec, pipeline.stencilProfondeurReussite));
 }
 
-void Pipeline::dessiner(const Pipeline& pipeline, const Vertexarray vao, const Model& model)
+void Pipeline::dessiner(const Pipeline& pipeline, const Vertexarray vao)
 { 
 	Vertexarray::lier(vao);
-	APPEL_GX(glDrawArrays(GL_PATCHES, 0, model.nbTriangle * 3));
+	APPEL_GX(glDrawArrays(GL_PATCHES, 0, vao.nbTriangles * 3));
 }

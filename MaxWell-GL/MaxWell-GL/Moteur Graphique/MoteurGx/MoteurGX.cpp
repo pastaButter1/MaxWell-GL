@@ -67,5 +67,5 @@ void MoteurGX::executerCouche(const MoteurGX& mGX)
 
 	const Vertexarray& vao = mGX.listeVAOs.rechercherIndexUnique(couche.mesh);
 
-	APPEL_GX(glDrawArrays(pipeline.modeDessin, 0, couche.mesh))
+	Pipeline::dessiner(pipeline, vao);
 }

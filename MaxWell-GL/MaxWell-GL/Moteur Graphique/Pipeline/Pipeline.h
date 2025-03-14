@@ -7,26 +7,30 @@
 #include "Moteur Graphique/Model/Model.h"
 
 struct Pipeline {
-	const Framebuffer* const fbo;
-	const Shader* const shader;
+	const Framebuffer* fbo = nullptr;
+	const Shader* shader = nullptr;
+
+	EnumGX modeDessin;
 
 	glm::uvec2 tailleFenetre;
 
-	uint32_t modeEliminationFace;
+	EnumGX modeEliminationFace;
 
-	uint32_t testProfondeur;
+	EnumGX testProfondeur;
 
-	uint32_t modeMelangeSRC;
-	uint32_t modeMelangeDST;
-	uint32_t equationMelange;
+	EnumGX modeMelangeSRC;
+	EnumGX modeMelangeDST;
+	EnumGX equationMelange;
 
-	uint32_t stencilFunc;
-	uint32_t stencilRef;
-	uint32_t stencilMasque;
-	uint32_t stencilEchec;
-	uint32_t profondeurEchec;
-	uint32_t stencilProfondeurReussite;
+	EnumGX stencilFunc;
+	EnumGX stencilRef;
+	EnumGX stencilMasque;
+	EnumGX stencilEchec;
+	EnumGX profondeurEchec;
+	EnumGX stencilProfondeurReussite;
 
+	Pipeline() {}
+	
 	Pipeline(const Framebuffer* const fbo, const Shader* const shader) : fbo(fbo), shader(shader) {}
 
 	static void init(const Pipeline& pipeline);

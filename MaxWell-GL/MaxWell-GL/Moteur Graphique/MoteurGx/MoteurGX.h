@@ -7,15 +7,43 @@
 
 #include <vector>
 
+struct Mesh
+{
+	
+};
+
 struct MoteurGX
 {
-	ListeIndexUnique<uint16_t, Pipeline> listePipelines;
-	ListeIndexUnique<uint16_t, Shader> listeShaders;
-	ListeIndexUnique<uint16_t, Framebuffer> listeFBOs;
-	ListeIndexUnique<uint16_t, Texture> listeTextures;
-	ListeIndexUnique<uint16_t, Vertexarray> listeVAOs;
+	typedef uint16_t Ressource;
 
-	static void demarerCouche(MoteurGX* const mGX);
+	ListeIndexUnique<Ressource, Pipeline> listePipelines;
+	ListeIndexUnique<Ressource, Shader> listeShaders;
+	ListeIndexUnique<Ressource, Framebuffer> listeFBOs;
+	ListeIndexUnique<Ressource, Texture> listeTextures;
+	ListeIndexUnique<Ressource, Vertexarray> listeVAOs;
+
+	struct Couche
+	{
+		Ressource pipeline = 0;
+		Ressource mesh = 0;
+	};
+
+	Couche coucheActive;
+
+	MoteurGX(const MoteurGX&) = delete;
+	MoteurGX& operator=(const MoteurGX&) = delete;
+
+	static Pipeline& creerPipeline(MoteurGX* const mGX, Ressource* const res);
+
+	static Shader& creeerShader(MoteurGX* const mGX, Ressource* const res);
+
+	static Framebuffer& creerFramebuffer(MoteurGX* const mGX, Ressource* const res);
+
+	static Texture& creerTexture(MoteurGX* const mGX, Ressource* const res);
+
+	static Vertexarray& creerVertexarray(MoteurGX* const mGX, Ressource* const res);
+
+	static void demarerCouche(const MoteurGX&  mGX, Ressource pipeline);
 
 	static void executerCouche(const MoteurGX& mGX);
 

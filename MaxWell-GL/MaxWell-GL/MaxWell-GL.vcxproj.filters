@@ -27,9 +27,6 @@
     <ClCompile Include="Moteur Graphique\Indexbuffer\Indexbuffer.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="Moteur Graphique\Mesh\Mesh.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
     <ClCompile Include="Moteur Graphique\Model\DecoderFichier.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
@@ -93,9 +90,6 @@
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="Moteur Graphique\Indexbuffer\Indexbuffer.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="Moteur Graphique\Mesh\Mesh.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="Moteur Graphique\Model\DecoderFichier.h">

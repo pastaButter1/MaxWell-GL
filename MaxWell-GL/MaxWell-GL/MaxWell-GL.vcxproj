@@ -147,7 +147,6 @@
     <ClCompile Include="Moteur Graphique\Cubemap\Cubemap.cpp" />
     <ClCompile Include="Moteur Graphique\Framebuffer\Framebuffer.cpp" />
     <ClCompile Include="Moteur Graphique\Indexbuffer\Indexbuffer.cpp" />
-    <ClCompile Include="Moteur Graphique\Mesh\Mesh.cpp" />
     <ClCompile Include="Moteur Graphique\Model\DecoderFichier.cpp" />
     <ClCompile Include="Moteur Graphique\MoteurGx\MoteurGX.cpp" />
     <ClCompile Include="Moteur Graphique\MoteurRendu\MoteurRendu.cpp" />
@@ -164,7 +163,6 @@
     <ClInclude Include="Moteur Graphique\Cubemap\Cubemap.h" />
     <ClInclude Include="Moteur Graphique\Framebuffer\Framebuffer.h" />
     <ClInclude Include="Moteur Graphique\Indexbuffer\Indexbuffer.h" />
-    <ClInclude Include="Moteur Graphique\Mesh\Mesh.h" />
     <ClInclude Include="Moteur Graphique\Model\DecoderFichier.h" />
     <ClInclude Include="Moteur Graphique\Model\Model.h" />
     <ClInclude Include="Moteur Graphique\MoteurGx\MoteurGX.h" />

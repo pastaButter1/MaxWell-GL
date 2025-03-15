@@ -144,6 +144,8 @@ void Application::initialiser(Application* const app, glm::uvec2 tailleFenetre)
 	style->Colors[ImGuiCol_NavWindowingHighlight] = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
 	style->Colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
 	style->Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
+
+
 }
 
 void Application::executer(const Application& app)

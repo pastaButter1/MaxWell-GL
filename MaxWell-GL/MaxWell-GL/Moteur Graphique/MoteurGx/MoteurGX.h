@@ -25,6 +25,8 @@ struct MoteurGX
 
 	Couche coucheActive;
 
+	MoteurGX() {}
+
 	MoteurGX(const MoteurGX&) = delete;
 	MoteurGX& operator=(const MoteurGX&) = delete;
 
@@ -38,7 +40,7 @@ struct MoteurGX
 
 	static Vertexarray& creerVertexarray(MoteurGX* const mGX, Ressource* const res);
 
-	static void demarerCouche(const MoteurGX&  mGX, Ressource pipeline);
+	static void demarerCouche(const MoteurGX&  mGX, const Ressource pipeline);
 
 	static void executerCouche(const MoteurGX& mGX);
 

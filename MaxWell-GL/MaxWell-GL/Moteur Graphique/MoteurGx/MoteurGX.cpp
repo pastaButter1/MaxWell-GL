@@ -52,11 +52,27 @@ Vertexarray& MoteurGX::creerVertexarray(MoteurGX* const mGX, Ressource* const re
 	return vao;
 }
 
-void MoteurGX::demarerCouche(const MoteurGX& mGX, Ressource IndexPipeline)
+void MoteurGX::demarerCouche(const MoteurGX& mGX, const Ressource IndexPipeline)
 {
 	const Pipeline& pipeline = mGX.listePipelines.rechercherIndexUnique(IndexPipeline);
-
 	Pipeline::init(pipeline);
+
+	const Framebuffer& fbo = *pipeline.fbo;
+	const uint32_t masqueAttachements = Framebuffer::masqueCouleur;
+	const uint32_t listeAttachement = fbo.infoAttachments & (masqueAttachements);
+
+	EnumGX destinations[Framebuffer::nbAttachmentMask];
+	uint32_t nbAttachements = 0;
+	for (uint32_t masque = 0x80000000; nbAttachements < __popcnt(masqueAttachements); masque >>= 1)
+	{
+		if ((listeAttachement & masque) != 0)
+		{
+			destinations[nbAttachements] = GL_COLOR_ATTACHMENT0 + nbAttachements;
+			nbAttachements++;
+		}
+	}
+
+	APPEL_GX(glDrawBuffers(nbAttachements, destinations));
 }
 
 void MoteurGX::executerCouche(const MoteurGX& mGX)

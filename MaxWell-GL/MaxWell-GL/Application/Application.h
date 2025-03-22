@@ -16,4 +16,9 @@ struct Application {
 	static void executer(const Application& app);
 
 	static void fermer(Application* const app);
+
+private:
+	static void initaliserMoteurGraphique(Application* const app);
+
+	static void initialiserInterfaceUtilisateur(Application* const app);
 };

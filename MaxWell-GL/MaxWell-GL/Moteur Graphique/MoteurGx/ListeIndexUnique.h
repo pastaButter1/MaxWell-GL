@@ -98,7 +98,9 @@ public:
 		// Recherche binaire
 		// Les indexes sont toutes en ordre croissant
 
-		while (resultat != indexUnique && essaiMax - essaiMin > 1)
+		resultat = tamponIndex[essai];
+
+		while (resultat != indexUnique)
 		{
 			resultat = tamponIndex[essai];
 
@@ -119,14 +121,20 @@ public:
 
 				essai -= dst >> 1;
 			}
+
+			if (essaiMax - essaiMin > 1)
+			{
+				essai = compteurMax;
+				break;
+			}
 		}
 
-		return essaiMax - essaiMin <= 1 ? compteurMax : essai;
+		return essai;
 	}
 
 	Contenant& rechercherIndex(const TypeCompteur index)
 	{
-		if (index < tamponDonnees.size() - 1)
+		if (index < compteurMax - 1)
 		{
 			return tamponDonnees[index];
 		}

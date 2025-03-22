@@ -297,33 +297,6 @@ glm::vec3 orientation(float yaw, float pitch) {
 int main() {
 	Application application;
 
-	ListeIndexUnique<uint8_t, int> ciu;
-
-	for (int i = 0; i < 250; i++)
-	{
-		ciu.ajouter(10+i);
-	}
-
-	ciu.retirerIndex(20);
-	ciu.retirerIndexUnique(22);
-	ciu.retirerIndexUnique(21);
-	ciu.retirerIndexUnique(21);
-
-	ciu.ajouter(3333);
-
-	printf("%i\n", ciu.retournerIndex(19));
-	printf("%i\n", ciu.retournerIndex(20));
-	printf("%i\n", ciu.retournerIndex(21));
-	printf("%i\n", ciu.retournerIndex(22));
-	printf("%i\n", ciu.retournerIndex(23));
-	printf("%i\n", ciu.retournerIndex(255));
-
-	ciu.rechercherIndex(1);
-
-	const auto& ciuconst = ciu;
-
-	ciuconst.rechercherIndex(1);
-
 	Application::initialiser(&application, glm::uvec2(800, 600));
 	
 	Application::executer(application);

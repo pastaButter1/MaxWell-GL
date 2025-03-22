@@ -11,6 +11,11 @@
 #include <conio.h>
 #include <chrono>
 
+#include "Moteur Graphique/Model/DecoderFichier.h"
+#include "Moteur Graphique/Vertexbuffer/Vertexbuffer.h"
+
+using Ressource = MoteurGX::Ressource;
+
 void Application::initialiser(Application* const app, glm::uvec2 tailleFenetre)
 {
 	app->tailleFenetre = tailleFenetre;
@@ -61,6 +66,143 @@ void Application::initialiser(Application* const app, glm::uvec2 tailleFenetre)
 	afficherLog("OPENGL version : %s", glGetString(GL_VERSION));
 	afficherLog("OPENGL Supported glsl version : %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
+	initialiserInterfaceUtilisateur(app);
+
+	initaliserMoteurGraphique(app);
+}
+
+void Application::executer(const Application& app)
+{
+	auto tAvant = std::chrono::high_resolution_clock::now();
+
+	while (!glfwWindowShouldClose(app.fenetre))
+	{
+		auto tMaintenant = std::chrono::high_resolution_clock::now();
+		const float dt = (tMaintenant - tAvant).count() / 1000000000.0f;
+		tAvant = tMaintenant;
+
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
+		ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar;
+		window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize;
+		window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+
+		ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_::ImGuiDockNodeFlags_None;
+
+		ImGuiViewport* viewport = ImGui::GetMainViewport();
+		ImGui::SetNextWindowPos(viewport->Pos);
+		ImGui::SetNextWindowSize(viewport->Size);
+		ImGui::SetNextWindowViewport(viewport->ID);
+
+		ImGui::Begin("Dockspace window", 0, window_flags);
+
+		ImGuiIO& io = ImGui::GetIO();
+
+		if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+		{
+			ImGuiID dockspace = ImGui::GetID("MyDockSpace");
+			ImGui::DockSpace(dockspace, ImVec2(0, 0), dockspace_flags);
+		}
+
+		ImGui::End();
+
+		ImGui::Begin("fenetre");
+
+		static glm::vec4 couleur;
+
+		ImGui::ColorEdit4("Couleur", (float*)&couleur);
+
+		ImGui::End();
+
+		ImGui::Render();
+		//ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		MoteurGX::demarerCouche(app.moteurGX, 0);
+		Vertexarray::lier(MoteurGX::retVertexarray(app.moteurGX, 0));
+
+		MoteurGX::executerCouche(app.moteurGX);
+
+		glfwSwapBuffers(app.fenetre);
+		glfwPollEvents();
+	}
+}
+
+void Application::fermer(Application* const app)
+{
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
+
+	glfwDestroyWindow(app->fenetre);
+	glfwTerminate();
+
+	app->fenetre = nullptr;
+}
+
+void Application::initaliserMoteurGraphique(Application* const app)
+{
+	APPEL_GX(glEnable(GL_BLEND));
+	APPEL_GX(glEnable(GL_DEPTH_TEST));
+	APPEL_GX(glEnable(GL_STENCIL_TEST));
+
+	MoteurGX::init(&app->moteurGX);
+
+	Ressource shaderIU, pipelineIU, vaoIU;
+	Shader& shader = MoteurGX::creerShader(&app->moteurGX, &shaderIU);
+	mgx::Pipeline& pipeline = MoteurGX::creerPipeline(&app->moteurGX, &pipelineIU);
+	pipeline.fbo = 0;
+	pipeline.shader = shaderIU;
+	pipeline.modeDessin = GL_TRIANGLES;
+	pipeline.equationMelange = GL_FUNC_ADD;
+	pipeline.modeMelangeSRC = GL_SRC_ALPHA;
+	pipeline.modeMelangeDST = GL_ONE_MINUS_SRC_ALPHA;
+	pipeline.testProfondeur = GL_ALWAYS;
+	pipeline.modeEliminationFace = GL_BACK;
+	pipeline.tailleFenetre = glm::uvec2(app->tailleFenetre.x, app->tailleFenetre.y);
+	pipeline.stencilFunc = FUNC_TOUJOURS;
+	pipeline.stencilMasque = 0xFF;
+	pipeline.stencilRef = 0xFF;
+	pipeline.stencilEchec = STENCIL_FUNC_GARDER;
+	pipeline.profondeurEchec = STENCIL_FUNC_GARDER;
+	pipeline.stencilProfondeurReussite = STENCIL_FUNC_GARDER;
+
+	{
+		std::string shaderRaw;
+
+		chargerFichier("C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Shaders\\Simple\\vertex.glsl", &shaderRaw);
+		Shader::loadSubShader(shader, shaderRaw, SHADER_VERTEX);
+
+		shaderRaw.clear();
+		chargerFichier("C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Shaders\\Simple\\fragment.glsl", &shaderRaw);
+		Shader::loadSubShader(shader, shaderRaw, SHADER_FRAGMENT);
+	}
+
+	Shader::assembler(shader);
+	Shader::delier();
+
+	Vertexarray& vao = MoteurGX::creerVertexarray(&app->moteurGX, &vaoIU);
+	Vertexbuffer vbo;
+	Vertexbuffer::generer(&vbo, 6 * sizeof(glm::vec2));
+	vao.nbTriangles = 2;
+	glm::vec2 triangles[6] =
+	{
+		glm::vec2(-1.0f, -1.0f),
+		glm::vec2(-1.0f,  1.0f),
+		glm::vec2( 1.0f,  1.0f),
+		glm::vec2( 1.0f,  1.0f),
+		glm::vec2( 1.0f, -1.0f),
+		glm::vec2(-1.0f, -1.0f)
+	};
+	Vertexbuffer::transfererDonnees(vbo, 0, 6 * sizeof(glm::vec2), triangles);
+
+	Vertexarray::ajouterAttribut(vao,vbo, 0, 2, TYPE_VIRGULE, TYPE_FAUX, sizeof(glm::vec2), 0);
+	Vertexarray::delier();
+	Vertexbuffer::delier();
+}
+
+void Application::initialiserInterfaceUtilisateur(Application* const app)
+{
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
@@ -144,71 +286,4 @@ void Application::initialiser(Application* const app, glm::uvec2 tailleFenetre)
 	style->Colors[ImGuiCol_NavWindowingHighlight] = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
 	style->Colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
 	style->Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
-
-
-}
-
-void Application::executer(const Application& app)
-{
-	auto tAvant = std::chrono::high_resolution_clock::now();
-
-	while (!glfwWindowShouldClose(app.fenetre))
-	{
-		auto tMaintenant = std::chrono::high_resolution_clock::now();
-		const float dt = (tMaintenant - tAvant).count() / 1000000000.0f;
-		tAvant = tMaintenant;
-
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
-
-		ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar;
-		window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize;
-		window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-
-		ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_::ImGuiDockNodeFlags_None;
-
-		ImGuiViewport* viewport = ImGui::GetMainViewport();
-		ImGui::SetNextWindowPos(viewport->Pos);
-		ImGui::SetNextWindowSize(viewport->Size);
-		ImGui::SetNextWindowViewport(viewport->ID);
-
-		ImGui::Begin("Dockspace window", 0, window_flags);
-
-		ImGuiIO& io = ImGui::GetIO();
-
-		if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
-		{
-			ImGuiID dockspace = ImGui::GetID("MyDockSpace");
-			ImGui::DockSpace(dockspace, ImVec2(0, 0), dockspace_flags);
-		}
-
-		ImGui::End();
-
-		ImGui::Begin("fenetre");
-
-		static glm::vec4 couleur;
-
-		ImGui::ColorEdit4("Couleur", (float*)&couleur);
-
-		ImGui::End();
-
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-		glfwSwapBuffers(app.fenetre);
-		glfwPollEvents();
-	}
-}
-
-void Application::fermer(Application* const app)
-{
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
-
-	glfwDestroyWindow(app->fenetre);
-	glfwTerminate();
-
-	app->fenetre = nullptr;
 }

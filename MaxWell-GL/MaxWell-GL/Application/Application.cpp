@@ -142,10 +142,6 @@ void Application::fermer(Application* const app)
 
 void Application::initaliserMoteurGraphique(Application* const app)
 {
-	APPEL_GX(glEnable(GL_BLEND));
-	APPEL_GX(glEnable(GL_DEPTH_TEST));
-	APPEL_GX(glEnable(GL_STENCIL_TEST));
-
 	MoteurGX::init(&app->moteurGX);
 
 	Ressource shaderIU, pipelineIU, vaoIU;

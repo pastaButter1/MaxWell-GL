@@ -46,6 +46,10 @@ void mgx::Pipeline::dessiner(const Pipeline& pipeline, const Vertexarray vao)
 
 void MoteurGX::init(MoteurGX* const mGX)
 {
+	APPEL_GX(glEnable(GL_BLEND));
+	APPEL_GX(glEnable(GL_DEPTH_TEST));
+	APPEL_GX(glEnable(GL_STENCIL_TEST));
+
 	Ressource res;
 	Framebuffer& fbo = MoteurGX::creerFramebuffer(mGX, &res);
 	Framebuffer::addAttachment(&fbo, 800, 600, TEX_INFORMAT_RVBA, TEX_FORMAT_RVBA, GL_UNSIGNED_BYTE, TEX_FILTRE_PROCHE, TEX_FILTRE_PROCHE);

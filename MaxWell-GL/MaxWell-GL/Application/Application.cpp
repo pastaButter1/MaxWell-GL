@@ -11,62 +11,16 @@
 #include <conio.h>
 #include <chrono>
 
-void Application::initialiser(Application* const app, glm::uvec2 tailleFenetre)
+void Application::initialiser(Application* const app, glm::ivec2 tailleFenetre)
 {
-	app->tailleFenetre = tailleFenetre;
-
-	if (app->fenetre != nullptr)
-	{
-		afficherErreur("Le pointeur de la fenetre GLFW devrait etre egal a nullptr");
-	}
-
-	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-
-	// Création de la fenêtre avec GLFW
-
-	app->fenetre = glfwCreateWindow(app->tailleFenetre.x, app->tailleFenetre.y, "MaxWell-GL", NULL, NULL);
-	if (app->fenetre == nullptr)
-	{
-		afficherErreur("Erreur dans la creation de la fenetre GLFW");
-
-		glfwTerminate();
-
-		_getch();
-		exit(-1);
-	}
-
-	glfwMakeContextCurrent(app->fenetre);
-
-	glfwSwapInterval(1);
-
-	afficherLog("Creation de la fenetre avec GLFW");
-
-	glfwMakeContextCurrent(app->fenetre);
-
-	if (glewInit() != GLEW_OK) {
-		afficherErreur("L'initialisation de GLEW a echoue");
-
-		_getch();
-		exit(-1);
-	}
-
-	afficherLog("Initialisation de GLEW");
-
-	afficherLog("OPENGL vendor : %s", glGetString(GL_VENDOR));
-	afficherLog("OPENGL renderer : %s", glGetString(GL_RENDERER));
-	afficherLog("OPENGL version : %s", glGetString(GL_VERSION));
-	afficherLog("OPENGL Supported glsl version : %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
-
+	Fenetre::init(&app->fenetre, tailleFenetre);
+	
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	//io->ConfigFlags |= ImGuiConfigFlags_::ImGuiConfigFlags_NavEnableKeyboard;
 	ImGui::StyleColorsDark();
-	ImGui_ImplGlfw_InitForOpenGL(app->fenetre, true);
+	ImGui_ImplGlfw_InitForOpenGL(app->fenetre.window, true);
 	ImGui_ImplOpenGL3_Init("#version 450");
 
 	//ImFont* dfont = io->Fonts->AddFontDefault();
@@ -152,7 +106,7 @@ void Application::executer(const Application& app)
 {
 	auto tAvant = std::chrono::high_resolution_clock::now();
 
-	while (!glfwWindowShouldClose(app.fenetre))
+	while (!glfwWindowShouldClose(app.fenetre.window))
 	{
 		auto tMaintenant = std::chrono::high_resolution_clock::now();
 		const float dt = (tMaintenant - tAvant).count() / 1000000000.0f;
@@ -196,7 +150,7 @@ void Application::executer(const Application& app)
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-		glfwSwapBuffers(app.fenetre);
+		glfwSwapBuffers(app.fenetre.window);
 		glfwPollEvents();
 	}
 }
@@ -207,8 +161,8 @@ void Application::fermer(Application* const app)
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
 
-	glfwDestroyWindow(app->fenetre);
+	glfwDestroyWindow(app->fenetre.window);
 	glfwTerminate();
 
-	app->fenetre = nullptr;
+	app->fenetre.window = nullptr;
 }

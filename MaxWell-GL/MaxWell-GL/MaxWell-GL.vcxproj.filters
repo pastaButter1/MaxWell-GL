@@ -45,9 +45,6 @@
     <ClCompile Include="Moteur Graphique\Vertexbuffer\Vertexbuffer.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="Moteur Graphique\MoteurRendu\MoteurRendu.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
     <ClCompile Include="Application\Application.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
@@ -76,6 +73,18 @@
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="Moteur Graphique\MoteurGx\MoteurGX.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\Fenetre\Fenetre.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\Souris\Souris.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Moteur Graphique\Camera\Camera.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="MoteurPhysique\Espace\Espace.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -113,9 +122,6 @@
     <ClInclude Include="Moteur Graphique\Vertexbuffer\Vertexbuffer.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="Moteur Graphique\MoteurRendu\MoteurRendu.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="Application\Application.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
@@ -126,6 +132,21 @@
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="Moteur Graphique\MoteurGx\ListeIndexUnique.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Moteur Graphique\MoteurRendu\MoteurRendu.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Fenetre\Fenetre.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Souris\Souris.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Moteur Graphique\Camera\Camera.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="MoteurPhysique\Espace\Espace.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>
@@ -144,5 +165,7 @@
     <None Include="Shaders\Tesselation surface\Surface fragment.glsl" />
     <None Include="Shaders\Tesselation surface\Surface tessEval.glsl" />
     <None Include="Shaders\Tesselation surface\Surface geometrie.glsl" />
+    <None Include="Shader\DessinerVecteurChamp.glsl" />
+    <None Include="Shader\CalculerChamp.glsl" />
   </ItemGroup>
 </Project>

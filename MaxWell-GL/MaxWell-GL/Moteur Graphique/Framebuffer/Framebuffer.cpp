@@ -44,9 +44,10 @@ void Framebuffer::addAttachment(Framebuffer* const fbo, uint32_t largeur, uint32
 
 	Texture& tex = fbo->textureAttachments[texIndex];
 
-	Texture::generer(&tex, largeur, hauteur, nullptr, internalFormat, format, dataType);
+	Texture::generer(&tex, GL_TEXTURE_2D, internalFormat); /* TODO À changer */
+	Texture::allouer2D(tex, 0, glm::ivec2(largeur, hauteur), format, dataType, nullptr);
 
-	Texture::specifierEtirement(tex, TEX_ENVELOPPER_LIMITER_BORDURE, TEX_ENVELOPPER_LIMITER_BORDURE);
+	Texture::specifierEtirement(tex, TEX_ENVELOPPER_LIMITER_BORDURE, TEX_ENVELOPPER_LIMITER_BORDURE, TEX_ENVELOPPER_LIMITER_BORDURE);
 
 	uint32_t zeros[] = { 0, 0, 0, 0 };
 

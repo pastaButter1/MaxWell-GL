@@ -135,6 +135,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Application\Application.cpp" />
+    <ClCompile Include="Application\Fenetre\Fenetre.cpp" />
+    <ClCompile Include="Application\Souris\Souris.cpp" />
     <ClCompile Include="Application\Utilitaire.cpp" />
     <ClCompile Include="Lib\IMGUI\IMGUI\imgui.cpp" />
     <ClCompile Include="Lib\IMGUI\IMGUI\imgui_demo.cpp" />
@@ -144,21 +146,25 @@
     <ClCompile Include="Lib\IMGUI\IMGUI\imgui_tables.cpp" />
     <ClCompile Include="Lib\IMGUI\IMGUI\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Moteur Graphique\Camera\Camera.cpp" />
     <ClCompile Include="Moteur Graphique\Cubemap\Cubemap.cpp" />
     <ClCompile Include="Moteur Graphique\Framebuffer\Framebuffer.cpp" />
     <ClCompile Include="Moteur Graphique\Indexbuffer\Indexbuffer.cpp" />
     <ClCompile Include="Moteur Graphique\Model\DecoderFichier.cpp" />
     <ClCompile Include="Moteur Graphique\MoteurGx\MoteurGX.cpp" />
-    <ClCompile Include="Moteur Graphique\MoteurRendu\MoteurRendu.cpp" />
     <ClCompile Include="Moteur Graphique\Pipeline\Pipeline.cpp" />
     <ClCompile Include="Moteur Graphique\Shader\Shader.cpp" />
     <ClCompile Include="Moteur Graphique\Texture\Texture.cpp" />
     <ClCompile Include="Moteur Graphique\Vertexarray\Vertexarray.cpp" />
     <ClCompile Include="Moteur Graphique\Vertexbuffer\Vertexbuffer.cpp" />
+    <ClCompile Include="MoteurPhysique\Espace\Espace.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Application.h" />
+    <ClInclude Include="Application\Fenetre\Fenetre.h" />
+    <ClInclude Include="Application\Souris\Souris.h" />
     <ClInclude Include="Application\Utilitaire.h" />
+    <ClInclude Include="Moteur Graphique\Camera\Camera.h" />
     <ClInclude Include="Moteur Graphique\Graphique.h" />
     <ClInclude Include="Moteur Graphique\Cubemap\Cubemap.h" />
     <ClInclude Include="Moteur Graphique\Framebuffer\Framebuffer.h" />
@@ -173,6 +179,7 @@
     <ClInclude Include="Moteur Graphique\Texture\Texture.h" />
     <ClInclude Include="Moteur Graphique\Vertexarray\Vertexarray.h" />
     <ClInclude Include="Moteur Graphique\Vertexbuffer\Vertexbuffer.h" />
+    <ClInclude Include="MoteurPhysique\Espace\Espace.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Moteur Graphique\Deferred rendering\Composer fragment.glsl" />
@@ -195,6 +202,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </None>
     <None Include="Shaders\Tesselation surface\Surface tessEval.glsl" />
+    <None Include="Shader\CalculerChamp.glsl" />
+    <None Include="Shader\DessinerVecteurChamp.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

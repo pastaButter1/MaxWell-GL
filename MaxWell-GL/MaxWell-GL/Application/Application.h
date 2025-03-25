@@ -11,7 +11,7 @@ struct Application {
 	ImFont* police;
 	MoteurGX moteurGX;
 
-	static void initialiser(Application* const app, glm::ivec2 tailleFenetre);
+	static void initialiser(Application* const app, glm::uvec2 tailleFenetre);
 
 	static void executer(const Application& app);
 

@@ -13,6 +13,7 @@
 
 #include "Moteur Graphique/Model/DecoderFichier.h"
 #include "Moteur Graphique/Vertexbuffer/Vertexbuffer.h"
+#include "Moteur Graphique/MoteurGx/Mesh.h"
 
 using Ressource = MoteurGX::Ressource;
 
@@ -177,24 +178,28 @@ void Application::initaliserMoteurGraphique(Application* const app)
 	Shader::assembler(shader);
 	Shader::delier();
 
-	Vertexarray& vao = MoteurGX::creerVertexarray(&app->moteurGX, &vaoIU);
+	/*Vertexarray& vao = MoteurGX::creerVertexarray(&app->moteurGX, &vaoIU);
 	Vertexbuffer vbo;
-	Vertexbuffer::generer(&vbo, 6 * sizeof(glm::vec2));
-	vao.nbTriangles = 2;
-	glm::vec2 triangles[6] =
-	{
-		glm::vec2(-1.0f, -1.0f),
-		glm::vec2(-1.0f,  1.0f),
-		glm::vec2( 1.0f,  1.0f),
-		glm::vec2( 1.0f,  1.0f),
-		glm::vec2( 1.0f, -1.0f),
-		glm::vec2(-1.0f, -1.0f)
-	};
-	Vertexbuffer::transfererDonnees(vbo, 0, 6 * sizeof(glm::vec2), triangles);
+	Vertexbuffer::generer(&vbo);
+	Vertexbuffer::allocation(&vbo, 6 * sizeof(glm::vec2));
+	vao.nbTriangles = 2;*/
+	Vertex triangles[6];
+	triangles[0] = { glm::vec3(-1, -1, 0), glm::vec2(0, 0), glm::vec3(0, 0, 0) };
+	triangles[1] = { glm::vec3(-1,  1, 0), glm::vec2(0, 1), glm::vec3(0, 0, 0) };
+	triangles[2] = { glm::vec3(1,  1, 0), glm::vec2(1, 1), glm::vec3(0, 0, 0) };
+	triangles[3] = { glm::vec3(1,  1, 0), glm::vec2(1, 1), glm::vec3(0, 0, 0) };
+	triangles[4] = { glm::vec3(1, -1, 0), glm::vec2(1, 0), glm::vec3(0, 0, 0) };
+	triangles[5] = { glm::vec3(-1, -1, 0), glm::vec2(0, 0), glm::vec3(0, 0, 0) };
+
+	mgx::Mesh mesh;
+	mgx::Mesh::creer(&mesh, &app->moteurGX);
+	mgx::Mesh::chargerModel<Vertex>(&mesh, &app->moteurGX, 6, triangles);
+	
+	/*Vertexbuffer::transfererDonnees(vbo, 0, 6 * sizeof(glm::vec2), triangles);
 
 	Vertexarray::ajouterAttribut(vao,vbo, 0, 2, TYPE_VIRGULE, TYPE_FAUX, sizeof(glm::vec2), 0);
 	Vertexarray::delier();
-	Vertexbuffer::delier();
+	Vertexbuffer::delier();*/
 }
 
 void Application::initialiserInterfaceUtilisateur(Application* const app)

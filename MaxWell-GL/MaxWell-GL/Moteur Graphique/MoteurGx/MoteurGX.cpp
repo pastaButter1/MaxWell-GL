@@ -107,6 +107,18 @@ Vertexarray& MoteurGX::creerVertexarray(MoteurGX* const mGX, Ressource* const re
 	return vao;
 }
 
+Vertexbuffer& MoteurGX::creerVertexbuffer(MoteurGX* const mGX, Ressource* const res)
+{
+	Ressource index = mGX->listeVBOs.ajouter();
+	*res = index;
+
+	Vertexbuffer& vbo = mGX->listeVBOs.rechercherIndexUnique(index);
+
+	Vertexbuffer::generer(&vbo);
+
+	return vbo;
+}
+
 Pipeline& MoteurGX::retPipeline(const MoteurGX& mGX, const Ressource res)
 {
 	return *(Pipeline*)&mGX.listePipelines.rechercherIndexUnique(res);
@@ -130,6 +142,11 @@ Texture& MoteurGX::retTexture(const MoteurGX& mGX, const Ressource res)
 Vertexarray& MoteurGX::retVertexarray(const MoteurGX& mGX, const Ressource res)
 {
 	return *(Vertexarray*)&mGX.listeVAOs.rechercherIndexUnique(res);
+}
+
+Vertexbuffer& MoteurGX::retVertexbuffer(const MoteurGX& mGX, const Ressource res)
+{
+	return *(Vertexbuffer*)&mGX.listeVBOs.rechercherIndexUnique(res);
 }
 
 void MoteurGX::demarerCouche(const MoteurGX& mGX, const Ressource IndexPipeline)

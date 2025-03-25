@@ -148,6 +148,7 @@
     <ClCompile Include="Moteur Graphique\Framebuffer\Framebuffer.cpp" />
     <ClCompile Include="Moteur Graphique\Indexbuffer\Indexbuffer.cpp" />
     <ClCompile Include="Moteur Graphique\Model\DecoderFichier.cpp" />
+    <ClCompile Include="Moteur Graphique\MoteurGx\Mesh.cpp" />
     <ClCompile Include="Moteur Graphique\MoteurGx\MoteurGX.cpp" />
     <ClCompile Include="Moteur Graphique\Shader\Shader.cpp" />
     <ClCompile Include="Moteur Graphique\Texture\Texture.cpp" />
@@ -163,6 +164,7 @@
     <ClInclude Include="Moteur Graphique\Indexbuffer\Indexbuffer.h" />
     <ClInclude Include="Moteur Graphique\Model\DecoderFichier.h" />
     <ClInclude Include="Moteur Graphique\Model\Model.h" />
+    <ClInclude Include="Moteur Graphique\MoteurGx\Mesh.h" />
     <ClInclude Include="Moteur Graphique\MoteurGx\MoteurGX.h" />
     <ClInclude Include="Moteur Graphique\MoteurGx\ListeIndexUnique.h" />
     <ClInclude Include="Moteur Graphique\Shader\Shader.h" />

@@ -6,12 +6,12 @@
 struct Framebuffer
 {
 	Texture textureAttachments[4];
-	uint32_t attachmentData = 0;
+	uint32_t infoAttachments = 0;
 	int32_t id = -1;
 
 	static constexpr uint32_t nbAttachmentMask = 0x00000003;
-	static constexpr uint32_t depthStencilMask = 0x80000000;
-	static constexpr uint32_t colorMask =        0x78000000;
+	static constexpr uint32_t masqueProfondeurStencil = 0x80000000;
+	static constexpr uint32_t masqueCouleur =        0x78000000;
 
 	static void generer(Framebuffer* const fbo);
 

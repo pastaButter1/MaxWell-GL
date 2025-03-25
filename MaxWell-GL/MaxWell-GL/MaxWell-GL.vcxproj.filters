@@ -27,13 +27,7 @@
     <ClCompile Include="Moteur Graphique\Indexbuffer\Indexbuffer.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="Moteur Graphique\Mesh\Mesh.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
     <ClCompile Include="Moteur Graphique\Model\DecoderFichier.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Moteur Graphique\Pipeline\Pipeline.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="Moteur Graphique\Shader\Shader.cpp">
@@ -46,9 +40,6 @@
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="Moteur Graphique\Vertexbuffer\Vertexbuffer.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Moteur Graphique\MoteurRendu\MoteurRendu.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="Application\Application.cpp">
@@ -78,6 +69,9 @@
     <ClCompile Include="Lib\IMGUI\IMGUI\imgui_widgets.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
+    <ClCompile Include="Moteur Graphique\MoteurGx\MoteurGX.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Moteur Graphique\Graphique.h">
@@ -92,16 +86,10 @@
     <ClInclude Include="Moteur Graphique\Indexbuffer\Indexbuffer.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="Moteur Graphique\Mesh\Mesh.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="Moteur Graphique\Model\DecoderFichier.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="Moteur Graphique\Model\Model.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="Moteur Graphique\Pipeline\Pipeline.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="Moteur Graphique\Shader\Shader.h">
@@ -116,13 +104,19 @@
     <ClInclude Include="Moteur Graphique\Vertexbuffer\Vertexbuffer.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="Moteur Graphique\MoteurRendu\MoteurRendu.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="Application\Application.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="Application\Utilitaire.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Moteur Graphique\MoteurGx\MoteurGX.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Moteur Graphique\MoteurGx\ListeIndexUnique.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Moteur Graphique\MoteurGx\MoteurGXDef.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>
@@ -141,5 +135,7 @@
     <None Include="Shaders\Tesselation surface\Surface fragment.glsl" />
     <None Include="Shaders\Tesselation surface\Surface tessEval.glsl" />
     <None Include="Shaders\Tesselation surface\Surface geometrie.glsl" />
+    <None Include="Shaders\Simple\vertex.glsl" />
+    <None Include="Shaders\Simple\fragment.glsl" />
   </ItemGroup>
 </Project>

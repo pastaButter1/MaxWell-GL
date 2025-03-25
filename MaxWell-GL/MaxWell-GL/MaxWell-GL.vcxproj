@@ -147,10 +147,9 @@
     <ClCompile Include="Moteur Graphique\Cubemap\Cubemap.cpp" />
     <ClCompile Include="Moteur Graphique\Framebuffer\Framebuffer.cpp" />
     <ClCompile Include="Moteur Graphique\Indexbuffer\Indexbuffer.cpp" />
-    <ClCompile Include="Moteur Graphique\Mesh\Mesh.cpp" />
     <ClCompile Include="Moteur Graphique\Model\DecoderFichier.cpp" />
-    <ClCompile Include="Moteur Graphique\MoteurRendu\MoteurRendu.cpp" />
-    <ClCompile Include="Moteur Graphique\Pipeline\Pipeline.cpp" />
+    <ClCompile Include="Moteur Graphique\MoteurGx\Mesh.cpp" />
+    <ClCompile Include="Moteur Graphique\MoteurGx\MoteurGX.cpp" />
     <ClCompile Include="Moteur Graphique\Shader\Shader.cpp" />
     <ClCompile Include="Moteur Graphique\Texture\Texture.cpp" />
     <ClCompile Include="Moteur Graphique\Vertexarray\Vertexarray.cpp" />
@@ -163,15 +162,16 @@
     <ClInclude Include="Moteur Graphique\Cubemap\Cubemap.h" />
     <ClInclude Include="Moteur Graphique\Framebuffer\Framebuffer.h" />
     <ClInclude Include="Moteur Graphique\Indexbuffer\Indexbuffer.h" />
-    <ClInclude Include="Moteur Graphique\Mesh\Mesh.h" />
     <ClInclude Include="Moteur Graphique\Model\DecoderFichier.h" />
     <ClInclude Include="Moteur Graphique\Model\Model.h" />
-    <ClInclude Include="Moteur Graphique\MoteurRendu\MoteurRendu.h" />
-    <ClInclude Include="Moteur Graphique\Pipeline\Pipeline.h" />
+    <ClInclude Include="Moteur Graphique\MoteurGx\Mesh.h" />
+    <ClInclude Include="Moteur Graphique\MoteurGx\MoteurGX.h" />
+    <ClInclude Include="Moteur Graphique\MoteurGx\ListeIndexUnique.h" />
     <ClInclude Include="Moteur Graphique\Shader\Shader.h" />
     <ClInclude Include="Moteur Graphique\Texture\Texture.h" />
     <ClInclude Include="Moteur Graphique\Vertexarray\Vertexarray.h" />
     <ClInclude Include="Moteur Graphique\Vertexbuffer\Vertexbuffer.h" />
+    <ClInclude Include="Moteur Graphique\MoteurGx\MoteurGXDef.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Moteur Graphique\Deferred rendering\Composer fragment.glsl" />
@@ -184,6 +184,8 @@
     <None Include="Shaders\Calcul onde\Calcul gradient onde.glsl" />
     <None Include="Shaders\Calcul onde\Calcul gradient2 onde.glsl" />
     <None Include="Shaders\Calcul onde\Calcul onde.glsl" />
+    <None Include="Shaders\Simple\fragment.glsl" />
+    <None Include="Shaders\Simple\vertex.glsl" />
     <None Include="Shaders\Tesselation surface\Surface fragment.glsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>

@@ -171,13 +171,14 @@
     <ClInclude Include="Moteur Graphique\MoteurGx\Mesh.h" />
     <ClInclude Include="Moteur Graphique\MoteurGx\MoteurGX.h" />
     <ClInclude Include="Moteur Graphique\MoteurGx\ListeIndexUnique.h" />
+    <ClInclude Include="Moteur Graphique\MoteurGx\MoteurGXDef.h" />
     <ClInclude Include="Moteur Graphique\Shader\Shader.h" />
     <ClInclude Include="Moteur Graphique\Texture\Texture.h" />
     <ClInclude Include="Moteur Graphique\Vertexarray\Vertexarray.h" />
     <ClInclude Include="Moteur Graphique\Vertexbuffer\Vertexbuffer.h" />
-    <ClInclude Include="Moteur Graphique\MoteurGx\MoteurGXDef.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="imgui.ini" />
     <None Include="Moteur Graphique\Deferred rendering\Composer fragment.glsl" />
     <None Include="Moteur Graphique\Deferred rendering\Composer vertex.glsl" />
     <None Include="Moteur Graphique\Deferred rendering\Deferred fragment.glsl" />

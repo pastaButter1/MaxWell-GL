@@ -201,6 +201,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </None>
     <None Include="Shaders\Tesselation surface\Surface tessEval.glsl" />
+    <None Include="Shader\CalculerChamp.glsl" />
+    <None Include="Shader\DessinerVecteurChamp.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

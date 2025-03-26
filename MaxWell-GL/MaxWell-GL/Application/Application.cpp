@@ -121,11 +121,11 @@ void Application::initaliserMoteurGraphique(Application* const app)
 	{
 		std::string shaderRaw;
 
-		chargerFichier("C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Shaders\\Simple\\vertex.glsl", &shaderRaw);
+		chargerFichier("Shaders/Simple/vertex.glsl", &shaderRaw);
 		Shader::loadSubShader(shader, shaderRaw, SHADER_VERTEX);
 
 		shaderRaw.clear();
-		chargerFichier("C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Shaders\\Simple\\fragment.glsl", &shaderRaw);
+		chargerFichier("Shaders/Simple/fragment.glsl", &shaderRaw);
 		Shader::loadSubShader(shader, shaderRaw, SHADER_FRAGMENT);
 	}
 

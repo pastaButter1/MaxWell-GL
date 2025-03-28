@@ -189,3 +189,17 @@ void MoteurGX::executerCouche(const MoteurGX& mGX)
 void MoteurGX::pousserMesh(MoteurGX* const mGX)
 {
 }
+
+void MoteurGX::copierRenduBackbuffer(const MoteurGX& mGX, const glm::uvec2 dimensionBackbuffer)
+{
+	Framebuffer& fboRendu = retFBO(mGX, 0);
+
+	APPEL_GX(glBindFramebuffer(GL_READ_FRAMEBUFFER, fboRendu.id));
+	APPEL_GX(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0));
+	APPEL_GX(glDrawBuffer(GL_FRONT_AND_BACK));
+	APPEL_GX(glReadBuffer(GL_COLOR_ATTACHMENT0));
+
+	APPEL_GX(glBlitFramebuffer(0, 0, dimensionBackbuffer.x, dimensionBackbuffer.y, 0, 0, dimensionBackbuffer.x, dimensionBackbuffer.y, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST));
+
+	Framebuffer::delier();
+}

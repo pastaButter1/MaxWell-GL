@@ -78,6 +78,8 @@ void Application::executer(const Application& app)
 
 		MoteurGX::executerCouche(app.moteurGX);
 
+		MoteurGX::copierRenduBackbuffer(app.moteurGX, glm::uvec2(800, 600));
+
 		glfwSwapBuffers(app.fenetre.window);
 		glfwPollEvents();
 	}

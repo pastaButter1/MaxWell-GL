@@ -99,4 +99,6 @@ struct MoteurGX
 	static void executerCouche(const MoteurGX& mGX);
 
 	static void pousserMesh(MoteurGX* const mGX);
+
+	static void copierRenduBackbuffer(const MoteurGX& mGX, const glm::uvec2 dimensionBackbuffer);
 };

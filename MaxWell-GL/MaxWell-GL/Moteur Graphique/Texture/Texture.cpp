@@ -32,9 +32,14 @@ void Texture::delier()
 	APPEL_GX(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
-void Texture::attacher(const Texture& tex, const GLuint unite)
+void Texture::attacherUnite(const Texture& tex, const GLuint unite)
 {
 	APPEL_GX(glBindTextureUnit(unite, tex.id));
+}
+
+void Texture::attacherImage(const Texture& tex, uint32_t unite, const GLenum acces)
+{
+	glBindImageTexture(unite, tex.id, 0, GL_TRUE, 0, acces, tex.formatInterne);
 }
 
 void Texture::allouer1D(const Texture& tex, const GLint niveau, const glm::ivec1 dimension, const GLenum format, const GLenum type, const void* const pixels)

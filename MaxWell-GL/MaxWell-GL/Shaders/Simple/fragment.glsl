@@ -6,5 +6,5 @@ in vec2 f_uv;
 
 void main()
 {
-	a_couleur = vec4(f_uv, 1, 0.5);
+	a_couleur = vec4(1, 1, 0, 1);
 }

@@ -6,7 +6,7 @@ using namespace mgx;
 
 void mgx::Pipeline::init(const Pipeline& pipeline, const Framebuffer& fbo, const Shader& shader)
 {
-	//Framebuffer::lier(fbo);
+	Framebuffer::lier(fbo);
 	Shader::lier(shader);
 
 	APPEL_GX(glViewport(0, 0, pipeline.tailleFenetre.x, pipeline.tailleFenetre.y));
@@ -19,15 +19,19 @@ void mgx::Pipeline::init(const Pipeline& pipeline, const Framebuffer& fbo, const
 	APPEL_GX(glStencilFunc(pipeline.stencilFunc, pipeline.stencilRef, pipeline.stencilMasque));
 	APPEL_GX(glStencilOp(pipeline.stencilEchec, pipeline.profondeurEchec, pipeline.stencilProfondeurReussite));
 
+	APPEL_GX(glClearColor(1, 0, 0, 1));
+	APPEL_GX(glClear(GL_COLOR_BUFFER_BIT));
+
 	// Definir les cibles du dessinage
 
-	/*const uint32_t masqueAttachements = Framebuffer::masqueCouleur;
+	const uint32_t masqueAttachements = Framebuffer::masqueCouleur;
 	const uint32_t listeAttachement = fbo.infoAttachments & (masqueAttachements);
 
 	EnumGX destinations[Framebuffer::nbAttachmentMask];
 	uint32_t nbAttachements = 0;
-	for (uint32_t masque = 0x80000000; nbAttachements < __popcnt(masqueAttachements); masque >>= 1)
+	for (uint32_t masque = 0x80000000, i = 0; i < __popcnt(masqueAttachements); masque >>= 1, i++)
 	{
+		uint32_t a = listeAttachement & masque;
 		if ((listeAttachement & masque) != 0)
 		{
 			destinations[nbAttachements] = GL_COLOR_ATTACHMENT0 + nbAttachements;
@@ -35,7 +39,7 @@ void mgx::Pipeline::init(const Pipeline& pipeline, const Framebuffer& fbo, const
 		}
 	}
 
-	APPEL_GX(glDrawBuffers(nbAttachements, destinations));*/
+	APPEL_GX(glDrawBuffers(nbAttachements, destinations));
 }
 
 void mgx::Pipeline::dessiner(const Pipeline& pipeline, const Vertexarray vao)
@@ -50,9 +54,10 @@ void MoteurGX::init(MoteurGX* const mGX)
 	APPEL_GX(glEnable(GL_DEPTH_TEST));
 	APPEL_GX(glEnable(GL_STENCIL_TEST));
 
-	Ressource res;
-	Framebuffer& fbo = MoteurGX::creerFramebuffer(mGX, &res);
-	Framebuffer::addAttachment(&fbo, 800, 600, TEX_INFORMAT_RVBA, TEX_FORMAT_RVBA, GL_UNSIGNED_BYTE, TEX_FILTRE_PROCHE, TEX_FILTRE_PROCHE);
+	Ressource fboIU, texIU;
+	Framebuffer& fbo = MoteurGX::creerFramebuffer(mGX, &fboIU);
+	Texture& tex = MoteurGX::creerTexture(mGX, &texIU);
+	Framebuffer::addAttachment(&fbo, &tex, 800, 600, TEX_INFORMAT_RVBA, TEX_FORMAT_RVBA, GL_UNSIGNED_BYTE, TEX_FILTRE_PROCHE, TEX_FILTRE_PROCHE);
 }
 
 Pipeline& MoteurGX::creerPipeline(MoteurGX* const mGX, Ressource* const res)
@@ -91,6 +96,9 @@ Texture& MoteurGX::creerTexture(MoteurGX* const mGX, Ressource* const res)
 {
 	Ressource index = mGX->listeTextures.ajouter();
 	*res = index;
+
+	Texture& tex = mGX->listeTextures.rechercherIndexUnique(index);
+	Texture::generer(&tex);
 
 	return mGX->listeTextures.rechercherIndexUnique(index);
 }
@@ -160,16 +168,13 @@ void MoteurGX::demarerCouche(const MoteurGX& mGX, const Ressource IndexPipeline)
 
 void MoteurGX::executerCouche(const MoteurGX& mGX)
 {
-	APPEL_GX(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-
-	APPEL_GX(glClearColor(1, 0, 1, 1));
-	APPEL_GX(glClear(GL_COLOR_BUFFER_BIT));
-
 	const Couche& couche = mGX.coucheActive;
 
-	const Pipeline& pipeline = mGX.listePipelines.rechercherIndexUnique(0);
+	const Pipeline& pipeline = MoteurGX::retPipeline(mGX, 0);
 
-	const Vertexarray& vao = mGX.listeVAOs.rechercherIndexUnique(0);
+	const Vertexarray& vao = MoteurGX::retVertexarray(mGX, 0);
+
+	//APPEL_GX(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 
 	//Vertexbuffer vbo;
 	//vbo.id = 1;

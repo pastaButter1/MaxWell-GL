@@ -10,7 +10,7 @@ void Framebuffer::detruire(Framebuffer* const fbo)
 	APPEL_GX(glDeleteFramebuffers(1, (GLuint*)&(fbo->id)));
 }
 
-void Framebuffer::addAttachment(Framebuffer* const fbo, uint32_t largeur, uint32_t hauteur, uint32_t internalFormat, uint32_t format, uint32_t dataType, uint32_t minFilter, uint32_t magFilter)
+void Framebuffer::addAttachment(Framebuffer* const fbo, Texture* const tex, uint32_t largeur, uint32_t hauteur, uint32_t formatInterne, uint32_t format, uint32_t typeDonnees, uint32_t filtreMin, uint32_t filtreMag)
 {
 	uint32_t nbAttachments = fbo->infoAttachments & nbAttachmentMask;
 	bool depthStencil = fbo->infoAttachments & masqueProfondeurStencil >> _tzcnt_u32(masqueProfondeurStencil);
@@ -42,21 +42,22 @@ void Framebuffer::addAttachment(Framebuffer* const fbo, uint32_t largeur, uint32
 		break;
 	}
 
-	Texture& tex = fbo->textureAttachments[texIndex];
+	//Texture& tex = fbo->textureAttachments[texIndex];
 
-	Texture::generer(&tex, GL_TEXTURE_2D, internalFormat); /* TODO À changer */
-	Texture::allouer2D(tex, 0, glm::ivec2(largeur, hauteur), format, dataType, nullptr);
+	Texture::generer(tex);
 
-	Texture::specifierEtirement(tex, TEX_ENVELOPPER_LIMITER_BORDURE, TEX_ENVELOPPER_LIMITER_BORDURE, TEX_ENVELOPPER_LIMITER_BORDURE);
+	Texture::allouer2D(tex, 0, glm::ivec2(largeur, hauteur), formatInterne, format, typeDonnees, nullptr);
+
+	Texture::specifierEtirement(*tex, TEX_ENVELOPPER_LIMITER_BORDURE, TEX_ENVELOPPER_LIMITER_BORDURE, TEX_ENVELOPPER_LIMITER_BORDURE);
 
 	uint32_t zeros[] = { 0, 0, 0, 0 };
 
-	Texture::specifierCouleurBordure(tex, *(glm::vec4*)zeros);
+	Texture::specifierCouleurBordure(*tex, *(glm::vec4*)zeros);
 
-	Texture::specifierFiltre(tex, GL_NEAREST, GL_NEAREST);
+	Texture::specifierFiltre(*tex, GL_NEAREST, GL_NEAREST);
 
 	lier(*fbo);
-	APPEL_GX(glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, TEX_2D, tex.id, 0));
+	APPEL_GX(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex->id, 0));
 
 	uint32_t fboStatus = APPEL_GX(glCheckFramebufferStatus(GL_FRAMEBUFFER));
 	if (fboStatus == GL_FRAMEBUFFER_COMPLETE)

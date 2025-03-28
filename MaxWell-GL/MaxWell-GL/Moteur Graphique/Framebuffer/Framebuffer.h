@@ -17,7 +17,7 @@ struct Framebuffer
 
 	static void detruire(Framebuffer* const fbo);
 
-	static void addAttachment(Framebuffer* const fbo, uint32_t largeur, uint32_t hauteur, uint32_t internalFormat, uint32_t format, uint32_t dataType, uint32_t minFilter, uint32_t magFilter);
+	static void addAttachment(Framebuffer* const fbo, Texture* const tex, uint32_t largeur, uint32_t hauteur, uint32_t formatInterne, uint32_t format, uint32_t typeDonnees, uint32_t filtreMin, uint32_t filtreMag);
 
 	static void lier(const Framebuffer& fbo);
 

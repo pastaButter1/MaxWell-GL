@@ -137,17 +137,23 @@ void Application::initaliserMoteurGraphique(Application* const app)
 	Vertexbuffer::generer(&vbo);
 	Vertexbuffer::allocation(&vbo, 6 * sizeof(glm::vec2));
 	vao.nbTriangles = 2;*/
-	Vertex triangles[6];
+	/*Vertex triangles[6];
 	triangles[0] = { glm::vec3(-1, -1, 0), glm::vec2(0, 0), glm::vec3(0, 0, 0) };
 	triangles[1] = { glm::vec3(-1,  1, 0), glm::vec2(0, 1), glm::vec3(0, 0, 0) };
 	triangles[2] = { glm::vec3( 1,  1, 0), glm::vec2(1, 1), glm::vec3(0, 0, 0) };
 	triangles[3] = { glm::vec3( 1,  1, 0), glm::vec2(1, 1), glm::vec3(0, 0, 0) };
 	triangles[4] = { glm::vec3( 1, -1, 0), glm::vec2(1, 0), glm::vec3(0, 0, 0) };
-	triangles[5] = { glm::vec3(-1, -1, 0), glm::vec2(0, 0), glm::vec3(0, 0, 0) };
+	triangles[5] = { glm::vec3(-1, -1, 0), glm::vec2(0, 0), glm::vec3(0, 0, 0) };*/
+
+	Model model;
+
+	decoderOBJ("C:\\Users\\Alexandre\\Desktop\\général francais\\etoile2.obj", &model);
 
 	mgx::Mesh mesh;
 	mgx::Mesh::creer(&mesh, &app->moteurGX);
-	mgx::Mesh::chargerModel<Vertex>(&mesh, &app->moteurGX, 6, triangles);
+	mgx::Mesh::chargerModel<Vertex>(&mesh, &app->moteurGX, model.nbTriangle * 3, model.triangles);
+
+	delete[] model.triangles;
 	
 	/*Vertexbuffer::transfererDonnees(vbo, 0, 6 * sizeof(glm::vec2), triangles);
 

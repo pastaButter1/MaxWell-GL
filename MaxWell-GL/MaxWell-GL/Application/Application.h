@@ -11,9 +11,16 @@ struct Application {
 	ImFont* police;
 	MoteurGX moteurGX;
 
+	struct DonneesOperation
+	{
+		float tangageCam = 0.0f;
+		float lacetCam = 0.0f;
+		float distanceCam = 50.0f;
+	} donnesOperation;
+
 	static void initialiser(Application* const app, glm::uvec2 tailleFenetre);
 
-	static void executer(const Application& app);
+	static void executer(Application* const app);
 
 	static void fermer(Application* const app);
 
@@ -21,4 +28,8 @@ private:
 	static void initaliserMoteurGraphique(Application* const app);
 
 	static void initialiserInterfaceUtilisateur(Application* const app);
+
+	static void executerEntrees(Application* const app, const float dt);
+
+	static void executerRendu(Application* const app);
 };

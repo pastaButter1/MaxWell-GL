@@ -40,6 +40,8 @@ namespace mgx
 		static void init(const Pipeline& pipeline, const Framebuffer& fbo, const Shader& shader);
 
 		static void dessiner(const Pipeline& pipeline, const Vertexarray vao);
+
+		static constexpr void renduStandard(Pipeline* const pipelinePtr);
 	};
 }
 
@@ -94,7 +96,7 @@ struct MoteurGX
 
 	static Vertexbuffer& retVertexbuffer(const MoteurGX& mGX, const Ressource res);
 
-	static void demarerCouche(const MoteurGX&  mGX, const Ressource pipeline);
+	static const Shader& demarerCouche(const MoteurGX&  mGX, const Ressource pipeline);
 
 	static void executerCouche(const MoteurGX& mGX);
 

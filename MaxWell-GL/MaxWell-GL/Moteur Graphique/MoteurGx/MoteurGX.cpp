@@ -19,8 +19,8 @@ void mgx::Pipeline::init(const Pipeline& pipeline, const Framebuffer& fbo, const
 	APPEL_GX(glStencilFunc(pipeline.stencilFunc, pipeline.stencilRef, pipeline.stencilMasque));
 	APPEL_GX(glStencilOp(pipeline.stencilEchec, pipeline.profondeurEchec, pipeline.stencilProfondeurReussite));
 
-	APPEL_GX(glClearColor(1, 0, 0, 1));
-	APPEL_GX(glClear(GL_COLOR_BUFFER_BIT));
+	APPEL_GX(glClearColor(0.1, 0.1, 0.3, 1));
+	APPEL_GX(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
 	// Definir les cibles du dessinage
 
@@ -48,16 +48,36 @@ void mgx::Pipeline::dessiner(const Pipeline& pipeline, const Vertexarray vao)
 	APPEL_GX(glDrawArrays(pipeline.modeDessin, 0, vao.nbTriangles * 3));
 }
 
+constexpr void mgx::Pipeline::renduStandard(Pipeline* const pipelinePtr)
+{
+	Pipeline& pipeline = *pipelinePtr;
+	pipeline.modeDessin = GL_TRIANGLES;
+	pipeline.equationMelange = GL_FUNC_ADD;
+	pipeline.modeMelangeSRC = GL_SRC_ALPHA;
+	pipeline.modeMelangeDST = GL_ONE_MINUS_SRC_ALPHA;
+	pipeline.testProfondeur = GL_LESS;
+	pipeline.modeEliminationFace = GL_BACK;
+	pipeline.stencilFunc = FUNC_TOUJOURS;
+	pipeline.stencilMasque = 0xFF;
+	pipeline.stencilRef = 0xFF;
+	pipeline.stencilEchec = STENCIL_FUNC_GARDER;
+	pipeline.profondeurEchec = STENCIL_FUNC_GARDER;
+	pipeline.stencilProfondeurReussite = STENCIL_FUNC_GARDER;
+}
+
 void MoteurGX::init(MoteurGX* const mGX)
 {
 	APPEL_GX(glEnable(GL_BLEND));
 	APPEL_GX(glEnable(GL_DEPTH_TEST));
 	APPEL_GX(glEnable(GL_STENCIL_TEST));
 
-	Ressource fboIU, texIU;
+	Ressource fboIU, texCoulIU, texProfIU;
 	Framebuffer& fbo = MoteurGX::creerFramebuffer(mGX, &fboIU);
-	Texture& tex = MoteurGX::creerTexture(mGX, &texIU);
-	Framebuffer::addAttachment(&fbo, &tex, 800, 600, TEX_INFORMAT_RVBA, TEX_FORMAT_RVBA, GL_UNSIGNED_BYTE, TEX_FILTRE_PROCHE, TEX_FILTRE_PROCHE);
+	MoteurGX::creerTexture(mGX, &texCoulIU);
+	Texture& texProfondeur = MoteurGX::creerTexture(mGX, &texProfIU);
+	Texture& texCouleur = MoteurGX::retTexture(*mGX, texCoulIU);
+	Framebuffer::addAttachment(&fbo, &texCouleur, 800, 600, TEX_INFORMAT_RVBA, TEX_FORMAT_RVBA, GL_UNSIGNED_BYTE, TEX_FILTRE_PROCHE, TEX_FILTRE_PROCHE);
+	Framebuffer::addAttachment(&fbo, &texProfondeur, 800, 600, TEX_INFORMAT_COMPOSANT_PROFONDEUR, TEX_FORMAT_COMPOSANT_PROFONDEUR, GL_UNSIGNED_INT, TEX_FILTRE_PROCHE, TEX_FILTRE_PROCHE);
 }
 
 Pipeline& MoteurGX::creerPipeline(MoteurGX* const mGX, Ressource* const res)
@@ -157,13 +177,15 @@ Vertexbuffer& MoteurGX::retVertexbuffer(const MoteurGX& mGX, const Ressource res
 	return *(Vertexbuffer*)&mGX.listeVBOs.rechercherIndexUnique(res);
 }
 
-void MoteurGX::demarerCouche(const MoteurGX& mGX, const Ressource IndexPipeline)
+const Shader& MoteurGX::demarerCouche(const MoteurGX& mGX, const Ressource IndexPipeline)
 {
 	const Pipeline& pipeline = mGX.listePipelines.rechercherIndexUnique(IndexPipeline);
 	const Framebuffer& fbo = MoteurGX::retFBO(mGX, pipeline.fbo);
 	const Shader& shader = MoteurGX::retShader(mGX, pipeline.shader);
 
 	Pipeline::init(pipeline, fbo, shader);
+
+	return shader;
 }
 
 void MoteurGX::executerCouche(const MoteurGX& mGX)

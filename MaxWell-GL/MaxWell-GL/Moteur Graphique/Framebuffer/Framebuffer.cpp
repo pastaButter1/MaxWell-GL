@@ -17,16 +17,16 @@ void Framebuffer::addAttachment(Framebuffer* const fbo, Texture* const tex, uint
 	uint32_t colorAttachments = (fbo->infoAttachments & masqueCouleur) >> _tzcnt_u32(masqueCouleur);
 
 	int texIndex = 0;
-	uint32_t attachmentType = FBO_ATTACHEMENT_COULEUR0;
+	uint32_t typeAttachement = FBO_ATTACHEMENT_COULEUR0;
 	switch (format) {
 	case TEX_COMPOSANT_PROFONDEUR:
-		attachmentType = FBO_ATTACHEMENT_PROFONDEUR;
+		typeAttachement = FBO_ATTACHEMENT_PROFONDEUR;
 		break;
 	case TEX_INDEX_STENCIL:
-		attachmentType = FBO_ATTACHEMENT_STENCIL;
+		typeAttachement = FBO_ATTACHEMENT_STENCIL;
 		break;
 	case TEX_PROFONDEUR_STENCIL:
-		attachmentType = FBO_ATTACHEMENT_PROFONDEUR_STENCIL;
+		typeAttachement = FBO_ATTACHEMENT_PROFONDEUR_STENCIL;
 		break;
 	default:
 		for (uint32_t mask = 1 << (__popcnt(masqueCouleur) - 1); texIndex <= __popcnt(masqueCouleur) + 1; texIndex++, mask >>= 1) {
@@ -37,14 +37,12 @@ void Framebuffer::addAttachment(Framebuffer* const fbo, Texture* const tex, uint
 			}
 		}
 
-		attachmentType += texIndex;
+		typeAttachement += texIndex;
 		texIndex += 1;
 		break;
 	}
 
 	//Texture& tex = fbo->textureAttachments[texIndex];
-
-	Texture::generer(tex);
 
 	Texture::allouer2D(tex, 0, glm::ivec2(largeur, hauteur), formatInterne, format, typeDonnees, nullptr);
 
@@ -57,12 +55,12 @@ void Framebuffer::addAttachment(Framebuffer* const fbo, Texture* const tex, uint
 	Texture::specifierFiltre(*tex, GL_NEAREST, GL_NEAREST);
 
 	lier(*fbo);
-	APPEL_GX(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex->id, 0));
+	APPEL_GX(glFramebufferTexture2D(GL_FRAMEBUFFER, typeAttachement, GL_TEXTURE_2D, tex->id, 0));
 
 	uint32_t fboStatus = APPEL_GX(glCheckFramebufferStatus(GL_FRAMEBUFFER));
 	if (fboStatus == GL_FRAMEBUFFER_COMPLETE)
 	{
-		if (attachmentType == FBO_ATTACHEMENT_PROFONDEUR || attachmentType == FBO_ATTACHEMENT_STENCIL || attachmentType == FBO_ATTACHEMENT_PROFONDEUR_STENCIL)
+		if (typeAttachement == FBO_ATTACHEMENT_PROFONDEUR || typeAttachement == FBO_ATTACHEMENT_STENCIL || typeAttachement == FBO_ATTACHEMENT_PROFONDEUR_STENCIL)
 		{
 			fbo->infoAttachments |= masqueProfondeurStencil;
 		}

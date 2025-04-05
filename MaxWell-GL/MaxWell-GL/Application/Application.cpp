@@ -15,6 +15,9 @@
 #include "Moteur Graphique/Vertexbuffer/Vertexbuffer.h"
 #include "Moteur Graphique/MoteurGx/Mesh.h"
 
+#include "Lib/GLM/glm/matrix.hpp"
+#include "Lib/GLM/glm/gtc/matrix_transform.hpp"
+
 using Ressource = MoteurGX::Ressource;
 
 void Application::initialiser(Application* const app, glm::uvec2 tailleFenetre)
@@ -26,11 +29,11 @@ void Application::initialiser(Application* const app, glm::uvec2 tailleFenetre)
 	initaliserMoteurGraphique(app);
 }
 
-void Application::executer(const Application& app)
+void Application::executer(Application* const app)
 {
 	auto tAvant = std::chrono::high_resolution_clock::now();
 
-	while (!glfwWindowShouldClose(app.fenetre.window))
+	while (!glfwWindowShouldClose(app->fenetre.window))
 	{
 		auto tMaintenant = std::chrono::high_resolution_clock::now();
 		const float dt = (tMaintenant - tAvant).count() / 1000000000.0f;
@@ -73,14 +76,11 @@ void Application::executer(const Application& app)
 
 		ImGui::Render();
 		//ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-		MoteurGX::demarerCouche(app.moteurGX, 0);
-		Vertexarray::lier(MoteurGX::retVertexarray(app.moteurGX, 0));
 
-		MoteurGX::executerCouche(app.moteurGX);
+		executerEntrees(app, dt);
+		executerRendu(app);
 
-		MoteurGX::copierRenduBackbuffer(app.moteurGX, glm::uvec2(800, 600));
-
-		glfwSwapBuffers(app.fenetre.window);
+		glfwSwapBuffers(app->fenetre.window);
 		glfwPollEvents();
 	}
 }
@@ -110,7 +110,7 @@ void Application::initaliserMoteurGraphique(Application* const app)
 	pipeline.equationMelange = GL_FUNC_ADD;
 	pipeline.modeMelangeSRC = GL_SRC_ALPHA;
 	pipeline.modeMelangeDST = GL_ONE_MINUS_SRC_ALPHA;
-	pipeline.testProfondeur = GL_ALWAYS;
+	pipeline.testProfondeur = GL_LESS;
 	pipeline.modeEliminationFace = GL_BACK;
 	pipeline.tailleFenetre = glm::uvec2(app->fenetre.dimension.x, app->fenetre.dimension.y);
 	pipeline.stencilFunc = FUNC_TOUJOURS;
@@ -125,6 +125,10 @@ void Application::initaliserMoteurGraphique(Application* const app)
 
 		chargerFichier("C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Shaders\\Simple\\vertex.glsl", &shaderRaw);
 		Shader::loadSubShader(shader, shaderRaw, SHADER_VERTEX);
+
+		shaderRaw.clear();
+		chargerFichier("C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Shaders\\Simple\\geometrie.glsl", &shaderRaw);
+		Shader::loadSubShader(shader, shaderRaw, SHADER_GEOMETRIE);
 
 		shaderRaw.clear();
 		chargerFichier("C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Shaders\\Simple\\fragment.glsl", &shaderRaw);
@@ -149,7 +153,8 @@ void Application::initaliserMoteurGraphique(Application* const app)
 
 	Model model;
 
-	decoderOBJ("C:\\Users\\Alexandre\\Desktop\\général francais\\etoile2.obj", &model);
+	//decoderOBJ("C:\\Users\\Alexandre\\Desktop\\général francais\\etoile2.obj", &model);
+	decoderSTL("C:\\Users\\Alexandre\\Desktop\\Inventor proj\\Sous-marinV2\\C-Coque\\C-0015.stl", &model);
 
 	mgx::Mesh mesh;
 	mgx::Mesh::creer(&mesh, &app->moteurGX);
@@ -249,4 +254,53 @@ void Application::initialiserInterfaceUtilisateur(Application* const app)
 	style->Colors[ImGuiCol_NavWindowingHighlight] = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
 	style->Colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
 	style->Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
+}
+
+void Application::executerEntrees(Application* const app, const float dt)
+{
+	GLFWwindow* fenetre = app->fenetre.window;
+	float& tangageCam = app->donnesOperation.tangageCam;
+	float& lacetCam = app->donnesOperation.lacetCam;
+	float& distanceCam = app->donnesOperation.distanceCam;
+
+	lacetCam += (glfwGetKey(fenetre, GLFW_KEY_RIGHT) - glfwGetKey(fenetre, GLFW_KEY_LEFT)) * dt * 50;
+	tangageCam += (glfwGetKey(fenetre, GLFW_KEY_UP) - glfwGetKey(fenetre, GLFW_KEY_DOWN)) * dt * 50;
+	distanceCam += (glfwGetKey(fenetre, GLFW_KEY_L) - glfwGetKey(fenetre, GLFW_KEY_O)) * dt * 30;
+}
+
+glm::vec3 orientation(float yaw, float pitch) {
+	float yawR = glm::radians(yaw);
+	float pitchR = glm::radians(pitch);
+
+	return glm::vec3(sin(yawR) * cos(pitchR), sin(pitchR), cos(yawR) * cos(pitchR));
+}
+
+void Application::executerRendu(Application* const app)
+{
+	const Shader& shader = MoteurGX::demarerCouche(app->moteurGX, 0);
+	Vertexarray::lier(MoteurGX::retVertexarray(app->moteurGX, 0));
+	//MoteurGX::retShader(app->moteurGX, MoteurGX::retPipeline(app->moteurGX, 0).shader);
+
+	GLFWwindow* fenetre = app->fenetre.window;
+	const float tangageCam = app->donnesOperation.tangageCam;
+	const float lacetCam = app->donnesOperation.lacetCam;
+	const float distanceCam = app->donnesOperation.distanceCam;
+
+	const float projFOV = 70.0f;
+	const float aspectRatio = 1.5f;
+
+	glm::vec3 camPos = orientation(lacetCam, tangageCam) * distanceCam;
+
+	glm::mat4 proj = glm::perspective(projFOV, aspectRatio, 1.0f, -1.0f);
+	glm::mat4 rotationCam = glm::lookAt(camPos, glm::vec3(0.0f), glm::vec3(0, 1, 0));
+	glm::mat4 vueCam = proj * rotationCam;
+
+	Shader::pousserConstanteMat4(shader, "u_cam", vueCam);
+	Shader::pousserConstanteVec3(shader, "u_couleur", glm::vec3(1, 0, 1));
+	Shader::pousserConstanteVec3(shader, "u_dirLumiere", orientation(45, 45));
+	Shader::pousserConstanteVec3(shader, "u_posCam", camPos);
+
+	MoteurGX::executerCouche(app->moteurGX);
+
+	MoteurGX::copierRenduBackbuffer(app->moteurGX, glm::uvec2(800, 600));
 }

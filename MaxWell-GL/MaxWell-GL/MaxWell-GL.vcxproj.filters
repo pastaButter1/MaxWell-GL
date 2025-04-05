@@ -72,6 +72,15 @@
     <ClCompile Include="Moteur Graphique\MoteurGx\MoteurGX.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
+    <ClCompile Include="Application\Fenetre\Fenetre.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\Souris\Souris.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Moteur Graphique\MoteurGx\Mesh.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Moteur Graphique\Graphique.h">
@@ -119,6 +128,15 @@
     <ClInclude Include="Moteur Graphique\MoteurGx\MoteurGXDef.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
+    <ClInclude Include="Application\Fenetre\Fenetre.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Souris\Souris.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Moteur Graphique\MoteurGx\Mesh.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Moteur Graphique\Deferred rendering\Composer fragment.glsl" />
@@ -137,5 +155,7 @@
     <None Include="Shaders\Tesselation surface\Surface geometrie.glsl" />
     <None Include="Shaders\Simple\vertex.glsl" />
     <None Include="Shaders\Simple\fragment.glsl" />
+    <None Include="imgui.ini" />
+    <None Include="Shaders\Simple\geometrie.glsl" />
   </ItemGroup>
 </Project>

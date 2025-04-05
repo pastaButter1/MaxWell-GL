@@ -5,7 +5,7 @@ void Texture::generer(Texture* const tex, const GLenum cible, const GLenum forma
 	tex->cible = cible;
 	tex->formatInterne = formatInterne;
 
-	APPEL_GX(glGenTextures(1, (GLuint*)&(tex->id)));
+	APPEL_GX(glGenTextures(1, &tex->id));
 	
 	lier(*tex);
 
@@ -24,12 +24,12 @@ void Texture::detruire(Texture* const tex)
 
 void Texture::lier(const Texture& tex)
 {
-	APPEL_GX(glBindTexture(GL_TEXTURE_2D, tex.id));
+	APPEL_GX(glBindTexture(tex.cible, tex.id));
 }
 
-void Texture::delier()
+void Texture::delier(const Texture& tex)
 {
-	APPEL_GX(glBindTexture(GL_TEXTURE_2D, 0));
+	APPEL_GX(glBindTexture(tex.cible, 0));
 }
 
 void Texture::attacherUnite(const Texture& tex, const GLuint unite)
@@ -39,7 +39,7 @@ void Texture::attacherUnite(const Texture& tex, const GLuint unite)
 
 void Texture::attacherImage(const Texture& tex, uint32_t unite, const GLenum acces)
 {
-	glBindImageTexture(unite, tex.id, 0, GL_TRUE, 0, acces, tex.formatInterne);
+	APPEL_GX(glBindImageTexture(unite, tex.id, 0, GL_TRUE, 0, acces, tex.formatInterne));
 }
 
 void Texture::allouer1D(const Texture& tex, const GLint niveau, const glm::ivec1 dimension, const GLenum format, const GLenum type, const void* const pixels)

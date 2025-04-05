@@ -81,6 +81,12 @@
     <ClCompile Include="Moteur Graphique\MoteurGx\Mesh.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
+    <ClCompile Include="MoteurPhysique\Espace\Espace.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="MoteurPhysique\MoteurPhysique\MoteurPhysique.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Moteur Graphique\Graphique.h">
@@ -137,6 +143,12 @@
     <ClInclude Include="Moteur Graphique\MoteurGx\Mesh.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
+    <ClInclude Include="MoteurPhysique\Espace\Espace.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="MoteurPhysique\MoteurPhysique\MoteurPhysique.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Moteur Graphique\Deferred rendering\Composer fragment.glsl" />
@@ -156,7 +168,8 @@
     <None Include="Shaders\Simple\vertex.glsl" />
     <None Include="Shaders\Simple\fragment.glsl" />
     <None Include="imgui.ini" />
-    <None Include="Shader\CalculerChamp.glsl" />
+    <None Include="Shader\ChampMagnetique.glsl" />
     <None Include="Shader\DessinerVecteurChamp.glsl" />
+    <None Include="Shader\Coordonnees.glsl" />
   </ItemGroup>
 </Project>

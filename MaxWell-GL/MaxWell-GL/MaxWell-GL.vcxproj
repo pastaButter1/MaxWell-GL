@@ -156,6 +156,8 @@
     <ClCompile Include="Moteur Graphique\Texture\Texture.cpp" />
     <ClCompile Include="Moteur Graphique\Vertexarray\Vertexarray.cpp" />
     <ClCompile Include="Moteur Graphique\Vertexbuffer\Vertexbuffer.cpp" />
+    <ClCompile Include="MoteurPhysique\Espace\Espace.cpp" />
+    <ClCompile Include="MoteurPhysique\MoteurPhysique\MoteurPhysique.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Application.h" />
@@ -176,6 +178,8 @@
     <ClInclude Include="Moteur Graphique\Texture\Texture.h" />
     <ClInclude Include="Moteur Graphique\Vertexarray\Vertexarray.h" />
     <ClInclude Include="Moteur Graphique\Vertexbuffer\Vertexbuffer.h" />
+    <ClInclude Include="MoteurPhysique\Espace\Espace.h" />
+    <ClInclude Include="MoteurPhysique\MoteurPhysique\MoteurPhysique.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="imgui.ini" />
@@ -201,8 +205,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </None>
     <None Include="Shaders\Tesselation surface\Surface tessEval.glsl" />
-    <None Include="Shader\CalculerChamp.glsl" />
+    <None Include="Shader\ChampMagnetique.glsl" />
     <None Include="Shader\DessinerVecteurChamp.glsl" />
+    <None Include="Shader\Coordonnees.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

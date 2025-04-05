@@ -7,6 +7,7 @@
 #include "Lib/IMGUI/IMGUI/imgui_impl_opengl3.h"
 
 #include "Utilitaire.h"
+#include "MoteurPhysique/MoteurPhysique/MoteurPhysique.h"
 
 #include <conio.h>
 #include <chrono>
@@ -30,8 +31,24 @@ void Application::executer(const Application& app)
 {
 	auto tAvant = std::chrono::high_resolution_clock::now();
 
+	MoteurPhysique moteurPhysique;
+	Espace::gpuInitialiser(&moteurPhysique.coordonnees, glm::ivec3(100, 100, 100));
+	Espace::gpuInitialiser(&moteurPhysique.champMagnetique, glm::ivec3(100, 100, 100));
+
+	MoteurPhysique::Info info;
+	info.fils.push_back({ glm::vec3(0, 0, 1), 1.0f, glm::vec3(-1.0f, -1.0f, 0.0f) });
+	info.fils.push_back({ glm::vec3(0, 0, 1), 1.0f, glm::vec3(1.0f, 1.0f, 0.0f) });
+
+	MoteurPhysique::InitialiserFils(&info);
+	MoteurPhysique::SoumettreFils(info);
+
+	MoteurPhysique::ChargerShaders(&moteurPhysique, "Shader/");
+	MoteurPhysique::AssignerCoordonnees(moteurPhysique, glm::vec3(-2), glm::vec3(2));
+
 	while (!glfwWindowShouldClose(app.fenetre.window))
 	{
+		MoteurPhysique::CalculerGPU(moteurPhysique.shaderChampMagnetique, moteurPhysique.coordonnees, moteurPhysique.champMagnetique, info);
+
 		auto tMaintenant = std::chrono::high_resolution_clock::now();
 		const float dt = (tMaintenant - tAvant).count() / 1000000000.0f;
 		tAvant = tMaintenant;

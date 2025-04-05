@@ -1,24 +1,23 @@
 #include "Espace.h"
 
-void Espace::Initializer(Espace* carte, glm::ivec3 taille)
+void Espace::Initialiser(Espace* const espace, const glm::ivec3 dimension)
 {
-	carte->dimensions = glm::ivec4(taille, taille.x * taille.y * taille.z);
-	carte->longueur = taille.x * taille.y * taille.z;
-	carte->pos = new glm::vec3[2 * carte->longueur];
-	carte->force = &carte->pos[carte->longueur];
+	espace->dimensions = glm::ivec4(dimension, dimension.x * dimension.y * dimension.z);
+	espace->longueur = dimension.x * dimension.y * dimension.z;
+	espace->tableau = new glm::vec3[espace->longueur];
 }
 
-void Espace::Detruire(Espace* carte)
+void Espace::Detruire(Espace * const espace)
 {
-	delete[] carte->pos;
+	delete[] carte->tableau;
 }
 
-void Espace::SetPos(Espace* carte, glm::ivec3 index, glm::vec3 valeur)
+void Espace::SetPos(Espace * const espace, const glm::ivec3 index, const glm::vec3 valeur)
 {
-	carte->pos[index.z * carte->ly * carte->lx + index.y * carte->lx + index.x] = valeur;
+	carte->tableau[index.z * carte->ly * carte->lx + index.y * carte->lx + index.x] = valeur;
 }
 
-void Espace::Remplir(Espace* carte, glm::vec3 min, glm::vec3 max)
+void Espace::Remplir(Espace * const espace, const glm::vec3 min, const glm::vec3 max)
 {
 	glm::vec3 scalaire = (max - min) / glm::vec3(carte->dimensions);
 	glm::ivec3 index = { 0,0,0 };
@@ -35,3 +34,24 @@ void Espace::Remplir(Espace* carte, glm::vec3 min, glm::vec3 max)
 		}
 	}
 }
+
+void Espace::gpuInitialiser(Espace* const espace, const glm::ivec3 dimension)
+{
+	espace->dimensions = glm::ivec4(dimension, dimension.x * dimension.y * dimension.z);
+	espace->longueur = dimension.x * dimension.y * dimension.z;
+
+	APPEL_GX(glUseProgram(0));
+	Texture::generer(&espace->tex, GL_TEXTURE_3D, GL_RGBA32F);
+	Texture::specifierEtirement(espace->tex, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER);
+	Texture::specifierCouleurBordure(espace->tex, glm::vec4(0.0f));
+	Texture::specifierFiltre(espace->tex, GL_LINEAR, GL_LINEAR);
+	Texture::allouer3D(espace->tex, 0, espace->dimensions, GL_RGB, GL_FLOAT, nullptr);
+}
+
+void Espace::gpuSoumettre(const Espace& espace)
+{
+	Texture::soumettre3D(espace.tex, 0, glm::ivec3(0), espace.dimensions, GL_RGB, GL_FLOAT, espace.tableau);
+}
+
+
+

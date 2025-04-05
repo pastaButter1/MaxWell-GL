@@ -13,7 +13,7 @@ struct Texture
 	static void detruire(Texture* const tex);
 	
 	static void lier(const Texture& tex);
-	static void delier();
+	static void delier(const Texture& tex);
 	static void attacherUnite(const Texture& tex, const GLuint unite);
 	static void attacherImage(const Texture& tex, uint32_t unite, const GLenum acces);
 

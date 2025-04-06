@@ -9,27 +9,27 @@ void Espace::Initialiser(Espace* const espace, const glm::ivec3 dimension)
 
 void Espace::Detruire(Espace * const espace)
 {
-	delete[] carte->tableau;
+	delete[] espace->tableau;
 }
 
 void Espace::SetPos(Espace * const espace, const glm::ivec3 index, const glm::vec3 valeur)
 {
-	carte->tableau[index.z * carte->ly * carte->lx + index.y * carte->lx + index.x] = valeur;
+	espace->tableau[index.z * espace->ly * espace->lx + index.y * espace->lx + index.x] = valeur;
 }
 
 void Espace::Remplir(Espace * const espace, const glm::vec3 min, const glm::vec3 max)
 {
-	glm::vec3 scalaire = (max - min) / glm::vec3(carte->dimensions);
+	glm::vec3 scalaire = (max - min) / glm::vec3(espace->dimensions);
 	glm::ivec3 index = { 0,0,0 };
 
-	for (index.z = 0; index.z < carte->lz; index += glm::ivec3(0, 0, 1))
+	for (index.z = 0; index.z < espace->lz; index += glm::ivec3(0, 0, 1))
 	{
-		for (index.y = 0; index.y < carte->ly; index += glm::ivec3(0, 1, 0))
+		for (index.y = 0; index.y < espace->ly; index += glm::ivec3(0, 1, 0))
 		{
-			for (index.x = 0; index.x < carte->lx; index += glm::ivec3(1, 0, 0))
+			for (index.x = 0; index.x < espace->lx; index += glm::ivec3(1, 0, 0))
 			{
 				glm::vec3 temp = glm::vec3(index) * scalaire + min + (scalaire * glm::vec3(0.5f));
-				SetPos(carte, index, temp);
+				SetPos(espace, index, temp);
 			}
 		}
 	}

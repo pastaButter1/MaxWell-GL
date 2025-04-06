@@ -37,12 +37,12 @@ void MoteurPhysique::CalculerGPU(const Shader& shader, const Espace & coordonnee
 	APPEL_GX(glUseProgram(shader.id));
 
 	APPEL_GX(glUniform1i(glGetUniformLocation(shader.id, "nombreFils"), info.fils.size()));
-	Texture::attacherImage(positions.tex, 0, GL_READ_ONLY);
+	Texture::attacherImage(coordonnees.tex, 0, GL_READ_ONLY);
 	Texture::attacherImage(donnees.tex, 1, GL_WRITE_ONLY);
 	APPEL_GX(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, info.buffer));
 
 	//Local (10,10,1)
-	APPEL_GX(glDispatchCompute(positions.dimensions.x / 10, positions.dimensions.y / 10, positions.dimensions.z));
+	APPEL_GX(glDispatchCompute(coordonnees.dimensions.x / 10, coordonnees.dimensions.y / 10, coordonnees.dimensions.z));
 }
 
 void MoteurPhysique::AssignerCoordonnees(const MoteurPhysique& moteurPhysique, glm::vec3 min, glm::vec3 max)

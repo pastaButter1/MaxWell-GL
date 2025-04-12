@@ -179,7 +179,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Simple\geometrie.glsl" />
-    <None Include="imgui.ini" />
     <None Include="Moteur Graphique\Deferred rendering\Composer fragment.glsl" />
     <None Include="Moteur Graphique\Deferred rendering\Composer vertex.glsl" />
     <None Include="Moteur Graphique\Deferred rendering\Deferred fragment.glsl" />

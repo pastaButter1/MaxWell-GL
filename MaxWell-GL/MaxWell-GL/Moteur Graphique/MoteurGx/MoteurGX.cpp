@@ -70,6 +70,7 @@ void MoteurGX::init(MoteurGX* const mGX)
 	APPEL_GX(glEnable(GL_BLEND));
 	APPEL_GX(glEnable(GL_DEPTH_TEST));
 	APPEL_GX(glEnable(GL_STENCIL_TEST));
+	//APPEL_GX(glEnable(GL_CULL_FACE));
 
 	Ressource fboIU, texCoulIU, texProfIU;
 	Framebuffer& fbo = MoteurGX::creerFramebuffer(mGX, &fboIU);

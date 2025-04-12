@@ -16,6 +16,8 @@ struct Application {
 		float tangageCam = 0.0f;
 		float lacetCam = 0.0f;
 		float distanceCam = 50.0f;
+
+		float disZ = 0.0f;
 	} donnesOperation;
 
 	static void initialiser(Application* const app, glm::uvec2 tailleFenetre);

@@ -155,7 +155,6 @@
     <None Include="Shaders\Tesselation surface\Surface geometrie.glsl" />
     <None Include="Shaders\Simple\vertex.glsl" />
     <None Include="Shaders\Simple\fragment.glsl" />
-    <None Include="imgui.ini" />
     <None Include="Shaders\Simple\geometrie.glsl" />
   </ItemGroup>
 </Project>

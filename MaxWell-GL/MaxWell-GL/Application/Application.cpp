@@ -66,19 +66,29 @@ void Application::executer(Application* const app)
 
 		ImGui::End();
 
+		ImGui::Begin("Edition");
+
+		ImGui::SliderFloat("Dis Z", &app->donnesOperation.disZ, -10.0f, 10.0f);
+
+		ImGui::End();
+
 		ImGui::Begin("fenetre");
 
 		static glm::vec4 couleur;
 
-		ImGui::ColorEdit4("Couleur", (float*)&couleur);
+		//ImGui::ColorEdit4("Couleur", (float*)&couleur);
+		ImGui::Image((void*)MoteurGX::retTexture(app->moteurGX, 0).id, ImVec2(800, 600), ImVec2(1, 1), ImVec2(0, 0));
 
 		ImGui::End();
 
-		ImGui::Render();
-		//ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
 		executerEntrees(app, dt);
 		executerRendu(app);
+		//MoteurGX::copierRenduBackbuffer(app->moteurGX, glm::uvec2(800, 600));
+
+		APPEL_GX(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+		
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		glfwSwapBuffers(app->fenetre.window);
 		glfwPollEvents();
@@ -95,6 +105,93 @@ void Application::fermer(Application* const app)
 	glfwTerminate();
 
 	app->fenetre.window = nullptr;
+}
+
+void genererSolenoide(Model* const model, const uint32_t nbTriangles, const float R, const float r, const float l, const float rot)
+{
+	Model& m = *model;
+
+	const uint32_t nbTranches = rot * sqrt(nbTriangles);
+	const uint32_t nbTriSurface = nbTriangles / nbTranches;
+	const uint32_t nbPointCirconference = nbTriSurface >> 1;
+
+	const float pasArcExt = rot * 2 * glm::pi<float>() / nbTranches;
+	const float pasArc = 2 * glm::pi<float>() / nbPointCirconference;
+
+	glm::vec3* points = new glm::vec3[nbTranches * nbPointCirconference];
+
+	for (int i = 0; i < nbTranches; i++)
+	{
+		const float theta = i * pasArcExt;
+		glm::vec3 face = glm::vec3(cos(theta), sin(theta), l * i / nbTranches);
+
+		for (int j = 0; j < nbPointCirconference; j++)
+		{
+			const float phi = j * pasArc - ((i & 1) == 1 ? 0.5f * pasArc : 0.0f);
+			const float rayon = r * cos(phi);
+			glm::vec3 point = glm::vec3(face.x * rayon + face.x * R, face.y * rayon + face.y * R, r * sin(phi) + face.z);
+
+			points[i * (nbPointCirconference)+j] = point;
+		}
+	}
+
+	m.nbTriangle = (nbTranches - 1) * nbTriSurface + nbPointCirconference * 2;
+	m.triangles = new Triangle[m.nbTriangle];
+	for (int i = 0; i < nbTranches - 1; i++)
+	{
+		int i1 = i;
+		int i2 = i + 1;
+		i2 = i2 >= nbTranches ? 0 : i2;
+
+		for (int j = 0; j < nbTriSurface; j += 2)
+		{
+			Triangle& tri1 = m.triangles[i * nbTriSurface + j];
+			Triangle& tri2 = m.triangles[i * nbTriSurface + j + 1];
+
+			int j11 = j >> 1;
+			int j12 = j11 - 1;
+			j12 += j12 < 0 ? nbPointCirconference : 0;
+			int j21 = (i & 1) == 1 ? j12 : j11;
+			int j22 = j21 - 1;
+			j22 += j22 < 0 ? nbPointCirconference : 0;
+
+			tri1.verts[0] = { points[i1 * nbPointCirconference + j11], glm::vec2(j11, i1), glm::vec3(0.0f) };
+			tri1.verts[1] = { points[i1 * nbPointCirconference + j12], glm::vec2(j12, i1), glm::vec3(0.0f) };
+			tri1.verts[2] = { points[i2 * nbPointCirconference + j21], glm::vec2(j21, i2), glm::vec3(0.0f) };
+
+			tri2.verts[2] = { points[i2 * nbPointCirconference + j21], glm::vec2(j21, i2), glm::vec3(0.0f) };
+			tri2.verts[1] = { points[i2 * nbPointCirconference + j22], glm::vec2(j22, i2), glm::vec3(0.0f) };
+			tri2.verts[0] = { points[i1 * nbPointCirconference + j12], glm::vec2(j12, i1), glm::vec3(0.0f) };
+		}
+	}
+
+	for (int i = 0; i < 2; i++)
+	{
+		bool deuxiemeFace = i == 1;
+
+		const float angle = deuxiemeFace ? 2 * glm::pi<float>() * rot * (nbTranches - 1) / nbTranches : 0;
+		glm::vec3 pointCentreFace = deuxiemeFace ? glm::vec3(R * cos(angle), R * sin(angle), l * (nbTranches - 1) / nbTranches) : glm::vec3(R, 0, 0);
+
+		uint32_t indexPoints = deuxiemeFace ? (nbTranches - 1) * nbPointCirconference : 0;
+
+		uint32_t v0 = deuxiemeFace ? 1 : 0;
+		uint32_t v1 = 1 - v0;
+
+		for (int j = 0; j < nbPointCirconference; j++)
+		{
+			Triangle& tri1 = m.triangles[(nbTranches - 1) * nbTriSurface + j + (deuxiemeFace ? i * nbPointCirconference : 0)];
+
+			int j1 = j;
+			int j2 = j + 1;
+			j2 = j2 >= nbPointCirconference ? 0 : j2;
+
+			tri1.verts[v0] = { points[indexPoints + j1], glm::vec2(0, 0), glm::vec3(0.0f) };
+			tri1.verts[v1] = { points[indexPoints + j2], glm::vec2(0, 0), glm::vec3(0.0f) };
+			tri1.verts[2]  = { pointCentreFace,          glm::vec2(0, 0), glm::vec3(0.0f) };
+		}
+	}
+
+	delete[] points;
 }
 
 void Application::initaliserMoteurGraphique(Application* const app)
@@ -154,12 +251,14 @@ void Application::initaliserMoteurGraphique(Application* const app)
 	Model model;
 
 	//decoderOBJ("C:\\Users\\Alexandre\\Desktop\\général francais\\etoile2.obj", &model);
-	decoderSTL("C:\\Users\\Alexandre\\Desktop\\Inventor proj\\Sous-marinV2\\C-Coque\\C-0015.stl", &model);
+	//decoderSTL("C:\\Users\\Alexandre\\Desktop\\Inventor proj\\Sous-marinV2\\C-Coque\\C-0015.stl", &model);
+	
+	genererSolenoide(&model, 30000, 5, 0.5, 10, 6);
 
 	mgx::Mesh mesh;
 	mgx::Mesh::creer(&mesh, &app->moteurGX);
 	mgx::Mesh::chargerModel<Vertex>(&mesh, &app->moteurGX, model.nbTriangle * 3, model.triangles);
-
+	
 	delete[] model.triangles;
 	
 	/*Vertexbuffer::transfererDonnees(vbo, 0, 6 * sizeof(glm::vec2), triangles);
@@ -263,7 +362,7 @@ void Application::executerEntrees(Application* const app, const float dt)
 	float& lacetCam = app->donnesOperation.lacetCam;
 	float& distanceCam = app->donnesOperation.distanceCam;
 
-	lacetCam += (glfwGetKey(fenetre, GLFW_KEY_RIGHT) - glfwGetKey(fenetre, GLFW_KEY_LEFT)) * dt * 50;
+	lacetCam += (glfwGetKey(fenetre, GLFW_KEY_LEFT) - glfwGetKey(fenetre, GLFW_KEY_RIGHT)) * dt * 50;
 	tangageCam += (glfwGetKey(fenetre, GLFW_KEY_UP) - glfwGetKey(fenetre, GLFW_KEY_DOWN)) * dt * 50;
 	distanceCam += (glfwGetKey(fenetre, GLFW_KEY_L) - glfwGetKey(fenetre, GLFW_KEY_O)) * dt * 30;
 }
@@ -299,8 +398,9 @@ void Application::executerRendu(Application* const app)
 	Shader::pousserConstanteVec3(shader, "u_couleur", glm::vec3(1, 0, 1));
 	Shader::pousserConstanteVec3(shader, "u_dirLumiere", orientation(45, 45));
 	Shader::pousserConstanteVec3(shader, "u_posCam", camPos);
+	Shader::pousserConstanteVirgule(shader, "u_disZ", app->donnesOperation.disZ);
 
 	MoteurGX::executerCouche(app->moteurGX);
 
-	MoteurGX::copierRenduBackbuffer(app->moteurGX, glm::uvec2(800, 600));
+	//MoteurGX::copierRenduBackbuffer(app->moteurGX, glm::uvec2(800, 600));
 }

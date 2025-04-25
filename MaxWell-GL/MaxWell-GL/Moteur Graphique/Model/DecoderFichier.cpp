@@ -1,5 +1,6 @@
 #include "Moteur Graphique/Model/DecoderFichier.h"
 
+#include "Application/Utilitaire.h"
 #include "Model.h"
 
 #include <stdio.h>
@@ -222,7 +223,7 @@ bool chargerFichier(const std::string& addresse, std::string* const donnees)
 
 	if (erreur != 0)
 	{
-		printf("ERREUR | Fichier non-trouve a l'addresse : %s", addresse.c_str());
+		afficherErreur("Fichier non trouve a l'addresse : %s", addresse.c_str());
 
 		return false;
 	}

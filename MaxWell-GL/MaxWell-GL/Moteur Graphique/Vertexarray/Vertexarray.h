@@ -11,7 +11,7 @@ struct Vertexarray
 
 	static void generer(Vertexarray* const vao);
 
-	static void ajouterAttribut(Vertexarray vao, Vertexbuffer vbo, EnumGX index, uint32_t taille, EnumGX type, bool normalizer, uint32_t pas, uint32_t decalage);
+	static void ajouterAttribut(Vertexarray vao, Vertexbuffer vbo, EnumGX index, uint32_t taille, Donnee::Type type, bool normalizer, uint32_t pas, uint32_t decalage);
 
 	static void lier(Vertexarray vao);
 

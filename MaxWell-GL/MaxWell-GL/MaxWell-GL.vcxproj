@@ -145,6 +145,7 @@
     <ClCompile Include="Lib\IMGUI\IMGUI\imgui_impl_opengl3.cpp" />
     <ClCompile Include="Lib\IMGUI\IMGUI\imgui_tables.cpp" />
     <ClCompile Include="Lib\IMGUI\IMGUI\imgui_widgets.cpp" />
+    <ClCompile Include="Lib\STBImage\stb_image.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Moteur Graphique\Cubemap\Cubemap.cpp" />
     <ClCompile Include="Moteur Graphique\Framebuffer\Framebuffer.cpp" />
@@ -162,6 +163,7 @@
     <ClInclude Include="Application\Fenetre\Fenetre.h" />
     <ClInclude Include="Application\Souris\Souris.h" />
     <ClInclude Include="Application\Utilitaire.h" />
+    <ClInclude Include="Lib\STBImage\stb_image.h" />
     <ClInclude Include="Moteur Graphique\Graphique.h" />
     <ClInclude Include="Moteur Graphique\Cubemap\Cubemap.h" />
     <ClInclude Include="Moteur Graphique\Framebuffer\Framebuffer.h" />
@@ -178,6 +180,10 @@
     <ClInclude Include="Moteur Graphique\Vertexbuffer\Vertexbuffer.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Shaders\PrefiltrageZ\fragment.glsl" />
+    <None Include="Shaders\PrefiltrageZ\vertex.glsl" />
+    <None Include="Shaders\Simple\fragmentPlan.glsl" />
+    <None Include="Shaders\Skybox\fragment.glsl" />
     <None Include="Shaders\Simple\geometrie.glsl" />
     <None Include="Moteur Graphique\Deferred rendering\Composer fragment.glsl" />
     <None Include="Moteur Graphique\Deferred rendering\Composer vertex.glsl" />
@@ -191,6 +197,7 @@
     <None Include="Shaders\Calcul onde\Calcul onde.glsl" />
     <None Include="Shaders\Simple\fragment.glsl" />
     <None Include="Shaders\Simple\vertex.glsl" />
+    <None Include="Shaders\Skybox\vertex.glsl" />
     <None Include="Shaders\Tesselation surface\Surface fragment.glsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>

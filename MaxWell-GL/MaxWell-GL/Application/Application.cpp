@@ -5,6 +5,7 @@
 #include "Lib/IMGUI/IMGUI/imgui.h"
 #include "Lib/IMGUI/IMGUI/imgui_impl_glfw.h"
 #include "Lib/IMGUI/IMGUI/imgui_impl_opengl3.h"
+#include "Lib/STBImage/stb_image.h"
 
 #include "Utilitaire.h"
 
@@ -14,11 +15,14 @@
 #include "Moteur Graphique/Model/DecoderFichier.h"
 #include "Moteur Graphique/Vertexbuffer/Vertexbuffer.h"
 #include "Moteur Graphique/MoteurGx/Mesh.h"
+#include "Moteur Graphique/MoteurGx/MoteurGX.h"
 
 #include "Lib/GLM/glm/matrix.hpp"
 #include "Lib/GLM/glm/gtc/matrix_transform.hpp"
 
 using Ressource = MoteurGX::Ressource;
+
+void genererSolenoide(Model* const model, const uint32_t nbTriangles, const float R, const float r, const float l, const float rot);
 
 void Application::initialiser(Application* const app, glm::uvec2 tailleFenetre)
 {
@@ -69,6 +73,35 @@ void Application::executer(Application* const app)
 		ImGui::Begin("Edition");
 
 		ImGui::SliderFloat("Dis Z", &app->donnesOperation.disZ, -10.0f, 10.0f);
+		ImGui::SliderFloat("Lumiere Y", &app->donnesOperation.angleLumiere.x, 0.0f, 360.0f);
+		ImGui::SliderFloat("Lumiere Z", &app->donnesOperation.angleLumiere.y, -90.0f, 90.0f);
+
+		auto& solFin = app->donnesOperation.solenoide;
+		auto solInit = solFin;
+
+		ImGui::SliderFloat("Solenoide L", &solFin.longueur, 0.0f, 30.0f);
+		ImGui::SliderFloat("Solenoide N", &solFin.nbRot, 0.1f, 10.0f);
+		ImGui::SliderFloat("Solenoide R", &solFin.R, 0.0f, 15.0f);
+		ImGui::SliderFloat("Solenoide r", &solFin.r, 0.0f, 1.0f);
+
+		if (memcmp(&solInit, &solFin, sizeof(solFin)) != 0)
+		{
+			const float L = app->donnesOperation.solenoide.longueur;
+			const float R = app->donnesOperation.solenoide.R;
+			const float r = app->donnesOperation.solenoide.r;
+			const float rot = app->donnesOperation.solenoide.nbRot;
+
+			Model model;
+			genererSolenoide(&model, 30000, R, r, L, rot);
+			mgx::Mesh::chargerModel<Vertex>(&app->donnesOperation.meshSolenoide, &app->moteurGX, model.nbTriangle * 3, model.triangles);
+			delete[] model.triangles;
+		}
+
+		ImGui::SliderFloat("Ambient", &app->donnesOperation.kAmbient, 0.0f, 1.0f);
+		ImGui::SliderFloat("Diffuse", &app->donnesOperation.kDiffuse, 0.0f, 1.0f);
+		ImGui::SliderFloat("Speculaire", &app->donnesOperation.kSpeculaire, 0.0f, 1.0f);
+		ImGui::SliderFloat("Exposant", &app->donnesOperation.esposantSpec, 0.0f, 1.0f);
+		ImGui::ColorEdit3("Couleur", (float*)&app->donnesOperation.couleur);
 
 		ImGui::End();
 
@@ -107,31 +140,41 @@ void Application::fermer(Application* const app)
 	app->fenetre.window = nullptr;
 }
 
-void genererSolenoide(Model* const model, const uint32_t nbTriangles, const float R, const float r, const float l, const float rot)
+void genererSolenoide(Model* const model, const uint32_t nbTriangles, const float R, const float r, const float L, const float rot)
 {
 	Model& m = *model;
 
 	const uint32_t nbTranches = rot * sqrt(nbTriangles);
-	const uint32_t nbTriSurface = nbTriangles / nbTranches;
+	const uint32_t nbTriSurface = (nbTriangles / nbTranches) & (~1);
 	const uint32_t nbPointCirconference = nbTriSurface >> 1;
 
-	const float pasArcExt = rot * 2 * glm::pi<float>() / nbTranches;
+	const float constanteRotation = 2 * glm::pi<float>() * rot;
+	const float pasArcExt = constanteRotation / nbTranches;
 	const float pasArc = 2 * glm::pi<float>() / nbPointCirconference;
+	const float valeurNormDirFace = 1.0f / sqrt(constanteRotation * constanteRotation + L * L);
 
 	glm::vec3* points = new glm::vec3[nbTranches * nbPointCirconference];
+	glm::vec3* normales = new glm::vec3[nbTranches * nbPointCirconference];
 
 	for (int i = 0; i < nbTranches; i++)
 	{
 		const float theta = i * pasArcExt;
-		glm::vec3 face = glm::vec3(cos(theta), sin(theta), l * i / nbTranches);
+		glm::vec3 face = glm::vec3(cos(theta), sin(theta), L * i / nbTranches);
+		glm::vec3 dirFace = valeurNormDirFace * glm::vec3(constanteRotation * glm::vec2(-face.y, face.x), L);
+		glm::vec3 dirFaceCote = glm::vec3(face.x, face.y, 0);
+		glm::vec3 dirFaceHaut = glm::cross(dirFace, dirFaceCote);
 
 		for (int j = 0; j < nbPointCirconference; j++)
 		{
 			const float phi = j * pasArc - ((i & 1) == 1 ? 0.5f * pasArc : 0.0f);
 			const float rayon = r * cos(phi);
-			glm::vec3 point = glm::vec3(face.x * rayon + face.x * R, face.y * rayon + face.y * R, r * sin(phi) + face.z);
 
-			points[i * (nbPointCirconference)+j] = point;
+			glm::vec3 normale = dirFaceCote * cos(phi) + dirFaceHaut * sin(phi);
+			//glm::vec3 point = glm::vec3(face.x * rayon + face.x * R, face.y * rayon + face.y * R, r * sin(phi) + face.z);
+			glm::vec3 point = glm::vec3(R, R, 1) * face + r * normale;
+
+			points[i * nbPointCirconference + j] = point;
+			normales[i * nbPointCirconference + j] = normale;
 		}
 	}
 
@@ -155,13 +198,13 @@ void genererSolenoide(Model* const model, const uint32_t nbTriangles, const floa
 			int j22 = j21 - 1;
 			j22 += j22 < 0 ? nbPointCirconference : 0;
 
-			tri1.verts[0] = { points[i1 * nbPointCirconference + j11], glm::vec2(j11, i1), glm::vec3(0.0f) };
-			tri1.verts[1] = { points[i1 * nbPointCirconference + j12], glm::vec2(j12, i1), glm::vec3(0.0f) };
-			tri1.verts[2] = { points[i2 * nbPointCirconference + j21], glm::vec2(j21, i2), glm::vec3(0.0f) };
+			tri1.verts[2] = { points[i1 * nbPointCirconference + j11], glm::vec2(j11, i1), normales[i1 * nbPointCirconference + j11] };
+			tri1.verts[1] = { points[i1 * nbPointCirconference + j12], glm::vec2(j12, i1), normales[i1 * nbPointCirconference + j12] };
+			tri1.verts[0] = { points[i2 * nbPointCirconference + j21], glm::vec2(j21, i2), normales[i2 * nbPointCirconference + j21] };
 
-			tri2.verts[2] = { points[i2 * nbPointCirconference + j21], glm::vec2(j21, i2), glm::vec3(0.0f) };
-			tri2.verts[1] = { points[i2 * nbPointCirconference + j22], glm::vec2(j22, i2), glm::vec3(0.0f) };
-			tri2.verts[0] = { points[i1 * nbPointCirconference + j12], glm::vec2(j12, i1), glm::vec3(0.0f) };
+			tri2.verts[0] = { points[i2 * nbPointCirconference + j21], glm::vec2(j21, i2), normales[i2 * nbPointCirconference + j21] };
+			tri2.verts[1] = { points[i2 * nbPointCirconference + j22], glm::vec2(j22, i2), normales[i2 * nbPointCirconference + j22] };
+			tri2.verts[2] = { points[i1 * nbPointCirconference + j12], glm::vec2(j12, i1), normales[i1 * nbPointCirconference + j12] };
 		}
 	}
 
@@ -170,7 +213,9 @@ void genererSolenoide(Model* const model, const uint32_t nbTriangles, const floa
 		bool deuxiemeFace = i == 1;
 
 		const float angle = deuxiemeFace ? 2 * glm::pi<float>() * rot * (nbTranches - 1) / nbTranches : 0;
-		glm::vec3 pointCentreFace = deuxiemeFace ? glm::vec3(R * cos(angle), R * sin(angle), l * (nbTranches - 1) / nbTranches) : glm::vec3(R, 0, 0);
+		glm::vec3 pointCentreFace = deuxiemeFace ? glm::vec3(R * cos(angle), R * sin(angle), L * (nbTranches - 1) / nbTranches) : glm::vec3(R, 0, 0);
+
+		glm::vec3 dirFace = (deuxiemeFace ? -1 : 1) * valeurNormDirFace * glm::vec3(constanteRotation * glm::vec2(-pointCentreFace.y, pointCentreFace.x), L);
 
 		uint32_t indexPoints = deuxiemeFace ? (nbTranches - 1) * nbPointCirconference : 0;
 
@@ -185,87 +230,189 @@ void genererSolenoide(Model* const model, const uint32_t nbTriangles, const floa
 			int j2 = j + 1;
 			j2 = j2 >= nbPointCirconference ? 0 : j2;
 
-			tri1.verts[v0] = { points[indexPoints + j1], glm::vec2(0, 0), glm::vec3(0.0f) };
-			tri1.verts[v1] = { points[indexPoints + j2], glm::vec2(0, 0), glm::vec3(0.0f) };
-			tri1.verts[2]  = { pointCentreFace,          glm::vec2(0, 0), glm::vec3(0.0f) };
+			tri1.verts[v0] = { points[indexPoints + j1], glm::vec2(0, 0), -dirFace };
+			tri1.verts[v1] = { points[indexPoints + j2], glm::vec2(0, 0), -dirFace };
+			tri1.verts[2]  = { pointCentreFace,          glm::vec2(0, 0), -dirFace };
 		}
 	}
 
 	delete[] points;
+	delete[] normales;
 }
 
 void Application::initaliserMoteurGraphique(Application* const app)
 {
 	MoteurGX::init(&app->moteurGX);
 
-	Ressource shaderIU, pipelineIU, vaoIU;
-	Shader& shader = MoteurGX::creerShader(&app->moteurGX, &shaderIU);
-	mgx::Pipeline& pipeline = MoteurGX::creerPipeline(&app->moteurGX, &pipelineIU);
-	pipeline.fbo = 0;
-	pipeline.shader = shaderIU;
-	pipeline.modeDessin = GL_TRIANGLES;
-	pipeline.equationMelange = GL_FUNC_ADD;
-	pipeline.modeMelangeSRC = GL_SRC_ALPHA;
-	pipeline.modeMelangeDST = GL_ONE_MINUS_SRC_ALPHA;
-	pipeline.testProfondeur = GL_LESS;
-	pipeline.modeEliminationFace = GL_BACK;
-	pipeline.tailleFenetre = glm::uvec2(app->fenetre.dimension.x, app->fenetre.dimension.y);
-	pipeline.stencilFunc = FUNC_TOUJOURS;
-	pipeline.stencilMasque = 0xFF;
-	pipeline.stencilRef = 0xFF;
-	pipeline.stencilEchec = STENCIL_FUNC_GARDER;
-	pipeline.profondeurEchec = STENCIL_FUNC_GARDER;
-	pipeline.stencilProfondeurReussite = STENCIL_FUNC_GARDER;
+	// Pipeline pour dessiner la vue en coupe
 
 	{
-		std::string shaderRaw;
+		Ressource shaderIU, pipelineIU, vaoIU;
+		Shader& shader = MoteurGX::creerShader(&app->moteurGX, &shaderIU);
+		mgx::Pipeline& pipeline = MoteurGX::creerPipeline(&app->moteurGX, &pipelineIU);
+		mgx::Pipeline::renduStandard(&pipeline, true);
+		pipeline.tailleFenetre = glm::uvec2(app->fenetre.dimension.x, app->fenetre.dimension.y);
+		pipeline.fbo = 0;
+		pipeline.shader = shaderIU;
+		pipeline.modeCulling = Operation::Culling::DESACTIVER;
+		pipeline.equationMelange = Operation::Melange::ADDITION;
 
-		chargerFichier("C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Shaders\\Simple\\vertex.glsl", &shaderRaw);
-		Shader::loadSubShader(shader, shaderRaw, SHADER_VERTEX);
+		{
+			std::string shaderRaw;
 
-		shaderRaw.clear();
-		chargerFichier("C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Shaders\\Simple\\geometrie.glsl", &shaderRaw);
-		Shader::loadSubShader(shader, shaderRaw, SHADER_GEOMETRIE);
+			chargerFichier("C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Shaders\\Simple\\vertex.glsl", &shaderRaw);
+			Shader::loadSubShader(shader, shaderRaw, (EnumGX)TypeShader::VERTEX);
 
-		shaderRaw.clear();
-		chargerFichier("C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Shaders\\Simple\\fragment.glsl", &shaderRaw);
-		Shader::loadSubShader(shader, shaderRaw, SHADER_FRAGMENT);
+			shaderRaw.clear();
+			chargerFichier("C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Shaders\\Simple\\geometrie.glsl", &shaderRaw);
+			Shader::loadSubShader(shader, shaderRaw, (EnumGX)TypeShader::GEOMETRIE);
+
+			shaderRaw.clear();
+			chargerFichier("C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Shaders\\Simple\\fragment.glsl", &shaderRaw);
+			Shader::loadSubShader(shader, shaderRaw, (EnumGX)TypeShader::FRAGMENT);
+		}
+		Shader::assembler(shader);
+		Shader::delier();
 	}
 
-	Shader::assembler(shader);
-	Shader::delier();
+	// Prefiltrage en Z (profondeur)
+	// Optimisation pour ne faire les calculs d'éclairage que sur les pixels visibles
 
-	/*Vertexarray& vao = MoteurGX::creerVertexarray(&app->moteurGX, &vaoIU);
-	Vertexbuffer vbo;
-	Vertexbuffer::generer(&vbo);
-	Vertexbuffer::allocation(&vbo, 6 * sizeof(glm::vec2));
-	vao.nbTriangles = 2;*/
-	/*Vertex triangles[6];
+	{
+		Ressource shaderIU, pipelineIU, vaoIU;
+		Shader& shader = MoteurGX::creerShader(&app->moteurGX, &shaderIU);
+		mgx::Pipeline& pipeline = MoteurGX::creerPipeline(&app->moteurGX, &pipelineIU);
+		mgx::Pipeline::renduStandard(&pipeline, true);
+		pipeline.tailleFenetre = glm::uvec2(app->fenetre.dimension.x, app->fenetre.dimension.y);
+		pipeline.fbo = 0;
+		pipeline.shader = shaderIU;
+		pipeline.modeCulling = Operation::Culling::AVANT;
+		pipeline.equationMelange = Operation::Melange::DESACTIVER;
+
+		{
+			std::string shaderRaw;
+
+			chargerFichier("C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Shaders\\PrefiltrageZ\\vertex.glsl", &shaderRaw);
+			Shader::loadSubShader(shader, shaderRaw, (EnumGX)TypeShader::VERTEX);
+
+			shaderRaw.clear();
+			chargerFichier("C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Shaders\\PrefiltrageZ\\fragment.glsl", &shaderRaw);
+			Shader::loadSubShader(shader, shaderRaw, (EnumGX)TypeShader::FRAGMENT);
+		}
+		Shader::assembler(shader);
+		Shader::delier();
+	}
+
+	// Pipeline pour dessiner le plan
+
+	{
+		Ressource shaderPlanIU, pipelinePlanIU;
+		Shader& shaderPlan = MoteurGX::creerShader(&app->moteurGX, &shaderPlanIU);
+		mgx::Pipeline& pipelinePlan = MoteurGX::creerPipeline(&app->moteurGX, &pipelinePlanIU);
+		mgx::Pipeline::renduStandard(&pipelinePlan, false);
+		pipelinePlan.tailleFenetre = glm::uvec2(app->fenetre.dimension.x, app->fenetre.dimension.y);
+		pipelinePlan.fbo = 0;
+		pipelinePlan.shader = shaderPlanIU;
+		pipelinePlan.modeCulling = Operation::Culling::DESACTIVER;
+
+		{
+			std::string shaderRaw;
+
+			chargerFichier("C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Shaders\\Simple\\vertex.glsl", &shaderRaw);
+			Shader::loadSubShader(shaderPlan, shaderRaw, (EnumGX)TypeShader::VERTEX);
+
+			shaderRaw.clear();
+			chargerFichier("C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Shaders\\Simple\\geometrie.glsl", &shaderRaw);
+			Shader::loadSubShader(shaderPlan, shaderRaw, (EnumGX)TypeShader::GEOMETRIE);
+
+			shaderRaw.clear();
+			chargerFichier("C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Shaders\\Simple\\fragmentPlan.glsl", &shaderRaw);
+			Shader::loadSubShader(shaderPlan, shaderRaw, (EnumGX)TypeShader::FRAGMENT);
+		}
+		Shader::assembler(shaderPlan);
+		Shader::delier();
+	}
+
+	Vertex triangles[6];
 	triangles[0] = { glm::vec3(-1, -1, 0), glm::vec2(0, 0), glm::vec3(0, 0, 0) };
 	triangles[1] = { glm::vec3(-1,  1, 0), glm::vec2(0, 1), glm::vec3(0, 0, 0) };
 	triangles[2] = { glm::vec3( 1,  1, 0), glm::vec2(1, 1), glm::vec3(0, 0, 0) };
 	triangles[3] = { glm::vec3( 1,  1, 0), glm::vec2(1, 1), glm::vec3(0, 0, 0) };
 	triangles[4] = { glm::vec3( 1, -1, 0), glm::vec2(1, 0), glm::vec3(0, 0, 0) };
-	triangles[5] = { glm::vec3(-1, -1, 0), glm::vec2(0, 0), glm::vec3(0, 0, 0) };*/
+	triangles[5] = { glm::vec3(-1, -1, 0), glm::vec2(0, 0), glm::vec3(0, 0, 0) };
 
 	Model model;
 
 	//decoderOBJ("C:\\Users\\Alexandre\\Desktop\\général francais\\etoile2.obj", &model);
 	//decoderSTL("C:\\Users\\Alexandre\\Desktop\\Inventor proj\\Sous-marinV2\\C-Coque\\C-0015.stl", &model);
 	
-	genererSolenoide(&model, 30000, 5, 0.5, 10, 6);
+	mgx::Mesh::creer(&app->donnesOperation.meshSolenoide, &app->moteurGX);
+	const float L = app->donnesOperation.solenoide.longueur;
+	const float R = app->donnesOperation.solenoide.R;
+	const float r = app->donnesOperation.solenoide.r;
+	const float rot = app->donnesOperation.solenoide.nbRot;
+	genererSolenoide(&model, 30000, R, r, L, rot);
+	mgx::Mesh::chargerModel<Vertex>(&app->donnesOperation.meshSolenoide, &app->moteurGX, model.nbTriangle * 3, model.triangles);
 
-	mgx::Mesh mesh;
-	mgx::Mesh::creer(&mesh, &app->moteurGX);
-	mgx::Mesh::chargerModel<Vertex>(&mesh, &app->moteurGX, model.nbTriangle * 3, model.triangles);
-	
+	mgx::Mesh meshCarre;
+	mgx::Mesh::creer(&meshCarre, &app->moteurGX);
+	mgx::Mesh::chargerModel<Vertex>(&meshCarre, &app->moteurGX, 6, triangles);
 	delete[] model.triangles;
-	
-	/*Vertexbuffer::transfererDonnees(vbo, 0, 6 * sizeof(glm::vec2), triangles);
 
-	Vertexarray::ajouterAttribut(vao,vbo, 0, 2, TYPE_VIRGULE, TYPE_FAUX, sizeof(glm::vec2), 0);
-	Vertexarray::delier();
-	Vertexbuffer::delier();*/
+	mgx::Mesh sphere;
+	mgx::Mesh::creer(&sphere, &app->moteurGX);
+	decoderOBJ("C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Mesh\\Sphere.obj", &model);
+	mgx::Mesh::chargerModel<Vertex>(&sphere, &app->moteurGX, model.nbTriangle * 3, model.triangles);
+	delete[] model.triangles;
+
+	int32_t skyboxX, skyboxY, skyboxCanaux;
+	std::string dossier = "C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Skybox\\Machine shop\\1k\\";
+	std::string ext = ".hdr";
+	std::string noms[6] = { "px", "nx", "py", "ny", "pz", "nz"};
+	Texture& skybox = MoteurGX::creerTexture(&app->moteurGX, &app->donnesOperation.skyboxIU);
+	Texture::allouerCubemap(&skybox, Tex::FormatInterne::RVB, Tex::Format::RVB, Donnee::Type::U8);
+	stbi_set_flip_vertically_on_load(0);
+	for (int i = 0; i < sizeof(noms) / sizeof(std::string); i++)
+	{
+		auto* pixels = stbi_load((dossier + noms[i] + ext).c_str(), &skyboxX, &skyboxY, &skyboxCanaux, 3);
+		Texture::soumettreCubemap(&skybox, (Tex::FaceCubemap)((uint32_t)Tex::FaceCubemap::POSX + i), 0, glm::ivec2(0, 0), glm::ivec2(skyboxX, skyboxY), pixels);
+		stbi_image_free(pixels);
+	}
+	Texture::specifierFiltre(skybox, Tex::Filtre::PROCHE, Tex::Filtre::PROCHE);
+	Texture::specifierEtirement(skybox, Tex::Emballage::LIMITER_BORDURE, Tex::Emballage::LIMITER_BORDURE, Tex::Emballage::LIMITER_BORDURE);
+
+	// Pipeline pour le skybox
+
+	{
+		Ressource shaderIU, pipelineIU, vaoIU;
+		Shader& shader = MoteurGX::creerShader(&app->moteurGX, &shaderIU);
+		mgx::Pipeline& pipeline = MoteurGX::creerPipeline(&app->moteurGX, &pipelineIU);
+		mgx::Pipeline::renduStandard(&pipeline, false);
+		pipeline.tailleFenetre = glm::uvec2(app->fenetre.dimension.x, app->fenetre.dimension.y);
+		pipeline.fbo = 0;
+		pipeline.shader = shaderIU;
+		pipeline.modeCulling = Operation::Culling::AVANT;
+		pipeline.testProfondeur = Operation::Profondeur::MOINS_EGAL;
+
+		{
+			std::string shaderRaw;
+
+			chargerFichier("C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Shaders\\Skybox\\vertex.glsl", &shaderRaw);
+			Shader::loadSubShader(shader, shaderRaw, (EnumGX)TypeShader::VERTEX);
+
+			shaderRaw.clear();
+			chargerFichier("C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Shaders\\Skybox\\fragment.glsl", &shaderRaw);
+			Shader::loadSubShader(shader, shaderRaw, (EnumGX)TypeShader::FRAGMENT);
+		}
+		Shader::assembler(shader);
+		Shader::delier();
+	}
+
+	mgx::Mesh& cube = app->donnesOperation.meshCube;
+	mgx::Mesh::creer(&cube, &app->moteurGX);
+	decoderOBJ("C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Mesh\\Cube.obj", &model);
+	mgx::Mesh::chargerModel<Vertex>(&cube, &app->moteurGX, model.nbTriangle * 3, model.triangles);
+	delete[] model.triangles;
 }
 
 void Application::initialiserInterfaceUtilisateur(Application* const app)
@@ -355,18 +502,6 @@ void Application::initialiserInterfaceUtilisateur(Application* const app)
 	style->Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
 }
 
-void Application::executerEntrees(Application* const app, const float dt)
-{
-	GLFWwindow* fenetre = app->fenetre.window;
-	float& tangageCam = app->donnesOperation.tangageCam;
-	float& lacetCam = app->donnesOperation.lacetCam;
-	float& distanceCam = app->donnesOperation.distanceCam;
-
-	lacetCam += (glfwGetKey(fenetre, GLFW_KEY_LEFT) - glfwGetKey(fenetre, GLFW_KEY_RIGHT)) * dt * 50;
-	tangageCam += (glfwGetKey(fenetre, GLFW_KEY_UP) - glfwGetKey(fenetre, GLFW_KEY_DOWN)) * dt * 50;
-	distanceCam += (glfwGetKey(fenetre, GLFW_KEY_L) - glfwGetKey(fenetre, GLFW_KEY_O)) * dt * 30;
-}
-
 glm::vec3 orientation(float yaw, float pitch) {
 	float yawR = glm::radians(yaw);
 	float pitchR = glm::radians(pitch);
@@ -374,33 +509,111 @@ glm::vec3 orientation(float yaw, float pitch) {
 	return glm::vec3(sin(yawR) * cos(pitchR), sin(pitchR), cos(yawR) * cos(pitchR));
 }
 
+void Application::executerEntrees(Application* const app, const float dt)
+{
+	GLFWwindow* fenetre = app->fenetre.window;
+	float& tangageCam = app->donnesOperation.tangageCam;
+	float& lacetCam = app->donnesOperation.lacetCam;
+	float& distanceCam = app->donnesOperation.distanceCam;
+
+	glm::vec3& camPos = app->donnesOperation.camPos;
+
+	lacetCam += (glfwGetKey(fenetre, GLFW_KEY_RIGHT) - glfwGetKey(fenetre, GLFW_KEY_LEFT)) * dt * 100;
+	tangageCam += (glfwGetKey(fenetre, GLFW_KEY_UP) - glfwGetKey(fenetre, GLFW_KEY_DOWN)) * dt * 100;
+	distanceCam += (glfwGetKey(fenetre, GLFW_KEY_L) - glfwGetKey(fenetre, GLFW_KEY_O)) * dt * 30;
+
+	glm::vec3 dirCam = orientation(lacetCam, tangageCam);
+	glm::vec3 coteCam = orientation(lacetCam - 90.0f, 0.0f);
+	glm::vec3 hautCam = glm::cross(dirCam, coteCam);
+
+	camPos += dirCam * (float)((glfwGetKey(fenetre, GLFW_KEY_W) - glfwGetKey(fenetre, GLFW_KEY_S)) * dt * 30.0f);
+	camPos += coteCam * (float)((glfwGetKey(fenetre, GLFW_KEY_A) - glfwGetKey(fenetre, GLFW_KEY_D)) * dt * 30.0f);
+	camPos -= hautCam * (float)((glfwGetKey(fenetre, GLFW_KEY_R) - glfwGetKey(fenetre, GLFW_KEY_F)) * dt * 30.0f);
+	
+}
+
 void Application::executerRendu(Application* const app)
 {
-	const Shader& shader = MoteurGX::demarerCouche(app->moteurGX, 0);
-	Vertexarray::lier(MoteurGX::retVertexarray(app->moteurGX, 0));
-	//MoteurGX::retShader(app->moteurGX, MoteurGX::retPipeline(app->moteurGX, 0).shader);
-
 	GLFWwindow* fenetre = app->fenetre.window;
 	const float tangageCam = app->donnesOperation.tangageCam;
 	const float lacetCam = app->donnesOperation.lacetCam;
 	const float distanceCam = app->donnesOperation.distanceCam;
+	const glm::vec2 angleLumiere = app->donnesOperation.angleLumiere;
 
 	const float projFOV = 70.0f;
 	const float aspectRatio = 1.5f;
 
-	glm::vec3 camPos = orientation(lacetCam, tangageCam) * distanceCam;
+	glm::vec3 camDir = orientation(lacetCam, tangageCam) * glm::vec3(1, 1, 1);
+	glm::vec3 camPos = app->donnesOperation.camPos;
 
 	glm::mat4 proj = glm::perspective(projFOV, aspectRatio, 1.0f, -1.0f);
-	glm::mat4 rotationCam = glm::lookAt(camPos, glm::vec3(0.0f), glm::vec3(0, 1, 0));
-	glm::mat4 vueCam = proj * rotationCam;
+	glm::mat4 rotationCam = glm::lookAt(glm::vec3(0.0f), camDir, glm::vec3(0, 1, 0));
+	glm::mat4 vueCam = proj * rotationCam * glm::translate(glm::mat4(1.0f), -app->donnesOperation.camPos);
 
-	Shader::pousserConstanteMat4(shader, "u_cam", vueCam);
-	Shader::pousserConstanteVec3(shader, "u_couleur", glm::vec3(1, 0, 1));
-	Shader::pousserConstanteVec3(shader, "u_dirLumiere", orientation(45, 45));
-	Shader::pousserConstanteVec3(shader, "u_posCam", camPos);
-	Shader::pousserConstanteVirgule(shader, "u_disZ", app->donnesOperation.disZ);
+	glm::vec3 posLumiere = orientation(angleLumiere.x, angleLumiere.y);
 
-	MoteurGX::executerCouche(app->moteurGX);
+	{
+		//const Shader& shader = MoteurGX::demarerCouche(app->moteurGX, 1);
+		//Shader::pousserConstanteMat4(shader, "u_cam", vueCam);
+		//MoteurGX::executerCouche(app->moteurGX, 0);
+	}
+
+	// Dessiner l'objet
+
+	{
+		const Shader& shader = MoteurGX::demarerCouche(app->moteurGX, 0);
+		Shader::pousserConstanteMat4(shader, "u_cam", vueCam);
+		Shader::pousserConstanteVec3(shader, "u_couleur", app->donnesOperation.couleur);
+		Shader::pousserConstanteVec3(shader, "u_dirLumiere", posLumiere);
+		Shader::pousserConstanteVec3(shader, "u_posCam", camPos);
+		Shader::pousserConstanteVirgule(shader, "u_disZ", app->donnesOperation.disZ);
+		Shader::pousserConstanteVirgule(shader, "u_ka", app->donnesOperation.kAmbient);
+		Shader::pousserConstanteVirgule(shader, "u_ks", app->donnesOperation.kSpeculaire);
+		Shader::pousserConstanteVirgule(shader, "u_kd", app->donnesOperation.kDiffuse);
+		Shader::pousserConstanteVirgule(shader, "u_exposantSpec", app->donnesOperation.esposantSpec);
+		Shader::pousserTexture(shader, "u_skybox", 0);
+		MoteurGX::executerCouche(app->moteurGX, 0);
+	}
+
+	// Dessiner le skybox
+
+	{
+		glm::mat4 matrice = rotationCam;
+
+		const Shader& shader = MoteurGX::demarerCouche(app->moteurGX, 3);
+		Texture::lier(MoteurGX::retTexture(app->moteurGX, app->donnesOperation.skyboxIU));
+		Shader::pousserTexture(shader, "u_skybox", 0);
+		for (int i = 0; i < 1; i++)
+		{
+			Shader::pousserConstanteMat4(shader, "u_cam", proj * matrice);
+			MoteurGX::executerCouche(app->moteurGX, 3);
+
+			matrice *= rotationCam;
+		}
+	}
+
+	// Dessiner le plan
+
+	glm::mat4 matriceModel = glm::mat4(
+		0, 0, 10, 0,
+		0, 10, 0, 0,
+		1, 0, 0, 0,
+		0, 0, 0, 1
+		);
+
+	glm::mat4 matricePlan = glm::translate(glm::mat4(1.0f), glm::vec3(app->donnesOperation.disZ, 0, 5)) * matriceModel;
+
+	const Shader& shaderPlan = MoteurGX::demarerCouche(app->moteurGX, 2);
+	Shader::pousserConstanteVec3(shaderPlan, "u_dirLumiere", posLumiere);
+	Shader::pousserConstanteVec3(shaderPlan, "u_posCam", camPos);
+
+	Shader::pousserConstanteMat4(shaderPlan, "u_cam", vueCam * glm::translate(glm::mat4(1.0f), 20.0f * posLumiere));
+	Shader::pousserConstanteVec3(shaderPlan, "u_couleur", glm::vec3(1, 1, 1));
+	MoteurGX::executerCouche(app->moteurGX, 2);
+
+	Shader::pousserConstanteMat4(shaderPlan, "u_cam", vueCam * matricePlan);
+	Shader::pousserConstanteVec3(shaderPlan, "u_couleur", glm::vec3(0, 1, 1));
+	MoteurGX::executerCouche(app->moteurGX, 1);
 
 	//MoteurGX::copierRenduBackbuffer(app->moteurGX, glm::uvec2(800, 600));
 }

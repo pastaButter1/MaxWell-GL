@@ -10,23 +10,23 @@ void Framebuffer::detruire(Framebuffer* const fbo)
 	APPEL_GX(glDeleteFramebuffers(1, (GLuint*)&(fbo->id)));
 }
 
-void Framebuffer::addAttachment(Framebuffer* const fbo, Texture* const tex, uint32_t largeur, uint32_t hauteur, uint32_t formatInterne, uint32_t format, uint32_t typeDonnees, uint32_t filtreMin, uint32_t filtreMag)
+void Framebuffer::addAttachment(Framebuffer* const fbo, Texture* const tex, const uint32_t largeur, const uint32_t hauteur, const Tex::FormatInterne formatInterne, const Tex::Format format, const Donnee::Type typeDonnees, const Tex::Filtre filtreMin, const Tex::Filtre filtreMag)
 {
 	uint32_t nbAttachments = fbo->infoAttachments & nbAttachmentMask;
 	bool depthStencil = fbo->infoAttachments & masqueProfondeurStencil >> _tzcnt_u32(masqueProfondeurStencil);
 	uint32_t colorAttachments = (fbo->infoAttachments & masqueCouleur) >> _tzcnt_u32(masqueCouleur);
 
 	int texIndex = 0;
-	uint32_t typeAttachement = FBO_ATTACHEMENT_COULEUR0;
+	Fbo::Attachement typeAttachement = Fbo::Attachement::COULEUR0;
 	switch (format) {
-	case TEX_COMPOSANT_PROFONDEUR:
-		typeAttachement = FBO_ATTACHEMENT_PROFONDEUR;
+	case Tex::Format::COMPOSANT_PROFONDEUR:
+		typeAttachement = Fbo::Attachement::PROFONDEUR;
 		break;
-	case TEX_INDEX_STENCIL:
-		typeAttachement = FBO_ATTACHEMENT_STENCIL;
+	case Tex::Format::INDEX_STENCIL:
+		typeAttachement = Fbo::Attachement::STENCIL;
 		break;
-	case TEX_PROFONDEUR_STENCIL:
-		typeAttachement = FBO_ATTACHEMENT_PROFONDEUR_STENCIL;
+	case Tex::Format::PROFONDEUR_STENCIL:
+		typeAttachement = Fbo::Attachement::PROFONDEUR_STENCIL;
 		break;
 	default:
 		for (uint32_t mask = 1 << (__popcnt(masqueCouleur) - 1); texIndex <= __popcnt(masqueCouleur) + 1; texIndex++, mask >>= 1) {
@@ -37,7 +37,7 @@ void Framebuffer::addAttachment(Framebuffer* const fbo, Texture* const tex, uint
 			}
 		}
 
-		typeAttachement += texIndex;
+		*(uint32_t*)&typeAttachement += texIndex;
 		texIndex += 1;
 		break;
 	}
@@ -46,21 +46,21 @@ void Framebuffer::addAttachment(Framebuffer* const fbo, Texture* const tex, uint
 
 	Texture::allouer2D(tex, 0, glm::ivec2(largeur, hauteur), formatInterne, format, typeDonnees, nullptr);
 
-	Texture::specifierEtirement(*tex, TEX_ENVELOPPER_LIMITER_BORDURE, TEX_ENVELOPPER_LIMITER_BORDURE, TEX_ENVELOPPER_LIMITER_BORDURE);
+	Texture::specifierEtirement(*tex, Tex::Emballage::LIMITER_BORDURE, Tex::Emballage::LIMITER_BORDURE, Tex::Emballage::LIMITER_BORDURE);
 
 	uint32_t zeros[] = { 0, 0, 0, 0 };
 
 	Texture::specifierCouleurBordure(*tex, *(glm::vec4*)zeros);
 
-	Texture::specifierFiltre(*tex, GL_NEAREST, GL_NEAREST);
+	Texture::specifierFiltre(*tex, Tex::Filtre::PROCHE, Tex::Filtre::PROCHE);
 
 	lier(*fbo);
-	APPEL_GX(glFramebufferTexture2D(GL_FRAMEBUFFER, typeAttachement, GL_TEXTURE_2D, tex->id, 0));
+	APPEL_GX(glFramebufferTexture2D(GL_FRAMEBUFFER, (EnumGX)typeAttachement, GL_TEXTURE_2D, tex->id, 0));
 
 	uint32_t fboStatus = APPEL_GX(glCheckFramebufferStatus(GL_FRAMEBUFFER));
 	if (fboStatus == GL_FRAMEBUFFER_COMPLETE)
 	{
-		if (typeAttachement == FBO_ATTACHEMENT_PROFONDEUR || typeAttachement == FBO_ATTACHEMENT_STENCIL || typeAttachement == FBO_ATTACHEMENT_PROFONDEUR_STENCIL)
+		if (typeAttachement == Fbo::Attachement::PROFONDEUR || typeAttachement == Fbo::Attachement::STENCIL || typeAttachement == Fbo::Attachement::PROFONDEUR_STENCIL)
 		{
 			fbo->infoAttachments |= masqueProfondeurStencil;
 		}

@@ -8,3 +8,5 @@
 *.pdb
 *.idb
 *.tlog
+/MaxWell-GL/MaxWell-GL/Lib/STBImage/stb_image.cpp
+/MaxWell-GL/MaxWell-GL/Lib/STBImage/stb_image.h

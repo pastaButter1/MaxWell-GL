@@ -9,76 +9,113 @@ void mgx::Pipeline::init(const Pipeline& pipeline, const Framebuffer& fbo, const
 	Framebuffer::lier(fbo);
 	Shader::lier(shader);
 
-	APPEL_GX(glViewport(0, 0, pipeline.tailleFenetre.x, pipeline.tailleFenetre.y));
-	APPEL_GX(glScissor(0, 0, pipeline.tailleFenetre.x, pipeline.tailleFenetre.y));
-	APPEL_GX(glCullFace(pipeline.modeEliminationFace));
-	APPEL_GX(glDepthFunc(pipeline.testProfondeur));
-	APPEL_GX(glBlendFunc(pipeline.modeMelangeSRC, pipeline.modeMelangeDST));
-	APPEL_GX(glBlendEquation(pipeline.equationMelange));
+	APPEL_GX(glViewport(0, 0, (EnumGX)pipeline.tailleFenetre.x, (EnumGX)pipeline.tailleFenetre.y));
+	APPEL_GX(glScissor(0, 0, (EnumGX)pipeline.tailleFenetre.x, (EnumGX)pipeline.tailleFenetre.y));
 
-	APPEL_GX(glStencilFunc(pipeline.stencilFunc, pipeline.stencilRef, pipeline.stencilMasque));
-	APPEL_GX(glStencilOp(pipeline.stencilEchec, pipeline.profondeurEchec, pipeline.stencilProfondeurReussite));
+	switch (pipeline.testProfondeur)
+	{
+	case Operation::Profondeur::DESACTIVER:
+		APPEL_GX(glDisable((EnumGX)Operation::Operation::PROFONDEUR));
+		break;
+	default:
+		APPEL_GX(glEnable((EnumGX)Operation::Operation::PROFONDEUR));
+		APPEL_GX(glDepthFunc((EnumGX)pipeline.testProfondeur));
+		if (pipeline.testProfondeur == Operation::Profondeur::LECTURE)
+		{
+			APPEL_GX(glDepthMask((EnumGX)Donnee::Binaire::FAUX));
+		}
+		else
+		{
+			APPEL_GX(glDepthMask((EnumGX)Donnee::Binaire::VRAI));
+		}
+		break;
+	}
 
-	APPEL_GX(glClearColor(0.1, 0.1, 0.3, 1));
-	APPEL_GX(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+	// TODO À finir pour stencil
+
+	switch (pipeline.stencilFunc)
+	{
+	case Operation::Stencil::DESACTIVER:
+		APPEL_GX(glDisable((EnumGX)Operation::Operation::STENCIL));
+		break;
+	case Operation::Stencil::LECTURE:
+		APPEL_GX(glEnable((EnumGX)Operation::Operation::STENCIL));
+		APPEL_GX(glStencilMask((EnumGX)Donnee::Binaire::FAUX));
+		break;
+	default:
+		APPEL_GX(glEnable((EnumGX)Operation::Operation::STENCIL));
+		APPEL_GX(glStencilMask((EnumGX)Donnee::Binaire::VRAI));
+		APPEL_GX(glStencilFunc((EnumGX)pipeline.stencilFunc, (EnumGX)pipeline.stencilRef, (EnumGX)pipeline.stencilMasque));
+		APPEL_GX(glStencilOp((EnumGX)pipeline.stencilEchec, (EnumGX)pipeline.profondeurEchec, (EnumGX)pipeline.stencilProfondeurReussit));
+	}
+
+	if (pipeline.nettoyerCible)
+	{
+		APPEL_GX(glClearColor(0.1, 0.1, 0.3, 1));
+		APPEL_GX(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+	}
+	
+	if (pipeline.modeCulling == Operation::Culling::DESACTIVER)
+	{
+		APPEL_GX(glDisable((EnumGX)Operation::Operation::CULLING));
+	}
+	else
+	{
+		APPEL_GX(glEnable((EnumGX)Operation::Operation::CULLING));
+		APPEL_GX(glCullFace((EnumGX)pipeline.modeCulling));
+	}
 
 	// Definir les cibles du dessinage
 
 	const uint32_t masqueAttachements = Framebuffer::masqueCouleur;
 	const uint32_t listeAttachement = fbo.infoAttachments & (masqueAttachements);
 
-	EnumGX destinations[Framebuffer::nbAttachmentMask];
+	Fbo::Attachement destinations[Framebuffer::nbAttachmentMask];
 	uint32_t nbAttachements = 0;
 	for (uint32_t masque = 0x80000000, i = 0; i < __popcnt(masqueAttachements); masque >>= 1, i++)
 	{
 		uint32_t a = listeAttachement & masque;
 		if ((listeAttachement & masque) != 0)
 		{
-			destinations[nbAttachements] = GL_COLOR_ATTACHMENT0 + nbAttachements;
+			destinations[nbAttachements] = (Fbo::Attachement)((EnumGX)Fbo::Attachement::COULEUR0 + nbAttachements);
 			nbAttachements++;
 		}
 	}
 
-	APPEL_GX(glDrawBuffers(nbAttachements, destinations));
+	if (pipeline.equationMelange == Operation::Melange::DESACTIVER)
+	{
+		APPEL_GX(glDrawBuffers(0, (uint32_t*)destinations));
+	}
+
+	else
+	{
+		APPEL_GX(glBlendFunc((EnumGX)pipeline.modeMelangeSRC, (EnumGX)pipeline.modeMelangeDST));
+		APPEL_GX(glBlendEquation((EnumGX)pipeline.equationMelange));
+		APPEL_GX(glDrawBuffers(nbAttachements, (uint32_t*)destinations));
+	}
 }
 
 void mgx::Pipeline::dessiner(const Pipeline& pipeline, const Vertexarray vao)
 {
 	Vertexarray::lier(vao);
-	APPEL_GX(glDrawArrays(pipeline.modeDessin, 0, vao.nbTriangles * 3));
-}
-
-constexpr void mgx::Pipeline::renduStandard(Pipeline* const pipelinePtr)
-{
-	Pipeline& pipeline = *pipelinePtr;
-	pipeline.modeDessin = GL_TRIANGLES;
-	pipeline.equationMelange = GL_FUNC_ADD;
-	pipeline.modeMelangeSRC = GL_SRC_ALPHA;
-	pipeline.modeMelangeDST = GL_ONE_MINUS_SRC_ALPHA;
-	pipeline.testProfondeur = GL_LESS;
-	pipeline.modeEliminationFace = GL_BACK;
-	pipeline.stencilFunc = FUNC_TOUJOURS;
-	pipeline.stencilMasque = 0xFF;
-	pipeline.stencilRef = 0xFF;
-	pipeline.stencilEchec = STENCIL_FUNC_GARDER;
-	pipeline.profondeurEchec = STENCIL_FUNC_GARDER;
-	pipeline.stencilProfondeurReussite = STENCIL_FUNC_GARDER;
+	APPEL_GX(glDrawArrays((EnumGX)pipeline.modeDessin, 0, vao.nbTriangles * 3));
 }
 
 void MoteurGX::init(MoteurGX* const mGX)
 {
-	APPEL_GX(glEnable(GL_BLEND));
-	APPEL_GX(glEnable(GL_DEPTH_TEST));
-	APPEL_GX(glEnable(GL_STENCIL_TEST));
-	//APPEL_GX(glEnable(GL_CULL_FACE));
+	APPEL_GX(glEnable((EnumGX)Operation::Operation::MELANGE));
+	APPEL_GX(glEnable((EnumGX)Operation::Operation::PROFONDEUR));
+	APPEL_GX(glEnable((EnumGX)Operation::Operation::STENCIL));
+	APPEL_GX(glEnable((EnumGX)Operation::Operation::CULLING));
+	APPEL_GX(glEnable((EnumGX)Operation::Operation::CISEAU));
 
 	Ressource fboIU, texCoulIU, texProfIU;
 	Framebuffer& fbo = MoteurGX::creerFramebuffer(mGX, &fboIU);
 	MoteurGX::creerTexture(mGX, &texCoulIU);
 	Texture& texProfondeur = MoteurGX::creerTexture(mGX, &texProfIU);
 	Texture& texCouleur = MoteurGX::retTexture(*mGX, texCoulIU);
-	Framebuffer::addAttachment(&fbo, &texCouleur, 800, 600, TEX_INFORMAT_RVBA, TEX_FORMAT_RVBA, GL_UNSIGNED_BYTE, TEX_FILTRE_PROCHE, TEX_FILTRE_PROCHE);
-	Framebuffer::addAttachment(&fbo, &texProfondeur, 800, 600, TEX_INFORMAT_COMPOSANT_PROFONDEUR, TEX_FORMAT_COMPOSANT_PROFONDEUR, GL_UNSIGNED_INT, TEX_FILTRE_PROCHE, TEX_FILTRE_PROCHE);
+	Framebuffer::addAttachment(&fbo, &texCouleur, 800, 600, Tex::FormatInterne::RVBA, Tex::Format::RVBA, Donnee::Type::U32, Tex::Filtre::PROCHE, Tex::Filtre::PROCHE);
+	Framebuffer::addAttachment(&fbo, &texProfondeur, 800, 600, Tex::FormatInterne::COMPOSANT_PROFONDEUR, Tex::Format::COMPOSANT_PROFONDEUR, Donnee::Type::U32, Tex::Filtre::PROCHE, Tex::Filtre::PROCHE);
 }
 
 Pipeline& MoteurGX::creerPipeline(MoteurGX* const mGX, Ressource* const res)
@@ -189,15 +226,15 @@ const Shader& MoteurGX::demarerCouche(const MoteurGX& mGX, const Ressource Index
 	return shader;
 }
 
-void MoteurGX::executerCouche(const MoteurGX& mGX)
+void MoteurGX::executerCouche(const MoteurGX& mGX, const Ressource vaoIU)
 {
 	const Couche& couche = mGX.coucheActive;
 
 	const Pipeline& pipeline = MoteurGX::retPipeline(mGX, 0);
 
-	const Vertexarray& vao = MoteurGX::retVertexarray(mGX, 0);
-
 	//APPEL_GX(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+
+	const Vertexarray& vao = retVertexarray(mGX, vaoIU);
 
 	//Vertexbuffer vbo;
 	//vbo.id = 1;

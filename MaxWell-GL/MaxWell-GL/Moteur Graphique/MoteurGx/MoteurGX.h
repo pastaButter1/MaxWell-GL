@@ -16,24 +16,25 @@ namespace mgx
 		Ressource fbo;
 		Ressource shader;
 
-		EnumGX modeDessin;
+		Operation::Dessin modeDessin;
 
 		glm::uvec2 tailleFenetre;
 
-		EnumGX modeEliminationFace;
+		Operation::Culling modeCulling;
 
-		EnumGX testProfondeur;
+		Operation::Profondeur testProfondeur;
 
-		EnumGX modeMelangeSRC;
-		EnumGX modeMelangeDST;
-		EnumGX equationMelange;
+		Operation::FuncMelange modeMelangeSRC;
+		Operation::FuncMelange modeMelangeDST;
+		Operation::Melange equationMelange;
 
-		EnumGX stencilFunc;
+		Operation::Stencil stencilFunc;
 		EnumGX stencilRef;
 		EnumGX stencilMasque;
-		EnumGX stencilEchec;
-		EnumGX profondeurEchec;
-		EnumGX stencilProfondeurReussite;
+		Operation::TestSP stencilEchec;
+		Operation::TestSP profondeurEchec;
+		Operation::TestSP stencilProfondeurReussit;
+		bool nettoyerCible;
 
 		Pipeline() {}
 
@@ -41,7 +42,25 @@ namespace mgx
 
 		static void dessiner(const Pipeline& pipeline, const Vertexarray vao);
 
-		static constexpr void renduStandard(Pipeline* const pipelinePtr);
+		static constexpr void renduStandard(Pipeline* const pipelinePtr, const bool nettoyerCible)
+		{
+			using namespace Operation;
+
+			Pipeline& pipeline = *pipelinePtr;
+			pipeline.modeDessin = Dessin::TRIANGLES_PLEINS;
+			pipeline.equationMelange = Melange::ADDITION;
+			pipeline.modeMelangeSRC = FuncMelange::ALPHA_SRC;
+			pipeline.modeMelangeDST = FuncMelange::UN_MOINS_ALPHA_SRC;
+			pipeline.testProfondeur = Profondeur::PLUS_PETIT;
+			pipeline.modeCulling = Culling::ARRIERE;
+			pipeline.stencilFunc = Stencil::TOUJOURS;
+			pipeline.stencilMasque = 0xFF;
+			pipeline.stencilRef = 0xFF;
+			pipeline.stencilEchec = TestSP::GARDER;
+			pipeline.profondeurEchec = TestSP::GARDER;
+			pipeline.stencilProfondeurReussit = TestSP::GARDER;
+			pipeline.nettoyerCible = nettoyerCible;
+		}
 	};
 }
 
@@ -98,7 +117,7 @@ struct MoteurGX
 
 	static const Shader& demarerCouche(const MoteurGX&  mGX, const Ressource pipeline);
 
-	static void executerCouche(const MoteurGX& mGX);
+	static void executerCouche(const MoteurGX& mGX, const Ressource vaoIU);
 
 	static void pousserMesh(MoteurGX* const mGX);
 

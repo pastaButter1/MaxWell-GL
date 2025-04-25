@@ -81,6 +81,9 @@
     <ClCompile Include="Moteur Graphique\MoteurGx\Mesh.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
+    <ClCompile Include="Lib\STBImage\stb_image.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Moteur Graphique\Graphique.h">
@@ -137,6 +140,9 @@
     <ClInclude Include="Moteur Graphique\MoteurGx\Mesh.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
+    <ClInclude Include="Lib\STBImage\stb_image.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Moteur Graphique\Deferred rendering\Composer fragment.glsl" />
@@ -156,5 +162,10 @@
     <None Include="Shaders\Simple\vertex.glsl" />
     <None Include="Shaders\Simple\fragment.glsl" />
     <None Include="Shaders\Simple\geometrie.glsl" />
+    <None Include="Shaders\Simple\fragmentPlan.glsl" />
+    <None Include="Shaders\Skybox\fragment.glsl" />
+    <None Include="Shaders\Skybox\vertex.glsl" />
+    <None Include="Shaders\PrefiltrageZ\fragment.glsl" />
+    <None Include="Shaders\PrefiltrageZ\vertex.glsl" />
   </ItemGroup>
 </Project>

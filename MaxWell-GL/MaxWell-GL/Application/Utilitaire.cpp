@@ -4,7 +4,7 @@
 
 void afficherErreur(const std::string& msg, ...)
 {
-	std::string info = "LOG | ";
+	std::string info = "ERREUR | ";
 
 	va_list args;
 	__crt_va_start(args, &msg);

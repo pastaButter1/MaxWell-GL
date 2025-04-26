@@ -31,10 +31,6 @@ void Application::initialiser(Application* const app, glm::uvec2 tailleFenetre)
 
 void Application::executer(Application* const app)
 {
-}
-
-void Application::executerSimulation(Application* const app, const float dt)
-{
 	auto tAvant = std::chrono::high_resolution_clock::now();
 
 	MoteurPhysique moteurPhysique;
@@ -103,6 +99,10 @@ void Application::executerSimulation(Application* const app, const float dt)
 		glfwSwapBuffers(app->fenetre.window);
 		glfwPollEvents();
 	}
+}
+
+void Application::executerSimulation(Application* const app, const float dt)
+{
 }
 
 void Application::fermer(Application* const app)

@@ -29,46 +29,29 @@ void Application::initialiser(Application* const app, glm::uvec2 tailleFenetre)
 	initaliserMoteurGraphique(app);
 }
 
-typedef void (APIENTRY* DEBUGPROC)(GLenum source,
-	GLenum type,
-	GLuint id,
-	GLenum severity,
-	GLsizei length,
-	const GLchar* message,
-	const void* userParam);
-
-void errorCallback(GLenum source,
-	GLenum type,
-	GLuint id,
-	GLenum severity,
-	GLsizei length,
-	const GLchar* message,
-	const void* userParam)
-{
-	printf("%i | %i | %i | %i | %i | %s\n", source, type, id, severity, length, message);
-}
-
 void Application::executer(Application* const app)
 {
-	auto tAvant = std::chrono::high_resolution_clock::now();
+}
 
-	glDebugMessageCallback(errorCallback, "");
+void Application::executerSimulation(Application* const app, const float dt)
+{
+	auto tAvant = std::chrono::high_resolution_clock::now();
 
 	MoteurPhysique moteurPhysique;
 	Espace::GPU::initialiser(&moteurPhysique.coordonnees, glm::ivec3(100, 100, 100));
 	Espace::GPU::initialiser(&moteurPhysique.champMagnetique, glm::ivec3(100, 100, 100));
 
 	MoteurPhysique::Info info;
-	info.fils.push_back(MoteurPhysique::Fil::creer(glm::vec3(0, 0, 1), glm::vec3(-1.0f,-1.0f, 0.0f), -3.0f));
-	info.fils.push_back(MoteurPhysique::Fil::creer(glm::vec3(0, 0, 1), glm::vec3( 1.0f, 1.0f, 0.0f), 1.0f));
-	info.fils.push_back(MoteurPhysique::Fil::creer(glm::vec3(0, 0,-1), glm::vec3( 0.0f, 1.5f, 0.0f), 1.0f));
+	info.fils.push_back(MoteurPhysique::Fil::creer(glm::vec3(0, 0, 1), glm::vec3(-1.0f, -1.0f, 0.0f), -3.0f));
+	info.fils.push_back(MoteurPhysique::Fil::creer(glm::vec3(0, 0, 1), glm::vec3(1.0f, 1.0f, 0.0f), 1.0f));
+	info.fils.push_back(MoteurPhysique::Fil::creer(glm::vec3(0, 0, -1), glm::vec3(0.0f, 1.5f, 0.0f), 1.0f));
 
 	MoteurPhysique::GPU::genererBufferInfo(&info);
 	MoteurPhysique::GPU::soumettreBufferInfo(info);
 
 	MoteurPhysique::GPU::chargerShaders(&moteurPhysique, "Shader/");
 	MoteurPhysique::GPU::assignerCoordonnees(moteurPhysique, glm::vec3(-2), glm::vec3(2));
-	
+
 	Texture gradient;
 	{
 		unsigned int contenu_gradient[] = { 0x00ff0002, 0x00fd7405, 0x00fbe701, 0x00dfff01, 0x004efd03, 0x0008fe49, 0x0003fde4, 0x0000e3ff, 0x000071fe, 0x000b00ff };
@@ -91,56 +74,14 @@ void Application::executer(Application* const app)
 
 	while (!glfwWindowShouldClose(app->fenetre.window))
 	{
-		glClear(GL_COLOR_BUFFER_BIT);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		MoteurPhysique::GPU::executerCalcul(moteurPhysique.shaderChampMagnetique, moteurPhysique.coordonnees, moteurPhysique.champMagnetique, info);
-
 		auto tMaintenant = std::chrono::high_resolution_clock::now();
 		const float dt = (tMaintenant - tAvant).count() / 1000000000.0f;
 		tAvant = tMaintenant;
 
-		//ImGui_ImplOpenGL3_NewFrame();
-		//ImGui_ImplGlfw_NewFrame();
-		//ImGui::NewFrame();
-		//
-		//ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar;
-		//window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize;
-		//window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-		//
-		//ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_::ImGuiDockNodeFlags_None;
-		//
-		//ImGuiViewport* viewport = ImGui::GetMainViewport();
-		//ImGui::SetNextWindowPos(viewport->Pos);
-		//ImGui::SetNextWindowSize(viewport->Size);
-		//ImGui::SetNextWindowViewport(viewport->ID);
-		//
-		//ImGui::Begin("Dockspace window", 0, window_flags);
-		//
-		//ImGuiIO& io = ImGui::GetIO();
-		//
-		//if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
-		//{
-		//	ImGuiID dockspace = ImGui::GetID("MyDockSpace");
-		//	ImGui::DockSpace(dockspace, ImVec2(0, 0), dockspace_flags);
-		//}
-		//
-		//ImGui::End();
-		//
-		//ImGui::Begin("fenetre");
-		//
-		//static glm::vec4 couleur;
-		//
-		//ImGui::ColorEdit4("Couleur", (float*)&couleur);
-		//
-		//ImGui::End();
-		//
-		//ImGui::Render();
-		//ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-		//MoteurGX::demarerCouche(app->moteurGX, 0);
-		//Vertexarray::lier(MoteurGX::retVertexarray(app->moteurGX, 0));
+		MoteurPhysique::GPU::executerCalcul(moteurPhysique.shaderChampMagnetique, moteurPhysique.coordonnees, moteurPhysique.champMagnetique, info);
 
-		//APPEL_GX(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0));
+		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		APPEL_GX(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 		Shader& shader = MoteurGX::retShader(app->moteurGX, MoteurGX::retPipeline(app->moteurGX, 0).shader);
@@ -157,7 +98,7 @@ void Application::executer(Application* const app)
 
 		APPEL_GX(glDrawArrays(GL_POINTS, 0, nombreFleches.x * nombreFleches.y));
 
-		//MoteurGX::executerCouche(app->moteurGX);
+		//Application::executerSimulation(app, dt);
 
 		glfwSwapBuffers(app->fenetre.window);
 		glfwPollEvents();

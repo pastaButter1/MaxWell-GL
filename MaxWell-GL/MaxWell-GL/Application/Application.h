@@ -15,6 +15,8 @@ struct Application {
 
 	static void executer(Application* const app);
 
+	static void executerSimulation(Application* const app, const float dt);
+
 	static void fermer(Application* const app);
 
 private:

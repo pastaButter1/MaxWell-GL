@@ -1,5 +1,7 @@
 #include "Espace.h"
 
+#include "Moteur Graphique/Shader/Shader.h"
+
 void Espace::generer(Espace* const espace, const glm::ivec3 dimension)
 {
 	espace->dimensions = glm::ivec4(dimension, dimension.x * dimension.y * dimension.z);
@@ -40,17 +42,18 @@ void Espace::GPU::initialiser(Espace* const espace, const glm::ivec3 dimension)
 	espace->dimensions = glm::ivec4(dimension, dimension.x * dimension.y * dimension.z);
 	espace->longueur = dimension.x * dimension.y * dimension.z;
 
-	APPEL_GX(glUseProgram(0));
-	Texture::generer(&espace->tex, GL_TEXTURE_3D, GL_RGBA32F);
-	Texture::specifierEtirement(espace->tex, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER);
+	Shader::delier();
+
+	Texture::generer(&espace->tex);
+	Texture::specifierEtirement(espace->tex, Tex::Emballage::LIMITER_BORDURE, Tex::Emballage::LIMITER_BORDURE, Tex::Emballage::LIMITER_BORDURE);
 	Texture::specifierCouleurBordure(espace->tex, glm::vec4(0.0f));
-	Texture::specifierFiltre(espace->tex, GL_LINEAR, GL_LINEAR);
-	Texture::allouer3D(espace->tex, 0, espace->dimensions, GL_RGB, GL_FLOAT, nullptr);
+	Texture::specifierFiltre(espace->tex, Tex::Filtre::LINEAIRE, Tex::Filtre::LINEAIRE);
+	Texture::allouer3D(&espace->tex, 0, espace->dimensions, Tex::FormatInterne::RVBA32F, Tex::Format::RVBA, Donnee::Type::VIRGULE, nullptr);
 }
 
-void Espace::GPU::soumettre(const Espace& espace)
+void Espace::GPU::soumettre(Espace* const espace)
 {
-	Texture::soumettre3D(espace.tex, 0, glm::ivec3(0), espace.dimensions, GL_RGB, GL_FLOAT, espace.tableau);
+	Texture::soumettre3D(&espace->tex, 0, glm::ivec3(0), espace->dimensions, espace->tableau);
 }
 
 

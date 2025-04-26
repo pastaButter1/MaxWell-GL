@@ -15,11 +15,12 @@ void Texture::lier(const Texture& tex)
 	APPEL_GX(glBindTexture((EnumGX)tex.cible, tex.id));
 }
 
+void Texture::delier(const Texture& tex)
 {
-	APPEL_GX(glBindTexture(GL_TEXTURE_2D, 0));
-	APPEL_GX(glBindTexture(tex.cible, 0));
+	APPEL_GX(glBindTexture((EnumGX)tex.cible, tex.id));
 }
 
+void Texture::attacherUnite(const Texture& tex, const ValGX unite)
 {
 	lier(tex);
 	APPEL_GX(glBindTextureUnit(unite, tex.id));
@@ -27,7 +28,7 @@ void Texture::lier(const Texture& tex)
 
 void Texture::attacherImage(const Texture& tex, uint32_t unite, const GLenum acces)
 {
-	APPEL_GX(glBindImageTexture(unite, tex.id, 0, GL_TRUE, 0, acces, tex.formatInterne));
+	APPEL_GX(glBindImageTexture(unite, tex.id, 0, GL_TRUE, 0, acces, (EnumGX)tex.formatInterne));
 }
 
 void Texture::allouer1D(Texture* const tex, const ValGX niveau, const glm::ivec1 dimension, const Tex::FormatInterne formatInterne, const Tex::Format format, const Donnee::Type type, const void* const pixels)

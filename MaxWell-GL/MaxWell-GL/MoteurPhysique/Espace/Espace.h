@@ -30,7 +30,7 @@ struct Espace
 	{
 		static void initialiser(Espace* const espace, const glm::ivec3 dimension);
 		static void Recuperer(Espace* const espace);
-		static void soumettre(const Espace& espace);
+		static void soumettre(Espace* const espace);
 		static void Utiliser(const Espace& espace);
 	};
 };

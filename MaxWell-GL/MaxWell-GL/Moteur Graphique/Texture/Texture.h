@@ -15,9 +15,8 @@ struct Texture
 	static void detruire(Texture* const tex);
 	
 	static void lier(const Texture& tex);
-	static void delier();
-	static void attacher(const Texture& tex, const ValGX unite);
-	static void attacherUnite(const Texture& tex, const GLuint unite);
+	static void delier(const Texture& tex);
+	static void attacherUnite(const Texture& tex, const ValGX unite);
 	static void attacherImage(const Texture& tex, uint32_t unite, const GLenum acces);
 
 	static void allouer1D(Texture* const tex, const ValGX niveau, const glm::ivec1 dimension, const Tex::FormatInterne formatInterne, const Tex::Format format, const Donnee::Type type, const void* const pixels);

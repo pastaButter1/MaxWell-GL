@@ -571,7 +571,7 @@ void Application::executerRendu(Application* const app)
 		Shader::pousserConstanteVirgule(shader, "u_ks", app->donnesOperation.kSpeculaire);
 		Shader::pousserConstanteVirgule(shader, "u_kd", app->donnesOperation.kDiffuse);
 		Shader::pousserConstanteVirgule(shader, "u_exposantSpec", app->donnesOperation.esposantSpec);
-		Shader::pousserTexture(shader, "u_skybox", 0);
+		Shader::pousserTexture(shader, "u_skybox", MoteurGX::retTexture(app->moteurGX, 0), 0);
 		MoteurGX::executerCouche(app->moteurGX, 0);
 	}
 
@@ -582,7 +582,7 @@ void Application::executerRendu(Application* const app)
 
 		const Shader& shader = MoteurGX::demarerCouche(app->moteurGX, 3);
 		Texture::lier(MoteurGX::retTexture(app->moteurGX, app->donnesOperation.skyboxIU));
-		Shader::pousserTexture(shader, "u_skybox", 0);
+		Shader::pousserTexture(shader, "u_skybox", MoteurGX::retTexture(app->moteurGX, 0), 0);
 		for (int i = 0; i < 1; i++)
 		{
 			Shader::pousserConstanteMat4(shader, "u_cam", proj * matrice);

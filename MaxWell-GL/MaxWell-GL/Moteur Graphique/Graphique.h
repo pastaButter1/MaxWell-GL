@@ -126,7 +126,8 @@ namespace Tex
 		RVB                  = (EnumGX)Format::RVB,
 		RVBA                 = (EnumGX)Format::RVBA,
 		COMPOSANT_PROFONDEUR = (EnumGX)Format::COMPOSANT_PROFONDEUR,
-		PROFONDEUR_STENCIL   = GL_DEPTH24_STENCIL8
+		PROFONDEUR_STENCIL   = GL_DEPTH24_STENCIL8,
+		RVBA32F              = GL_RGBA32F
 	};
 
 	enum class Filtre: EnumGX

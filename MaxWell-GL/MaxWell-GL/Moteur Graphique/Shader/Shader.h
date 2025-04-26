@@ -32,8 +32,10 @@ struct Shader
 
 	static void pousserConstanteUVec2(const Shader& shader, const std::string& name, glm::uvec2 v);
 
+	static void pousserConstanteIVec2(const Shader& shader, const std::string& name, glm::ivec2 v);
+
 	static void pousserConstanteVirgule(const Shader& shader, const std::string& name, float f);
 
-	static void pousserTexture(const Shader& shader, const std::string& name, const uint32_t texSlot);
+	static void pousserTexture(const Shader& shader, const std::string& name, const Texture& tex, GLuint unite);
 };
 

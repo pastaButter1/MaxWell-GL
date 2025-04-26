@@ -17,6 +17,8 @@ struct Texture
 	static void lier(const Texture& tex);
 	static void delier();
 	static void attacher(const Texture& tex, const ValGX unite);
+	static void attacherUnite(const Texture& tex, const GLuint unite);
+	static void attacherImage(const Texture& tex, uint32_t unite, const GLenum acces);
 
 	static void allouer1D(Texture* const tex, const ValGX niveau, const glm::ivec1 dimension, const Tex::FormatInterne formatInterne, const Tex::Format format, const Donnee::Type type, const void* const pixels);
 	static void allouer2D(Texture* const tex, const ValGX niveau, const glm::ivec2 dimension, const Tex::FormatInterne formatInterne, const Tex::Format format, const Donnee::Type type, const void* const pixels);
@@ -31,6 +33,7 @@ struct Texture
 	static void specifier(const Texture& tex, const EnumGX param, const ValGX valeur);
 	static void specifierFiltre(const Texture& tex, const Tex::Filtre filtreMag, const Tex::Filtre filtreMin);
 	static void specifierEtirement(const Texture& tex, const Tex::Emballage wrapS, const Tex::Emballage wrapT, const Tex::Emballage wrapR);
+
 	static void specifierCouleurBordure(const Texture& tex, const glm::vec4 colour);
 	
 };

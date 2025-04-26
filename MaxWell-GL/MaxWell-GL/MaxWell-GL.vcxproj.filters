@@ -82,6 +82,13 @@
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="Lib\STBImage\stb_image.cpp">
+    <ClCompile Include="MoteurPhysique\Espace\Espace.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="MoteurPhysique\MoteurPhysique\MoteurPhysique.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Moteur Graphique\Camera\Camera.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -141,6 +148,13 @@
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="Lib\STBImage\stb_image.h">
+    <ClInclude Include="MoteurPhysique\Espace\Espace.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="MoteurPhysique\MoteurPhysique\MoteurPhysique.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Moteur Graphique\Camera\Camera.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>
@@ -167,5 +181,12 @@
     <None Include="Shaders\Skybox\vertex.glsl" />
     <None Include="Shaders\PrefiltrageZ\fragment.glsl" />
     <None Include="Shaders\PrefiltrageZ\vertex.glsl" />
+    <None Include="imgui.ini" />
+    <None Include="Shader\ChampMagnetique.glsl" />
+    <None Include="Shader\DessinerVecteurChamp.glsl" />
+    <None Include="Shader\Coordonnees.glsl" />
+    <None Include="Shader\Vertex.glsl" />
+    <None Include="Shader\Geometry.glsl" />
+    <None Include="Shader\Fragment.glsl" />
   </ItemGroup>
 </Project>

@@ -10,7 +10,7 @@ struct Camera
 
 	glm::mat4 plan;
 
-	static void input(Camera* camera, Fenetre* fenetre, float deltaTemps);
+	static void input(Camera* const camera, Fenetre* const fenetre, float deltaTemps);
 
-	static void transformer(Camera* camera);
+	static void transformer(Camera* const camera);
 };

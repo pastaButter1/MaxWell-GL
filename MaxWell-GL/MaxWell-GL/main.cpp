@@ -6,7 +6,7 @@ int main() {
 
 	Application::initialiser(&application, glm::uvec2(800, 600));
 	
-	Application::executer(application);
+	Application::executer(&application);
 	
 	Application::fermer(&application);
 

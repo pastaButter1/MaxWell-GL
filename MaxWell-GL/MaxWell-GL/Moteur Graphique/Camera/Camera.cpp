@@ -1,6 +1,6 @@
 #include "Camera.h"
 
-void input(Camera* camera, Fenetre* fenetre, float deltaTemps)
+void Camera::input(Camera* const camera, Fenetre* const fenetre, float deltaTemps)
 {
 	if (glfwGetMouseButton(fenetre->window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 	{
@@ -13,7 +13,7 @@ void input(Camera* camera, Fenetre* fenetre, float deltaTemps)
 		camera->position -= glm::vec3(0.0f, 0.0f, 0.5f) * glm::vec3(deltaTemps);
 }
 
-void transformer(Camera* camera)
+void Camera::transformer(Camera* const camera)
 {
 	glm::mat4 plan = glm::mat4(1.0f);
 

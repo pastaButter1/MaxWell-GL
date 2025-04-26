@@ -16,6 +16,8 @@
 #include "Moteur Graphique/Vertexbuffer/Vertexbuffer.h"
 #include "Moteur Graphique/MoteurGx/Mesh.h"
 
+#include "Moteur Graphique/Camera/Camera.h"
+
 using Ressource = MoteurGX::Ressource;
 
 void Application::initialiser(Application* const app, glm::uvec2 tailleFenetre)
@@ -27,75 +29,137 @@ void Application::initialiser(Application* const app, glm::uvec2 tailleFenetre)
 	initaliserMoteurGraphique(app);
 }
 
-void Application::executer(const Application& app)
+typedef void (APIENTRY* DEBUGPROC)(GLenum source,
+	GLenum type,
+	GLuint id,
+	GLenum severity,
+	GLsizei length,
+	const GLchar* message,
+	const void* userParam);
+
+void errorCallback(GLenum source,
+	GLenum type,
+	GLuint id,
+	GLenum severity,
+	GLsizei length,
+	const GLchar* message,
+	const void* userParam)
+{
+	printf("%i | %i | %i | %i | %i | %s\n", source, type, id, severity, length, message);
+}
+
+void Application::executer(Application* const app)
 {
 	auto tAvant = std::chrono::high_resolution_clock::now();
 
+	glDebugMessageCallback(errorCallback, "");
+
 	MoteurPhysique moteurPhysique;
-	Espace::gpuInitialiser(&moteurPhysique.coordonnees, glm::ivec3(100, 100, 100));
-	Espace::gpuInitialiser(&moteurPhysique.champMagnetique, glm::ivec3(100, 100, 100));
+	Espace::GPU::initialiser(&moteurPhysique.coordonnees, glm::ivec3(100, 100, 100));
+	Espace::GPU::initialiser(&moteurPhysique.champMagnetique, glm::ivec3(100, 100, 100));
 
 	MoteurPhysique::Info info;
-	info.fils.push_back({ glm::vec3(0, 0, 1), 1.0f, glm::vec3(-1.0f, -1.0f, 0.0f) });
-	info.fils.push_back({ glm::vec3(0, 0, 1), 1.0f, glm::vec3(1.0f, 1.0f, 0.0f) });
+	info.fils.push_back(MoteurPhysique::Fil::creer(glm::vec3(0, 0, 1), glm::vec3(-1.0f,-1.0f, 0.0f), -3.0f));
+	info.fils.push_back(MoteurPhysique::Fil::creer(glm::vec3(0, 0, 1), glm::vec3( 1.0f, 1.0f, 0.0f), 1.0f));
+	info.fils.push_back(MoteurPhysique::Fil::creer(glm::vec3(0, 0,-1), glm::vec3( 0.0f, 1.5f, 0.0f), 1.0f));
 
-	MoteurPhysique::InitialiserFils(&info);
-	MoteurPhysique::SoumettreFils(info);
+	MoteurPhysique::GPU::genererBufferInfo(&info);
+	MoteurPhysique::GPU::soumettreBufferInfo(info);
 
-	MoteurPhysique::ChargerShaders(&moteurPhysique, "Shader/");
-	MoteurPhysique::AssignerCoordonnees(moteurPhysique, glm::vec3(-2), glm::vec3(2));
-
-	while (!glfwWindowShouldClose(app.fenetre.window))
+	MoteurPhysique::GPU::chargerShaders(&moteurPhysique, "Shader/");
+	MoteurPhysique::GPU::assignerCoordonnees(moteurPhysique, glm::vec3(-2), glm::vec3(2));
+	
+	Texture gradient;
 	{
-		MoteurPhysique::CalculerGPU(moteurPhysique.shaderChampMagnetique, moteurPhysique.coordonnees, moteurPhysique.champMagnetique, info);
+		unsigned int contenu_gradient[] = { 0x00ff0002, 0x00fd7405, 0x00fbe701, 0x00dfff01, 0x004efd03, 0x0008fe49, 0x0003fde4, 0x0000e3ff, 0x000071fe, 0x000b00ff };
+		Texture::generer(&gradient, GL_TEXTURE_1D, GL_RGBA);
+		Texture::specifierEtirement(gradient, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+		Texture::specifierFiltre(gradient, GL_LINEAR, GL_LINEAR);
+		Texture::allouer1D(gradient, 0, glm::ivec1(10), GL_RGBA, GL_UNSIGNED_BYTE, contenu_gradient);
+	}
+
+	Camera camera = {};
+
+	GLuint vba;
+	Ressource vaoIU, vboIU;
+	APPEL_GX(glGenVertexArrays(1, &vba));
+	Vertexarray& vao = MoteurGX::creerVertexarray(&app->moteurGX, &vaoIU);
+	Vertexarray::lier(vao);
+	Vertexbuffer& vbo = MoteurGX::creerVertexbuffer(&app->moteurGX, &vboIU);
+	Vertexbuffer::allocation(&vbo, 10);
+	Vertexarray::ajouterAttribut(vao, vbo, 0, 1, GL_FLOAT, GL_FALSE, 1, 0);
+
+	while (!glfwWindowShouldClose(app->fenetre.window))
+	{
+		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		MoteurPhysique::GPU::executerCalcul(moteurPhysique.shaderChampMagnetique, moteurPhysique.coordonnees, moteurPhysique.champMagnetique, info);
 
 		auto tMaintenant = std::chrono::high_resolution_clock::now();
 		const float dt = (tMaintenant - tAvant).count() / 1000000000.0f;
 		tAvant = tMaintenant;
 
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
-
-		ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar;
-		window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize;
-		window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-
-		ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_::ImGuiDockNodeFlags_None;
-
-		ImGuiViewport* viewport = ImGui::GetMainViewport();
-		ImGui::SetNextWindowPos(viewport->Pos);
-		ImGui::SetNextWindowSize(viewport->Size);
-		ImGui::SetNextWindowViewport(viewport->ID);
-
-		ImGui::Begin("Dockspace window", 0, window_flags);
-
-		ImGuiIO& io = ImGui::GetIO();
-
-		if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
-		{
-			ImGuiID dockspace = ImGui::GetID("MyDockSpace");
-			ImGui::DockSpace(dockspace, ImVec2(0, 0), dockspace_flags);
-		}
-
-		ImGui::End();
-
-		ImGui::Begin("fenetre");
-
-		static glm::vec4 couleur;
-
-		ImGui::ColorEdit4("Couleur", (float*)&couleur);
-
-		ImGui::End();
-
-		ImGui::Render();
+		//ImGui_ImplOpenGL3_NewFrame();
+		//ImGui_ImplGlfw_NewFrame();
+		//ImGui::NewFrame();
+		//
+		//ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar;
+		//window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize;
+		//window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+		//
+		//ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_::ImGuiDockNodeFlags_None;
+		//
+		//ImGuiViewport* viewport = ImGui::GetMainViewport();
+		//ImGui::SetNextWindowPos(viewport->Pos);
+		//ImGui::SetNextWindowSize(viewport->Size);
+		//ImGui::SetNextWindowViewport(viewport->ID);
+		//
+		//ImGui::Begin("Dockspace window", 0, window_flags);
+		//
+		//ImGuiIO& io = ImGui::GetIO();
+		//
+		//if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+		//{
+		//	ImGuiID dockspace = ImGui::GetID("MyDockSpace");
+		//	ImGui::DockSpace(dockspace, ImVec2(0, 0), dockspace_flags);
+		//}
+		//
+		//ImGui::End();
+		//
+		//ImGui::Begin("fenetre");
+		//
+		//static glm::vec4 couleur;
+		//
+		//ImGui::ColorEdit4("Couleur", (float*)&couleur);
+		//
+		//ImGui::End();
+		//
+		//ImGui::Render();
 		//ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-		MoteurGX::demarerCouche(app.moteurGX, 0);
-		Vertexarray::lier(MoteurGX::retVertexarray(app.moteurGX, 0));
+		//MoteurGX::demarerCouche(app->moteurGX, 0);
+		//Vertexarray::lier(MoteurGX::retVertexarray(app->moteurGX, 0));
 
-		MoteurGX::executerCouche(app.moteurGX);
+		//APPEL_GX(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0));
 
-		glfwSwapBuffers(app.fenetre.window);
+		APPEL_GX(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+		Shader& shader = MoteurGX::retShader(app->moteurGX, MoteurGX::retPipeline(app->moteurGX, 0).shader);
+		APPEL_GX(glUseProgram(shader.id));
+		APPEL_GX(glBindVertexArray(vba));
+
+		Camera::input(&camera, &app->fenetre, dt);
+		Camera::transformer(&camera);
+		glm::ivec2 nombreFleches = glm::ivec2(50);
+		Shader::pousserConstanteIVec2(shader, "dimension", nombreFleches);
+		Shader::pousserConstanteMat4(shader, "transformation", camera.plan);
+		Shader::pousserTexture(shader, "carte", moteurPhysique.champMagnetique.tex, 0);
+		Shader::pousserTexture(shader, "gradient", gradient, 1);
+
+		APPEL_GX(glDrawArrays(GL_POINTS, 0, nombreFleches.x * nombreFleches.y));
+
+		//MoteurGX::executerCouche(app->moteurGX);
+
+		glfwSwapBuffers(app->fenetre.window);
 		glfwPollEvents();
 	}
 }
@@ -138,22 +202,33 @@ void Application::initaliserMoteurGraphique(Application* const app)
 	{
 		std::string shaderRaw;
 
-		chargerFichier("Shaders/Simple/vertex.glsl", &shaderRaw);
+		chargerFichier("Shader/Vertex.glsl", &shaderRaw);
 		Shader::loadSubShader(shader, shaderRaw, SHADER_VERTEX);
-
 		shaderRaw.clear();
-		chargerFichier("Shaders/Simple/fragment.glsl", &shaderRaw);
+		
+		chargerFichier("Shader/Geometry.glsl", &shaderRaw);
+		Shader::loadSubShader(shader, shaderRaw, SHADER_GEOMETRIE);
+		shaderRaw.clear();
+
+		chargerFichier("Shader/Fragment.glsl", &shaderRaw);
 		Shader::loadSubShader(shader, shaderRaw, SHADER_FRAGMENT);
 	}
 
 	Shader::assembler(shader);
 	Shader::delier();
 
+	MoteurGX::Ressource ressource;
+
+	Vertexarray& vao = MoteurGX::creerVertexarray(&app->moteurGX, &ressource);
+	vao.nbTriangles = 1;
+
 	/*Vertexarray& vao = MoteurGX::creerVertexarray(&app->moteurGX, &vaoIU);
 	Vertexbuffer vbo;
 	Vertexbuffer::generer(&vbo);
 	Vertexbuffer::allocation(&vbo, 6 * sizeof(glm::vec2));
 	vao.nbTriangles = 2;*/
+	
+	/*
 	Vertex triangles[6];
 	triangles[0] = { glm::vec3(-1, -1, 0), glm::vec2(0, 0), glm::vec3(0, 0, 0) };
 	triangles[1] = { glm::vec3(-1,  1, 0), glm::vec2(0, 1), glm::vec3(0, 0, 0) };
@@ -165,6 +240,7 @@ void Application::initaliserMoteurGraphique(Application* const app)
 	mgx::Mesh mesh;
 	mgx::Mesh::creer(&mesh, &app->moteurGX);
 	mgx::Mesh::chargerModel<Vertex>(&mesh, &app->moteurGX, 6, triangles);
+	*/
 	
 	/*Vertexbuffer::transfererDonnees(vbo, 0, 6 * sizeof(glm::vec2), triangles);
 

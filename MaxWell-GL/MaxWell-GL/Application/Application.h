@@ -13,7 +13,7 @@ struct Application {
 
 	static void initialiser(Application* const app, glm::uvec2 tailleFenetre);
 
-	static void executer(const Application& app);
+	static void executer(Application* const app);
 
 	static void fermer(Application* const app);
 

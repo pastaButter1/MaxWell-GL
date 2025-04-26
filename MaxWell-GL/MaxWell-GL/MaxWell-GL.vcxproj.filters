@@ -87,6 +87,9 @@
     <ClCompile Include="MoteurPhysique\MoteurPhysique\MoteurPhysique.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
+    <ClCompile Include="Moteur Graphique\Camera\Camera.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Moteur Graphique\Graphique.h">
@@ -149,6 +152,9 @@
     <ClInclude Include="MoteurPhysique\MoteurPhysique\MoteurPhysique.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
+    <ClInclude Include="Moteur Graphique\Camera\Camera.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Moteur Graphique\Deferred rendering\Composer fragment.glsl" />
@@ -171,5 +177,8 @@
     <None Include="Shader\ChampMagnetique.glsl" />
     <None Include="Shader\DessinerVecteurChamp.glsl" />
     <None Include="Shader\Coordonnees.glsl" />
+    <None Include="Shader\Vertex.glsl" />
+    <None Include="Shader\Geometry.glsl" />
+    <None Include="Shader\Fragment.glsl" />
   </ItemGroup>
 </Project>

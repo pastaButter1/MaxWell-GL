@@ -28,11 +28,11 @@ typedef GLint ValGX;
 
 enum class TypeShader : EnumGX
 {
-	VERTEX               = GL_VERTEX_SHADER,
-	FRAGMENT             = GL_FRAGMENT_SHADER,
-	GEOMETRIE            = GL_GEOMETRY_SHADER,
-	CALCUL               = GL_COMPUTE_SHADER,
-	EVAL_TESSELATION     = GL_TESS_EVALUATION_SHADER,
+	VERTEX = GL_VERTEX_SHADER,
+	FRAGMENT = GL_FRAGMENT_SHADER,
+	GEOMETRIE = GL_GEOMETRY_SHADER,
+	CALCUL = GL_COMPUTE_SHADER,
+	EVAL_TESSELATION = GL_TESS_EVALUATION_SHADER,
 	CONTROLE_TESSELATION = GL_TESS_CONTROL_SHADER
 };
 
@@ -41,12 +41,12 @@ namespace Donnee
 	enum class Type : EnumGX
 	{
 		VIRGULE = GL_FLOAT,
-		I8      = GL_BYTE,
-		U8      = GL_UNSIGNED_BYTE,
-		I16     = GL_SHORT,
-		U16     = GL_UNSIGNED_SHORT,
-		I32     = GL_INT,
-		U32     = GL_UNSIGNED_INT
+		I8 = GL_BYTE,
+		U8 = GL_UNSIGNED_BYTE,
+		I16 = GL_SHORT,
+		U16 = GL_UNSIGNED_SHORT,
+		I32 = GL_INT,
+		U32 = GL_UNSIGNED_INT
 	};
 
 	enum class Binaire : EnumGX
@@ -78,70 +78,70 @@ namespace Tex
 
 	enum class Canal : EnumGX
 	{
-		ROUGE                = GL_RED,
-		VERT                 = GL_GREEN,
-		BLEU                 = GL_BLUE,
-		ALPHA                = GL_ALPHA,
-		RV                   = GL_RG,
-		RVB                  = GL_RGB,
-		BVR                  = GL_BGR,
-		RVBA                 = GL_RGBA,
-		BVRA                 = GL_BGRA,
-		RED_ENTIER           = GL_RED_INTEGER,
-		RV_ENTIER            = GL_RG_INTEGER,
-		RVB_ENTIER           = GL_RGB_INTEGER,
-		BVR_ENTIER           = GL_BGR_INTEGER,
-		RVBA_ENTIER          = GL_RGBA_INTEGER,
-		BVRA_ENTIER          = GL_BGRA_INTEGER,
-		LUMINANCE            = GL_LUMINANCE,
-		LUMINANCE_ALPHA      = GL_LUMINANCE_ALPHA,
-		INDEX_STENCIL        = GL_STENCIL_INDEX,
+		ROUGE = GL_RED,
+		VERT = GL_GREEN,
+		BLEU = GL_BLUE,
+		ALPHA = GL_ALPHA,
+		RV = GL_RG,
+		RVB = GL_RGB,
+		BVR = GL_BGR,
+		RVBA = GL_RGBA,
+		BVRA = GL_BGRA,
+		RED_ENTIER = GL_RED_INTEGER,
+		RV_ENTIER = GL_RG_INTEGER,
+		RVB_ENTIER = GL_RGB_INTEGER,
+		BVR_ENTIER = GL_BGR_INTEGER,
+		RVBA_ENTIER = GL_RGBA_INTEGER,
+		BVRA_ENTIER = GL_BGRA_INTEGER,
+		LUMINANCE = GL_LUMINANCE,
+		LUMINANCE_ALPHA = GL_LUMINANCE_ALPHA,
+		INDEX_STENCIL = GL_STENCIL_INDEX,
 		COMPOSANT_PROFONDEUR = GL_DEPTH_COMPONENT,
-		PROFONDEUR_STENCIL   = GL_DEPTH_STENCIL
+		PROFONDEUR_STENCIL = GL_DEPTH_STENCIL
 	};
 
 	enum class Format : EnumGX
 	{
-		ROUGE                = (EnumGX)Canal::ROUGE,
-		RV                   = (EnumGX)Canal::RV,
-		RVB                  = (EnumGX)Canal::RVB,
-		BVR                  = (EnumGX)Canal::BVR,
-		RVBA                 = (EnumGX)Canal::RVBA,
-		BVRA                 = (EnumGX)Canal::BVRA,
-		ROUGE_ENTIER         = (EnumGX)Canal::RED_ENTIER,
-		RV_ENTIER            = (EnumGX)Canal::RV_ENTIER,
-		RVB_ENTIER           = (EnumGX)Canal::RVB_ENTIER,
-		BVR_ENTIER           = (EnumGX)Canal::BVR_ENTIER,
-		RVBA_ENTIER          = (EnumGX)Canal::RVBA_ENTIER,
-		BVRA_ENTIER          = (EnumGX)Canal::BVRA_ENTIER,
-		INDEX_STENCIL        = (EnumGX)Canal::INDEX_STENCIL,
+		ROUGE = (EnumGX)Canal::ROUGE,
+		RV = (EnumGX)Canal::RV,
+		RVB = (EnumGX)Canal::RVB,
+		BVR = (EnumGX)Canal::BVR,
+		RVBA = (EnumGX)Canal::RVBA,
+		BVRA = (EnumGX)Canal::BVRA,
+		ROUGE_ENTIER = (EnumGX)Canal::RED_ENTIER,
+		RV_ENTIER = (EnumGX)Canal::RV_ENTIER,
+		RVB_ENTIER = (EnumGX)Canal::RVB_ENTIER,
+		BVR_ENTIER = (EnumGX)Canal::BVR_ENTIER,
+		RVBA_ENTIER = (EnumGX)Canal::RVBA_ENTIER,
+		BVRA_ENTIER = (EnumGX)Canal::BVRA_ENTIER,
+		INDEX_STENCIL = (EnumGX)Canal::INDEX_STENCIL,
 		COMPOSANT_PROFONDEUR = (EnumGX)Canal::COMPOSANT_PROFONDEUR,
-		PROFONDEUR_STENCIL   = (EnumGX)Canal::PROFONDEUR_STENCIL
+		PROFONDEUR_STENCIL = (EnumGX)Canal::PROFONDEUR_STENCIL
 	};
 
 	enum class FormatInterne : EnumGX
 	{
-		ROUGE                = (EnumGX)Format::ROUGE,
-		RV                   = (EnumGX)Format::RV,
-		RVB                  = (EnumGX)Format::RVB,
-		RVBA                 = (EnumGX)Format::RVBA,
+		ROUGE = (EnumGX)Format::ROUGE,
+		RV = (EnumGX)Format::RV,
+		RVB = (EnumGX)Format::RVB,
+		RVBA = (EnumGX)Format::RVBA,
 		COMPOSANT_PROFONDEUR = (EnumGX)Format::COMPOSANT_PROFONDEUR,
-		PROFONDEUR_STENCIL   = GL_DEPTH24_STENCIL8,
-		RVBA32F              = GL_RGBA32F
+		PROFONDEUR_STENCIL = GL_DEPTH24_STENCIL8,
+		RVBA32F = GL_RGBA32F
 	};
 
-	enum class Filtre: EnumGX
+	enum class Filtre : EnumGX
 	{
-		PROCHE   = GL_NEAREST,
+		PROCHE = GL_NEAREST,
 		LINEAIRE = GL_LINEAR
 	};
 
 	enum class Emballage : EnumGX
 	{
-		REPETER         = GL_REPEAT,
-		MIROIR_REPETER  = GL_MIRRORED_REPEAT,
+		REPETER = GL_REPEAT,
+		MIROIR_REPETER = GL_MIRRORED_REPEAT,
 		LIMITER_BORDURE = GL_CLAMP_TO_BORDER,
-		LIMITER_BORD    = GL_CLAMP_TO_EDGE
+		LIMITER_BORD = GL_CLAMP_TO_EDGE
 	};
 }
 
@@ -160,14 +160,14 @@ namespace Operation
 {
 	enum class Profondeur : EnumGX
 	{
-		EGAL       = GL_EQUAL,
-		PAS_EGAL   = GL_NOTEQUAL,
+		EGAL = GL_EQUAL,
+		PAS_EGAL = GL_NOTEQUAL,
 		MOINS_EGAL = GL_LEQUAL,
-		PLUS_EGAL  = GL_GEQUAL,
+		PLUS_EGAL = GL_GEQUAL,
 		PLUS_PETIT = GL_LESS,
 		PLUS_GRAND = GL_GREATER,
-		JAMAIS     = GL_NEVER,
-		TOUJOURS   = GL_ALWAYS,
+		JAMAIS = GL_NEVER,
+		TOUJOURS = GL_ALWAYS,
 		DESACTIVER,
 		LECTURE
 	};
@@ -176,11 +176,11 @@ namespace Operation
 
 	enum class TestSP : EnumGX
 	{
-		GARDER          = GL_KEEP,
-		REMPLACER       = GL_REPLACE,
-		INCR            = GL_INCR,
-		DECR            = GL_DECR,
-		ZERO            = GL_ZERO,
+		GARDER = GL_KEEP,
+		REMPLACER = GL_REPLACE,
+		INCR = GL_INCR,
+		DECR = GL_DECR,
+		ZERO = GL_ZERO,
 		INCR_ENVELOPPER = GL_INCR_WRAP,
 		DECR_ENVELOPPER = GL_DECR_WRAP,
 		DESACTIVER
@@ -188,49 +188,49 @@ namespace Operation
 
 	enum class Dessin : EnumGX
 	{
-		TRIANGLES_PLEINS           = GL_TRIANGLES,
-		TRIANGLES_LIGNES           = GL_TRIANGLE_STRIP,
+		TRIANGLES_PLEINS = GL_TRIANGLES,
+		TRIANGLES_LIGNES = GL_TRIANGLE_STRIP,
 		TRIANGLES_PLEINS_ADJACENTS = GL_TRIANGLES_ADJACENCY,
 		TRIANGLES_LIGNES_ADJACENTS = GL_TRIANGLE_STRIP_ADJACENCY,
 	};
 
 	enum class Culling : EnumGX
 	{
-		AVANT         = GL_FRONT,
-		ARRIERE       = GL_BACK,
+		AVANT = GL_FRONT,
+		ARRIERE = GL_BACK,
 		AVANT_ARRIERE = GL_FRONT_AND_BACK,
 		DESACTIVER
 	};
 
 	enum class FuncMelange : EnumGX
 	{
-		UN                         = GL_ONE,
-		ZERO                       = GL_ZERO,
-		ALPHA                      = GL_ALPHA,
-		UN_MOINS_ALPHA_SRC         = GL_ONE_MINUS_SRC_ALPHA,
-		UN_MOINS_ALPHA_DST         = GL_ONE_MINUS_DST_ALPHA,
-		ALPHA_SRC                  = GL_SRC_ALPHA,
-		ALPHA_DST                  = GL_DST_ALPHA,
-		COULEUR_SRC                = GL_SRC_COLOR,
-		COULEUR_DST                = GL_DST_COLOR,
-		COULEUR_CONSTANTE          = GL_CONSTANT_COLOR,
+		UN = GL_ONE,
+		ZERO = GL_ZERO,
+		ALPHA = GL_ALPHA,
+		UN_MOINS_ALPHA_SRC = GL_ONE_MINUS_SRC_ALPHA,
+		UN_MOINS_ALPHA_DST = GL_ONE_MINUS_DST_ALPHA,
+		ALPHA_SRC = GL_SRC_ALPHA,
+		ALPHA_DST = GL_DST_ALPHA,
+		COULEUR_SRC = GL_SRC_COLOR,
+		COULEUR_DST = GL_DST_COLOR,
+		COULEUR_CONSTANTE = GL_CONSTANT_COLOR,
 		UN_MOINS_COULEUR_CONSTANTE = GL_ONE_MINUS_CONSTANT_COLOR,
-		ALPHA_CONSTANT             = GL_CONSTANT_ALPHA,
-		UN_MOINS_ALPHA_CONSTANT    = GL_ONE_MINUS_CONSTANT_ALPHA,
-		ALPHA_SRC_SATURE           = GL_SRC_ALPHA_SATURATE,
-		COULEUR_SRC1               = GL_SRC1_COLOR,
-		UN_MOINS_COULEUR_SRC1      = GL_ONE_MINUS_SRC1_COLOR,
-		ALPHA_SRC1                 = GL_SRC1_ALPHA,
-		UN_MOINS_ALPHA_SRC1        = GL_ONE_MINUS_SRC1_ALPHA
+		ALPHA_CONSTANT = GL_CONSTANT_ALPHA,
+		UN_MOINS_ALPHA_CONSTANT = GL_ONE_MINUS_CONSTANT_ALPHA,
+		ALPHA_SRC_SATURE = GL_SRC_ALPHA_SATURATE,
+		COULEUR_SRC1 = GL_SRC1_COLOR,
+		UN_MOINS_COULEUR_SRC1 = GL_ONE_MINUS_SRC1_COLOR,
+		ALPHA_SRC1 = GL_SRC1_ALPHA,
+		UN_MOINS_ALPHA_SRC1 = GL_ONE_MINUS_SRC1_ALPHA
 	};
 
 	enum class Melange : EnumGX
 	{
-		ADDITION             = GL_FUNC_ADD,
-		SOUSTRACTION         = GL_FUNC_SUBTRACT,
+		ADDITION = GL_FUNC_ADD,
+		SOUSTRACTION = GL_FUNC_SUBTRACT,
 		SOUSTRACTION_INVERSE = GL_FUNC_REVERSE_SUBTRACT,
-		MINIMUM              = GL_MIN,
-		MAXIMUM              = GL_MAX,
+		MINIMUM = GL_MIN,
+		MAXIMUM = GL_MAX,
 		DESACTIVER
 	};
 

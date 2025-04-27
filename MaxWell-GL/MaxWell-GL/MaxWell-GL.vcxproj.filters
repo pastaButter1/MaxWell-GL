@@ -1,164 +1,63 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Fichiers sources">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Fichiers d%27en-tête">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Fichiers de ressources">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
+    <ClCompile Include="Application\Application.cpp" />
+    <ClCompile Include="Application\Fenetre\Fenetre.cpp" />
+    <ClCompile Include="Application\Souris\Souris.cpp" />
+    <ClCompile Include="Application\Utilitaire.cpp" />
+    <ClCompile Include="Lib\IMGUI\IMGUI\imgui.cpp" />
+    <ClCompile Include="Lib\IMGUI\IMGUI\imgui_demo.cpp" />
+    <ClCompile Include="Lib\IMGUI\IMGUI\imgui_draw.cpp" />
+    <ClCompile Include="Lib\IMGUI\IMGUI\imgui_impl_glfw.cpp" />
+    <ClCompile Include="Lib\IMGUI\IMGUI\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="Lib\IMGUI\IMGUI\imgui_tables.cpp" />
+    <ClCompile Include="Lib\IMGUI\IMGUI\imgui_widgets.cpp" />
+    <ClCompile Include="Lib\STBImage\stb_image.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Moteur Graphique\Camera\Camera.cpp" />
+    <ClCompile Include="Moteur Graphique\Cubemap\Cubemap.cpp" />
+    <ClCompile Include="Moteur Graphique\Framebuffer\Framebuffer.cpp" />
+    <ClCompile Include="Moteur Graphique\Indexbuffer\Indexbuffer.cpp" />
+    <ClCompile Include="Moteur Graphique\Model\DecoderFichier.cpp" />
+    <ClCompile Include="Moteur Graphique\MoteurGx\Mesh.cpp" />
+    <ClCompile Include="Moteur Graphique\MoteurGx\MoteurGX.cpp" />
+    <ClCompile Include="Moteur Graphique\Shader\Shader.cpp" />
+    <ClCompile Include="Moteur Graphique\Texture\Texture.cpp" />
+    <ClCompile Include="Moteur Graphique\Vertexarray\Vertexarray.cpp" />
+    <ClCompile Include="Moteur Graphique\Vertexbuffer\Vertexbuffer.cpp" />
+    <ClCompile Include="MoteurPhysique\Espace\Espace.cpp" />
+    <ClCompile Include="MoteurPhysique\MoteurPhysique\MoteurPhysique.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Moteur Graphique\Cubemap\Cubemap.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Moteur Graphique\Framebuffer\Framebuffer.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Moteur Graphique\Indexbuffer\Indexbuffer.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Moteur Graphique\Model\DecoderFichier.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Moteur Graphique\Shader\Shader.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Moteur Graphique\Texture\Texture.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Moteur Graphique\Vertexarray\Vertexarray.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Moteur Graphique\Vertexbuffer\Vertexbuffer.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\Application.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\Utilitaire.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Lib\IMGUI\IMGUI\imgui.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Lib\IMGUI\IMGUI\imgui_demo.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Lib\IMGUI\IMGUI\imgui_draw.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Lib\IMGUI\IMGUI\imgui_impl_glfw.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Lib\IMGUI\IMGUI\imgui_impl_opengl3.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Lib\IMGUI\IMGUI\imgui_tables.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Lib\IMGUI\IMGUI\imgui_widgets.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Moteur Graphique\MoteurGx\MoteurGX.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\Fenetre\Fenetre.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\Souris\Souris.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Moteur Graphique\MoteurGx\Mesh.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Lib\STBImage\stb_image.cpp">
-    <ClCompile Include="MoteurPhysique\Espace\Espace.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="MoteurPhysique\MoteurPhysique\MoteurPhysique.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Moteur Graphique\Camera\Camera.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
+    <ClInclude Include="Application\Application.h" />
+    <ClInclude Include="Application\Fenetre\Fenetre.h" />
+    <ClInclude Include="Application\Souris\Souris.h" />
+    <ClInclude Include="Application\Utilitaire.h" />
+    <ClInclude Include="Lib\STBImage\stb_image.h" />
+    <ClInclude Include="Moteur Graphique\Camera\Camera.h" />
+    <ClInclude Include="Moteur Graphique\Graphique.h" />
+    <ClInclude Include="Moteur Graphique\Cubemap\Cubemap.h" />
+    <ClInclude Include="Moteur Graphique\Framebuffer\Framebuffer.h" />
+    <ClInclude Include="Moteur Graphique\Indexbuffer\Indexbuffer.h" />
+    <ClInclude Include="Moteur Graphique\Model\DecoderFichier.h" />
+    <ClInclude Include="Moteur Graphique\Model\Model.h" />
+    <ClInclude Include="Moteur Graphique\MoteurGx\Mesh.h" />
+    <ClInclude Include="Moteur Graphique\MoteurGx\MoteurGX.h" />
+    <ClInclude Include="Moteur Graphique\MoteurGx\ListeIndexUnique.h" />
+    <ClInclude Include="Moteur Graphique\MoteurGx\MoteurGXDef.h" />
+    <ClInclude Include="Moteur Graphique\Shader\Shader.h" />
+    <ClInclude Include="Moteur Graphique\Texture\Texture.h" />
+    <ClInclude Include="Moteur Graphique\Vertexarray\Vertexarray.h" />
+    <ClInclude Include="Moteur Graphique\Vertexbuffer\Vertexbuffer.h" />
+    <ClInclude Include="MoteurPhysique\Espace\Espace.h" />
+    <ClInclude Include="MoteurPhysique\MoteurPhysique\MoteurPhysique.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Moteur Graphique\Graphique.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="Moteur Graphique\Cubemap\Cubemap.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="Moteur Graphique\Framebuffer\Framebuffer.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="Moteur Graphique\Indexbuffer\Indexbuffer.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="Moteur Graphique\Model\DecoderFichier.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="Moteur Graphique\Model\Model.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="Moteur Graphique\Shader\Shader.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="Moteur Graphique\Texture\Texture.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="Moteur Graphique\Vertexarray\Vertexarray.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="Moteur Graphique\Vertexbuffer\Vertexbuffer.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\Application.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\Utilitaire.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="Moteur Graphique\MoteurGx\MoteurGX.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="Moteur Graphique\MoteurGx\ListeIndexUnique.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="Moteur Graphique\MoteurGx\MoteurGXDef.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\Fenetre\Fenetre.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\Souris\Souris.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="Moteur Graphique\MoteurGx\Mesh.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="Lib\STBImage\stb_image.h">
-    <ClInclude Include="MoteurPhysique\Espace\Espace.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="MoteurPhysique\MoteurPhysique\MoteurPhysique.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="Moteur Graphique\Camera\Camera.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
+    <None Include="Shaders\PrefiltrageZ\fragment.glsl" />
+    <None Include="Shaders\PrefiltrageZ\vertex.glsl" />
+    <None Include="Shaders\Simple\fragmentPlan.glsl" />
+    <None Include="Shaders\Skybox\fragment.glsl" />
+    <None Include="Shaders\Simple\geometrie.glsl" />
     <None Include="Moteur Graphique\Deferred rendering\Composer fragment.glsl" />
     <None Include="Moteur Graphique\Deferred rendering\Composer vertex.glsl" />
     <None Include="Moteur Graphique\Deferred rendering\Deferred fragment.glsl" />
@@ -166,27 +65,24 @@
     <None Include="Moteur Graphique\Deferred rendering\Deferred vertex.glsl" />
     <None Include="Moteur Graphique\Deferred rendering\Skybox fragment.glsl" />
     <None Include="Moteur Graphique\Deferred rendering\Skybox vertex.glsl" />
-    <None Include="Shaders\Calcul onde\Calcul onde.glsl" />
     <None Include="Shaders\Calcul onde\Calcul gradient onde.glsl" />
     <None Include="Shaders\Calcul onde\Calcul gradient2 onde.glsl" />
-    <None Include="Shaders\Tesselation surface\Surface tessControle.glsl" />
-    <None Include="Shaders\Tesselation surface\Surface fragment.glsl" />
-    <None Include="Shaders\Tesselation surface\Surface tessEval.glsl" />
-    <None Include="Shaders\Tesselation surface\Surface geometrie.glsl" />
-    <None Include="Shaders\Simple\vertex.glsl" />
+    <None Include="Shaders\Calcul onde\Calcul onde.glsl" />
     <None Include="Shaders\Simple\fragment.glsl" />
-    <None Include="Shaders\Simple\geometrie.glsl" />
-    <None Include="Shaders\Simple\fragmentPlan.glsl" />
-    <None Include="Shaders\Skybox\fragment.glsl" />
+    <None Include="Shaders\Simple\vertex.glsl" />
     <None Include="Shaders\Skybox\vertex.glsl" />
-    <None Include="Shaders\PrefiltrageZ\fragment.glsl" />
-    <None Include="Shaders\PrefiltrageZ\vertex.glsl" />
-    <None Include="imgui.ini" />
+    <None Include="Shaders\Tesselation surface\Surface fragment.glsl" />
+    <None Include="Shaders\Tesselation surface\Surface geometrie.glsl" />
+    <None Include="Shaders\Tesselation surface\Surface tessControle.glsl" />
+    <None Include="Shaders\Tesselation surface\Surface tessEval.glsl" />
     <None Include="Shader\ChampMagnetique.glsl" />
     <None Include="Shader\DessinerVecteurChamp.glsl" />
     <None Include="Shader\Coordonnees.glsl" />
-    <None Include="Shader\Vertex.glsl" />
-    <None Include="Shader\Geometry.glsl" />
     <None Include="Shader\Fragment.glsl" />
+    <None Include="Shader\Geometry.glsl" />
+    <None Include="Shader\Vertex.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="Mesh\Cube.obj" />
   </ItemGroup>
 </Project>

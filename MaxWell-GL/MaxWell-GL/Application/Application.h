@@ -50,11 +50,15 @@ struct Application {
 	static void fermer(Application* const app);
 
 private:
-	static void initaliserMoteurGraphique(Application* const app);
+	static void initialiserMoteurGraphique(Application* const app);
+
+	static void initialiserSimulation(Application* const app);
 
 	static void initialiserInterfaceUtilisateur(Application* const app);
 
 	static void executerEntrees(Application* const app, const float dt);
 
 	static void executerRendu(Application* const app);
+
+	static void executerSimulation(Application* const app);
 };

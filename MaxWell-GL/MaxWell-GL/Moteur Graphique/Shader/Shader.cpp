@@ -13,9 +13,9 @@ void Shader::detruire(const Shader shader)
 	APPEL_GX(glDeleteShader(shader.id));
 }
 
-void Shader::loadSubShader(const Shader& shader, const std::string& fileData, uint32_t type)
+void Shader::loadSubShader(const Shader& shader, const std::string& fileData, TypeShader type)
 {
-	APPEL_GX(uint32_t id = glCreateShader(type));
+	APPEL_GX(uint32_t id = glCreateShader((EnumGX)type));
 
 	const char* donnee = fileData.c_str();
 

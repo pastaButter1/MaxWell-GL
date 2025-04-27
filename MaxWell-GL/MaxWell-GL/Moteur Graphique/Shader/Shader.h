@@ -14,7 +14,7 @@ struct Shader
 
 	static void detruire(const Shader shader);
 
-	static void loadSubShader(const Shader& shader, const std::string& fileData, uint32_t type);
+	static void loadSubShader(const Shader& shader, const std::string& fileData, TypeShader type);
 
 	static void assembler(const Shader& shader);
 

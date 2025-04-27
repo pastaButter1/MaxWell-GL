@@ -16,9 +16,12 @@
 #include "Moteur Graphique/Vertexbuffer/Vertexbuffer.h"
 #include "Moteur Graphique/MoteurGx/Mesh.h"
 #include "Moteur Graphique/MoteurGx/MoteurGX.h"
+#include "Moteur Graphique/Camera/Camera.h"
 
 #include "Lib/GLM/glm/matrix.hpp"
 #include "Lib/GLM/glm/gtc/matrix_transform.hpp"
+
+#include "MoteurPhysique/MoteurPhysique/MoteurPhysique.h"
 
 using Ressource = MoteurGX::Ressource;
 
@@ -30,7 +33,7 @@ void Application::initialiser(Application* const app, glm::uvec2 tailleFenetre)
 
 	initialiserInterfaceUtilisateur(app);
 
-	initaliserMoteurGraphique(app);
+	initialiserMoteurGraphique(app);
 }
 
 void Application::executer(Application* const app)
@@ -118,8 +121,8 @@ void Application::executer(Application* const app)
 		executerRendu(app);
 		//MoteurGX::copierRenduBackbuffer(app->moteurGX, glm::uvec2(800, 600));
 
-		APPEL_GX(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-		
+		Framebuffer::delier();
+
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -240,7 +243,7 @@ void genererSolenoide(Model* const model, const uint32_t nbTriangles, const floa
 	delete[] normales;
 }
 
-void Application::initaliserMoteurGraphique(Application* const app)
+void Application::initialiserMoteurGraphique(Application* const app)
 {
 	MoteurGX::init(&app->moteurGX);
 
@@ -261,15 +264,15 @@ void Application::initaliserMoteurGraphique(Application* const app)
 			std::string shaderRaw;
 
 			chargerFichier("C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Shaders\\Simple\\vertex.glsl", &shaderRaw);
-			Shader::loadSubShader(shader, shaderRaw, (EnumGX)TypeShader::VERTEX);
+			Shader::loadSubShader(shader, shaderRaw, TypeShader::VERTEX);
 
 			shaderRaw.clear();
 			chargerFichier("C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Shaders\\Simple\\geometrie.glsl", &shaderRaw);
-			Shader::loadSubShader(shader, shaderRaw, (EnumGX)TypeShader::GEOMETRIE);
+			Shader::loadSubShader(shader, shaderRaw, TypeShader::GEOMETRIE);
 
 			shaderRaw.clear();
 			chargerFichier("C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Shaders\\Simple\\fragment.glsl", &shaderRaw);
-			Shader::loadSubShader(shader, shaderRaw, (EnumGX)TypeShader::FRAGMENT);
+			Shader::loadSubShader(shader, shaderRaw, TypeShader::FRAGMENT);
 		}
 		Shader::assembler(shader);
 		Shader::delier();
@@ -293,11 +296,11 @@ void Application::initaliserMoteurGraphique(Application* const app)
 			std::string shaderRaw;
 
 			chargerFichier("C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Shaders\\PrefiltrageZ\\vertex.glsl", &shaderRaw);
-			Shader::loadSubShader(shader, shaderRaw, (EnumGX)TypeShader::VERTEX);
+			Shader::loadSubShader(shader, shaderRaw, TypeShader::VERTEX);
 
 			shaderRaw.clear();
 			chargerFichier("C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Shaders\\PrefiltrageZ\\fragment.glsl", &shaderRaw);
-			Shader::loadSubShader(shader, shaderRaw, (EnumGX)TypeShader::FRAGMENT);
+			Shader::loadSubShader(shader, shaderRaw, TypeShader::FRAGMENT);
 		}
 		Shader::assembler(shader);
 		Shader::delier();
@@ -319,15 +322,15 @@ void Application::initaliserMoteurGraphique(Application* const app)
 			std::string shaderRaw;
 
 			chargerFichier("C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Shaders\\Simple\\vertex.glsl", &shaderRaw);
-			Shader::loadSubShader(shaderPlan, shaderRaw, (EnumGX)TypeShader::VERTEX);
+			Shader::loadSubShader(shaderPlan, shaderRaw, TypeShader::VERTEX);
 
 			shaderRaw.clear();
 			chargerFichier("C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Shaders\\Simple\\geometrie.glsl", &shaderRaw);
-			Shader::loadSubShader(shaderPlan, shaderRaw, (EnumGX)TypeShader::GEOMETRIE);
+			Shader::loadSubShader(shaderPlan, shaderRaw, TypeShader::GEOMETRIE);
 
 			shaderRaw.clear();
 			chargerFichier("C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Shaders\\Simple\\fragmentPlan.glsl", &shaderRaw);
-			Shader::loadSubShader(shaderPlan, shaderRaw, (EnumGX)TypeShader::FRAGMENT);
+			Shader::loadSubShader(shaderPlan, shaderRaw, TypeShader::FRAGMENT);
 		}
 		Shader::assembler(shaderPlan);
 		Shader::delier();
@@ -398,11 +401,11 @@ void Application::initaliserMoteurGraphique(Application* const app)
 			std::string shaderRaw;
 
 			chargerFichier("C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Shaders\\Skybox\\vertex.glsl", &shaderRaw);
-			Shader::loadSubShader(shader, shaderRaw, (EnumGX)TypeShader::VERTEX);
+			Shader::loadSubShader(shader, shaderRaw, TypeShader::VERTEX);
 
 			shaderRaw.clear();
 			chargerFichier("C:\\Users\\Alexandre\\Desktop\\OpenGLRoot\\MaxWell-GL\\MaxWell-GL\\MaxWell-GL\\Shaders\\Skybox\\fragment.glsl", &shaderRaw);
-			Shader::loadSubShader(shader, shaderRaw, (EnumGX)TypeShader::FRAGMENT);
+			Shader::loadSubShader(shader, shaderRaw, TypeShader::FRAGMENT);
 		}
 		Shader::assembler(shader);
 		Shader::delier();
@@ -507,6 +510,40 @@ glm::vec3 orientation(float yaw, float pitch) {
 	float pitchR = glm::radians(pitch);
 
 	return glm::vec3(sin(yawR) * cos(pitchR), sin(pitchR), cos(yawR) * cos(pitchR));
+}
+
+void Application::initialiserSimulation(Application* const app)
+{
+	Ressource shaderIU, pipelineIU, vaoIU;
+	Shader& shader = MoteurGX::creerShader(&app->moteurGX, &shaderIU);
+	mgx::Pipeline& pipeline = MoteurGX::creerPipeline(&app->moteurGX, &pipelineIU);
+	mgx::Pipeline::renduStandard(&pipeline, true);
+	pipeline.fbo = 0;
+	pipeline.shader = shaderIU;
+	pipeline.tailleFenetre = glm::uvec2(app->fenetre.dimension.x, app->fenetre.dimension.y);
+
+	{
+		std::string shaderRaw;
+
+		chargerFichier("Shader/Vertex.glsl", &shaderRaw);
+		Shader::loadSubShader(shader, shaderRaw, TypeShader::VERTEX);
+		shaderRaw.clear();
+
+		chargerFichier("Shader/Geometry.glsl", &shaderRaw);
+		Shader::loadSubShader(shader, shaderRaw, TypeShader::GEOMETRIE);
+		shaderRaw.clear();
+
+		chargerFichier("Shader/Fragment.glsl", &shaderRaw);
+		Shader::loadSubShader(shader, shaderRaw, TypeShader::FRAGMENT);
+	}
+
+	Shader::assembler(shader);
+	Shader::delier();
+
+	MoteurGX::Ressource ressource;
+
+	Vertexarray& vao = MoteurGX::creerVertexarray(&app->moteurGX, &ressource);
+	vao.nbTriangles = 1;
 }
 
 void Application::executerEntrees(Application* const app, const float dt)
@@ -616,4 +653,76 @@ void Application::executerRendu(Application* const app)
 	MoteurGX::executerCouche(app->moteurGX, 1);
 
 	//MoteurGX::copierRenduBackbuffer(app->moteurGX, glm::uvec2(800, 600));
+}
+
+void Application::executerSimulation(Application* const app)
+{
+	auto tAvant = std::chrono::high_resolution_clock::now();
+
+	MoteurPhysique moteurPhysique;
+	Espace::GPU::initialiser(&moteurPhysique.coordonnees, glm::ivec3(100, 100, 100));
+	Espace::GPU::initialiser(&moteurPhysique.champMagnetique, glm::ivec3(100, 100, 100));
+
+	MoteurPhysique::Info info;
+	info.fils.push_back(MoteurPhysique::Fil::creer(glm::vec3(0, 0, 1), glm::vec3(-1.0f, -1.0f, 0.0f), -3.0f));
+	info.fils.push_back(MoteurPhysique::Fil::creer(glm::vec3(0, 0, 1), glm::vec3(1.0f, 1.0f, 0.0f), 1.0f));
+	info.fils.push_back(MoteurPhysique::Fil::creer(glm::vec3(0, 0, -1), glm::vec3(0.0f, 1.5f, 0.0f), 1.0f));
+
+	MoteurPhysique::GPU::genererBufferInfo(&info);
+	MoteurPhysique::GPU::soumettreBufferInfo(info);
+
+	MoteurPhysique::GPU::chargerShaders(&moteurPhysique, "Shader/");
+	MoteurPhysique::GPU::assignerCoordonnees(moteurPhysique, glm::vec3(-2), glm::vec3(2));
+
+	Texture gradient;
+	{
+		unsigned int contenu_gradient[] = { 0x00ff0002, 0x00fd7405, 0x00fbe701, 0x00dfff01, 0x004efd03, 0x0008fe49, 0x0003fde4, 0x0000e3ff, 0x000071fe, 0x000b00ff };
+		Texture::generer(&gradient);
+		Texture::specifierEtirement(gradient, Tex::Emballage::LIMITER_BORD, Tex::Emballage::LIMITER_BORD, Tex::Emballage::LIMITER_BORD);
+		Texture::specifierFiltre(gradient, Tex::Filtre::LINEAIRE, Tex::Filtre::LINEAIRE);
+		Texture::allouer1D(&gradient, 0, glm::ivec1(10), Tex::FormatInterne::RVBA, Tex::Format::RVBA, Donnee::Type::U8, contenu_gradient);
+	}
+
+	Camera camera = {};
+
+	GLuint vba;
+	Ressource vaoIU, vboIU;
+	APPEL_GX(glGenVertexArrays(1, &vba));
+	Vertexarray& vao = MoteurGX::creerVertexarray(&app->moteurGX, &vaoIU);
+	Vertexarray::lier(vao);
+	Vertexbuffer& vbo = MoteurGX::creerVertexbuffer(&app->moteurGX, &vboIU);
+	Vertexbuffer::allocation(&vbo, 10);
+	Vertexarray::ajouterAttribut(vao, vbo, 0, 1, Donnee::Type::VIRGULE, false, 1, 0);
+
+	while (!glfwWindowShouldClose(app->fenetre.window))
+	{
+		auto tMaintenant = std::chrono::high_resolution_clock::now();
+		const float dt = (tMaintenant - tAvant).count() / 1000000000.0f;
+		tAvant = tMaintenant;
+
+		MoteurPhysique::GPU::executerCalcul(moteurPhysique.shaderChampMagnetique, moteurPhysique.coordonnees, moteurPhysique.champMagnetique, info);
+
+		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		APPEL_GX(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+		Shader& shader = MoteurGX::retShader(app->moteurGX, MoteurGX::retPipeline(app->moteurGX, 0).shader);
+		APPEL_GX(glUseProgram(shader.id));
+		APPEL_GX(glBindVertexArray(vba));
+
+		Camera::input(&camera, &app->fenetre, dt);
+		Camera::transformer(&camera);
+		glm::ivec2 nombreFleches = glm::ivec2(50);
+		Shader::pousserConstanteIVec2(shader, "dimension", nombreFleches);
+		Shader::pousserConstanteMat4(shader, "transformation", camera.plan);
+		Shader::pousserTexture(shader, "carte", moteurPhysique.champMagnetique.tex, 0);
+		Shader::pousserTexture(shader, "gradient", gradient, 1);
+
+		APPEL_GX(glDrawArrays(GL_POINTS, 0, nombreFleches.x * nombreFleches.y));
+
+		//Application::executerSimulation(app, dt);
+
+		glfwSwapBuffers(app->fenetre.window);
+		glfwPollEvents();
+	}
 }

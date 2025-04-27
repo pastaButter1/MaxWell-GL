@@ -11,13 +11,13 @@ void MoteurPhysique::GPU::chargerShaders(MoteurPhysique* const moteurPhysique, c
 	chargerFichier(cheminDossier + "Coordonnees.glsl", &contenu);
 
 	Shader::generer(&moteurPhysique->shaderCoordonnees);
-	Shader::loadSubShader(moteurPhysique->shaderCoordonnees, contenu, GL_COMPUTE_SHADER);
+	Shader::loadSubShader(moteurPhysique->shaderCoordonnees, contenu, TypeShader::CALCUL);
 	Shader::assembler(moteurPhysique->shaderCoordonnees);
 	
 	chargerFichier(cheminDossier + "ChampMagnetique.glsl", &contenu);
 
 	Shader::generer(&moteurPhysique->shaderChampMagnetique);
-	Shader::loadSubShader(moteurPhysique->shaderChampMagnetique, contenu, GL_COMPUTE_SHADER);
+	Shader::loadSubShader(moteurPhysique->shaderChampMagnetique, contenu, TypeShader::CALCUL);
 	Shader::assembler(moteurPhysique->shaderChampMagnetique);
 }
 

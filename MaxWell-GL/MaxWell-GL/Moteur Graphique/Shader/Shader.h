@@ -14,7 +14,7 @@ struct Shader
 
 	static void detruire(const Shader shader);
 
-	static void loadSubShader(const Shader& shader, const std::string& fileData, uint32_t type);
+	static void loadSubShader(const Shader& shader, const std::string& fileData, TypeShader type);
 
 	static void assembler(const Shader& shader);
 
@@ -32,8 +32,10 @@ struct Shader
 
 	static void pousserConstanteUVec2(const Shader& shader, const std::string& name, glm::uvec2 v);
 
+	static void pousserConstanteIVec2(const Shader& shader, const std::string& name, glm::ivec2 v);
+
 	static void pousserConstanteVirgule(const Shader& shader, const std::string& name, float f);
 
-	static void pousserTexture(const Shader& shader, const std::string& name, const uint32_t texSlot);
+	static void pousserTexture(const Shader& shader, const std::string& name, const Texture& tex, GLuint unite);
 };
 

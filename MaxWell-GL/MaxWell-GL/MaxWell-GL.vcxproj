@@ -145,7 +145,9 @@
     <ClCompile Include="Lib\IMGUI\IMGUI\imgui_impl_opengl3.cpp" />
     <ClCompile Include="Lib\IMGUI\IMGUI\imgui_tables.cpp" />
     <ClCompile Include="Lib\IMGUI\IMGUI\imgui_widgets.cpp" />
+    <ClCompile Include="Lib\STBImage\stb_image.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Moteur Graphique\Camera\Camera.cpp" />
     <ClCompile Include="Moteur Graphique\Cubemap\Cubemap.cpp" />
     <ClCompile Include="Moteur Graphique\Framebuffer\Framebuffer.cpp" />
     <ClCompile Include="Moteur Graphique\Indexbuffer\Indexbuffer.cpp" />
@@ -156,12 +158,16 @@
     <ClCompile Include="Moteur Graphique\Texture\Texture.cpp" />
     <ClCompile Include="Moteur Graphique\Vertexarray\Vertexarray.cpp" />
     <ClCompile Include="Moteur Graphique\Vertexbuffer\Vertexbuffer.cpp" />
+    <ClCompile Include="MoteurPhysique\Espace\Espace.cpp" />
+    <ClCompile Include="MoteurPhysique\MoteurPhysique\MoteurPhysique.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Application.h" />
     <ClInclude Include="Application\Fenetre\Fenetre.h" />
     <ClInclude Include="Application\Souris\Souris.h" />
     <ClInclude Include="Application\Utilitaire.h" />
+    <ClInclude Include="Lib\STBImage\stb_image.h" />
+    <ClInclude Include="Moteur Graphique\Camera\Camera.h" />
     <ClInclude Include="Moteur Graphique\Graphique.h" />
     <ClInclude Include="Moteur Graphique\Cubemap\Cubemap.h" />
     <ClInclude Include="Moteur Graphique\Framebuffer\Framebuffer.h" />
@@ -176,9 +182,15 @@
     <ClInclude Include="Moteur Graphique\Texture\Texture.h" />
     <ClInclude Include="Moteur Graphique\Vertexarray\Vertexarray.h" />
     <ClInclude Include="Moteur Graphique\Vertexbuffer\Vertexbuffer.h" />
+    <ClInclude Include="MoteurPhysique\Espace\Espace.h" />
+    <ClInclude Include="MoteurPhysique\MoteurPhysique\MoteurPhysique.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="imgui.ini" />
+    <None Include="Shaders\PrefiltrageZ\fragment.glsl" />
+    <None Include="Shaders\PrefiltrageZ\vertex.glsl" />
+    <None Include="Shaders\Simple\fragmentPlan.glsl" />
+    <None Include="Shaders\Skybox\fragment.glsl" />
+    <None Include="Shaders\Simple\geometrie.glsl" />
     <None Include="Moteur Graphique\Deferred rendering\Composer fragment.glsl" />
     <None Include="Moteur Graphique\Deferred rendering\Composer vertex.glsl" />
     <None Include="Moteur Graphique\Deferred rendering\Deferred fragment.glsl" />
@@ -191,6 +203,7 @@
     <None Include="Shaders\Calcul onde\Calcul onde.glsl" />
     <None Include="Shaders\Simple\fragment.glsl" />
     <None Include="Shaders\Simple\vertex.glsl" />
+    <None Include="Shaders\Skybox\vertex.glsl" />
     <None Include="Shaders\Tesselation surface\Surface fragment.glsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -201,8 +214,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </None>
     <None Include="Shaders\Tesselation surface\Surface tessEval.glsl" />
-    <None Include="Shader\CalculerChamp.glsl" />
+    <None Include="Shader\ChampMagnetique.glsl" />
     <None Include="Shader\DessinerVecteurChamp.glsl" />
+    <None Include="Shader\Coordonnees.glsl" />
+    <None Include="Shader\Fragment.glsl" />
+    <None Include="Shader\Geometry.glsl" />
+    <None Include="Shader\Vertex.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

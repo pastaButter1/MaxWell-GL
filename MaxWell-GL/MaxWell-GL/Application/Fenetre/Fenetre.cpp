@@ -16,6 +16,7 @@ int Fenetre::init(Fenetre* fenetre, glm::ivec2 dimension)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 
 	// Création de la fenêtre avec GLFW
 
@@ -52,6 +53,7 @@ int Fenetre::init(Fenetre* fenetre, glm::ivec2 dimension)
 	afficherLog("OPENGL version : %s", glGetString(GL_VERSION));
 	afficherLog("OPENGL Supported glsl version : %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
+	fenetre->souris = {};
 	glfwSetWindowUserPointer(fenetre->window, (void*)fenetre);
 	
 	glfwSetMouseButtonCallback(fenetre->window, Souris::callbackBouton);

@@ -1,6 +1,7 @@
 #include <string>
 
 #include "Shader.h"
+#include "Moteur Graphique/Texture/Texture.h"
 
 void Shader::generer(Shader* const shader)
 {
@@ -12,9 +13,9 @@ void Shader::detruire(const Shader shader)
 	APPEL_GX(glDeleteShader(shader.id));
 }
 
-void Shader::loadSubShader(const Shader& shader, const std::string& fileData, uint32_t type)
+void Shader::loadSubShader(const Shader& shader, const std::string& fileData, TypeShader type)
 {
-	APPEL_GX(uint32_t id = glCreateShader(type));
+	APPEL_GX(uint32_t id = glCreateShader((EnumGX)type));
 
 	const char* donnee = fileData.c_str();
 
@@ -39,7 +40,7 @@ void Shader::loadSubShader(const Shader& shader, const std::string& fileData, ui
 	}
 
 	APPEL_GX(glAttachShader(shader.id, id));
-	glDeleteShader(id);
+	APPEL_GX(glDeleteShader(id));
 }
 
 void Shader::assembler(const Shader& shader)
@@ -98,14 +99,22 @@ void Shader::pousserConstanteUVec2(const Shader& shader, const std::string& name
 	APPEL_GX(glUniform2ui(loc, v.x, v.y));
 }
 
+void Shader::pousserConstanteIVec2(const Shader& shader, const std::string& name, glm::ivec2 v)
+{
+	uint32_t loc = APPEL_GX(glGetUniformLocation(shader.id, name.c_str()));
+	APPEL_GX(glUniform2i(loc, v.x, v.y));
+}
+
 void Shader::pousserConstanteVirgule(const Shader& shader, const std::string& name, float f)
 {
 	uint32_t loc = APPEL_GX(glGetUniformLocation(shader.id, name.c_str()));
 	APPEL_GX(glUniform1f(loc, f))
 }
 
-void Shader::pousserTexture(const Shader& shader, const std::string& name, const uint32_t texSlot)
+void Shader::pousserTexture(const Shader& shader, const std::string& name, const Texture& tex, GLuint unite)
 {
+	APPEL_GX(glActiveTexture(GL_TEXTURE0 + unite));
+	APPEL_GX(glBindTextureUnit(unite, tex.id));
 	uint32_t loc = APPEL_GX(glGetUniformLocation(shader.id, name.c_str()));
-	APPEL_GX(glUniform1i(loc, texSlot));
+	APPEL_GX(glUniform1i(loc, unite));
 }

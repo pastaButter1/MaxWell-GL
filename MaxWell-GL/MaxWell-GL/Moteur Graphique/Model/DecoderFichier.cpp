@@ -1,11 +1,12 @@
 #include "Moteur Graphique/Model/DecoderFichier.h"
 
+#include "Application/Utilitaire.h"
 #include "Model.h"
 
 #include <stdio.h>
 #include <vector>
 
-void decoderSTL(const char* addresse, Model& model)
+void decoderSTL(const char* addresse, Model* const model)
 {
 	std::string tampon;
 	chargerFichier(addresse, &tampon);
@@ -14,15 +15,15 @@ void decoderSTL(const char* addresse, Model& model)
 
 	ptr += 80;
 
-	model.nbTriangle = *(uint32_t*)ptr;
+	model->nbTriangle = *(uint32_t*)ptr;
 
-	model.triangles = new Triangle[model.nbTriangle];
+	model->triangles = new Triangle[model->nbTriangle];
 
 	ptr += 4;
 
-	for (int i = 0; i < model.nbTriangle; i++)
+	for (int i = 0; i < model->nbTriangle; i++)
 	{
-		Triangle& triangle = model.triangles[i];
+		Triangle& triangle = model->triangles[i];
 
 		glm::vec3 norm = *((glm::vec3*)ptr);
 
@@ -32,18 +33,18 @@ void decoderSTL(const char* addresse, Model& model)
 
 		ptr += sizeof(Vertex::norm);
 
-		model.triangles[i].verts[0].pos = *((glm::vec3*)ptr);
+		model->triangles[i].verts[0].pos = *((glm::vec3*)ptr);
 		ptr += sizeof(Vertex::pos);
-		model.triangles[i].verts[1].pos = *((glm::vec3*)ptr);
+		model->triangles[i].verts[1].pos = *((glm::vec3*)ptr);
 		ptr += sizeof(Vertex::pos);
-		model.triangles[i].verts[2].pos = *((glm::vec3*)ptr);
+		model->triangles[i].verts[2].pos = *((glm::vec3*)ptr);
 		ptr += sizeof(Vertex::pos);
 
 		ptr += 2;
 	}
 }
 
-void decoderOBJ(const char* addresse, Model& model)
+void decoderOBJ(const char* addresse, Model* const model)
 {
 	std::string tampon;
 	chargerFichier(addresse, &tampon);
@@ -207,11 +208,11 @@ void decoderOBJ(const char* addresse, Model& model)
 		ptr++;
 	}
 
-	model.nbTriangle = triangleList.size();
+	model->nbTriangle = triangleList.size();
 
-	model.triangles = new Triangle[model.nbTriangle];
+	model->triangles = new Triangle[model->nbTriangle];
 
-	memcpy_s(model.triangles, model.nbTriangle * sizeof(Triangle), triangleList.data(), triangleList.size() * sizeof(Triangle));
+	memcpy_s(model->triangles, model->nbTriangle * sizeof(Triangle), triangleList.data(), triangleList.size() * sizeof(Triangle));
 }
 
 bool chargerFichier(const std::string& addresse, std::string* const donnees)
@@ -222,7 +223,7 @@ bool chargerFichier(const std::string& addresse, std::string* const donnees)
 
 	if (erreur != 0)
 	{
-		printf("ERREUR | Fichier non-trouve a l'addresse : %s", addresse.c_str());
+		afficherErreur("Fichier non trouve a l'addresse : %s", addresse.c_str());
 
 		return false;
 	}

@@ -26,9 +26,9 @@ namespace mgx
 			Vertexarray& vao = MoteurGX::retVertexarray(*mGX, mesh->vao);
 			Vertexbuffer& vbo = MoteurGX::retVertexbuffer(*mGX, mesh->vbo);
 
-			Vertexarray::ajouterAttribut(vao, vbo, 0, 3, TYPE_VIRGULE, TYPE_FAUX, sizeof(Vertex), 0);
-			Vertexarray::ajouterAttribut(vao, vbo, 1, 2, TYPE_VIRGULE, TYPE_FAUX, sizeof(Vertex), offsetof(Vertex, Vertex::uv));
-			Vertexarray::ajouterAttribut(vao, vbo, 2, 3, TYPE_VIRGULE, TYPE_FAUX, sizeof(Vertex), offsetof(Vertex, Vertex::norm));
+			Vertexarray::ajouterAttribut(vao, vbo, 0, 3, Donnee::Type::VIRGULE, (EnumGX)Donnee::Binaire::FAUX, sizeof(Vertex), 0);
+			Vertexarray::ajouterAttribut(vao, vbo, 1, 2, Donnee::Type::VIRGULE, (EnumGX)Donnee::Binaire::FAUX, sizeof(Vertex), offsetof(Vertex, Vertex::uv));
+			Vertexarray::ajouterAttribut(vao, vbo, 2, 3, Donnee::Type::VIRGULE, (EnumGX)Donnee::Binaire::FAUX, sizeof(Vertex), offsetof(Vertex, Vertex::norm));
 		}
 
 		static void chargerModel(Mesh* const mesh, MoteurGX* const mGX, const uint32_t nbTriangles, const uint32_t tailleByte, const void* const donnees);

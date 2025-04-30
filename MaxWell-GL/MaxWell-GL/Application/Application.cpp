@@ -562,19 +562,20 @@ void Application::initialiserSimulation(Application* const app)
 	}
 
 	//Initialisation des ressources sur le GPU pour le compute shader
-	Espace::GPU::initialiser(&app->moteurPhysique.coordonnees, glm::ivec3(100, 100, 100));
-	Espace::GPU::initialiser(&app->moteurPhysique.champMagnetique, glm::ivec3(100, 100, 100));
+	Espace::GPU::initialiser(&app->moteurPhysique.coordonnees, glm::ivec3(100, 100, 10));
+	Espace::GPU::initialiser(&app->moteurPhysique.champMagnetique, glm::ivec3(100, 100, 10));
 
 	MoteurPhysique::Info& info = app->moteurPhysique.info;
 	info.fils.push_back(MoteurPhysique::Fil::creer(glm::vec3(0, 0, 1), glm::vec3(-1.0f, -1.0f, 0.0f), -3.0f));
 	info.fils.push_back(MoteurPhysique::Fil::creer(glm::vec3(0, 0, 1), glm::vec3(1.0f, 1.0f, 0.0f), 1.0f));
 	info.fils.push_back(MoteurPhysique::Fil::creer(glm::vec3(0, 0, -1), glm::vec3(0.0f, 1.5f, 0.0f), 1.0f));
+	info.solenoides.push_back(MoteurPhysique::Solenoide::creer(glm::vec3(0, 0, 0), glm::vec3(0, 0, -0.5f), 0.001f, 10, 10));
 
 	MoteurPhysique::GPU::genererBufferInfo(&info);
 	MoteurPhysique::GPU::soumettreBufferInfo(info);
 
 	MoteurPhysique::GPU::chargerShaders(&app->moteurPhysique, "Shaders/Physique/");
-	MoteurPhysique::GPU::assignerCoordonnees(app->moteurPhysique, glm::vec3(-2), glm::vec3(2));
+	MoteurPhysique::GPU::assignerCoordonnees(app->moteurPhysique, glm::vec3(-10), glm::vec3(10));
 }
 
 void Application::executerEntrees(Application* const app, const float dt)
@@ -690,6 +691,8 @@ void Application::executerRendu(Application* const app)
 void Application::executerSimulation(Application* const app)
 {
 	Camera camera = {};
+	camera.position = glm::vec3(0.0f, 0.0f, 0.5f);
+	camera.rotation = glm::vec2(0.0f, 0.0f);
 
 	MoteurPhysique::GPU::executerCalcul(app->moteurPhysique.shaderChampMagnetique, app->moteurPhysique.coordonnees, app->moteurPhysique.champMagnetique, app->moteurPhysique.info);
 

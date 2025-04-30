@@ -10,10 +10,10 @@ struct Fil
 struct Solenoide
 {
 	vec3 direction;
-	float courant;
+	float i;
 	vec3 origine;
-	float nombreTours;
-	float longeur;
+	float N;
+	float L;
 };
 
 layout(local_size_x = 10, local_size_y = 10, local_size_z = 1) in;
@@ -50,19 +50,32 @@ vec3 champMagnetiqueFil(ivec3 voxel, Fil fil)
 	vec3 vecOP = origine - coordonnee; 
 	vec3 vecDP = vecOP - produitOrtogonal(vecOP, direction);
 	
-	return 2.0f * fil.courant * 1000.0f * cross(direction, vecDP) / (length(vecDP) * length(vecDP));
+	return 2.0f * fil.courant * cross(direction, vecDP) / (length(vecDP) * length(vecDP));
 }
 
 vec3 champMagnetiqueSolenoide(ivec3 voxel, Solenoide solenoide)
 {
-	const float u0 = 12.56636e-10;
+	const float pi = 3.14159;
+	const float mu0 = 4.0f*pi * 1.0e-6f;
+	const vec3 coordonnee = imageLoad(voxelCoordonnee, voxel).xyz;
+	const vec3 origine = solenoide.origine;
+	const vec3 direction = solenoide.direction;
+	const float i = solenoide.i;
+	const float N = solenoide.N;
+	const float L = solenoide.L;
 
-	for (float teta = 0.0f; teta < solenoide.nombreTours * 6.28318f; teta += 0.25f)
+	vec3 integrale = vec3(0.0f);
+
+	for (float teta = 0.0f; teta < solenoide.N * 2.0f*pi; teta += 0.1f)
 	{
-		
+		vec3 dl = vec3(-sin(teta), cos(teta), L/N);
+		vec3 u = vec3(cos(teta), sin(teta), teta*L / (2*pi*N)) + (origine - coordonnee);
+		float r = length(u);
+
+		integrale += cross(dl,u) * pow(r, -3.0f);
 	}
 
-	return vec3(0);
+	return ((mu0*i) / (4.0f*pi)) * integrale;
 };
 
 void main()
@@ -71,14 +84,14 @@ void main()
 	
 	vec3 champ = vec3(0);
 
-	for (int i = 0; i < nombreFils; i++)
-	{
-		champ += champMagnetiqueFil(voxel, fils[i]);
-	}
+	//for (int i = 0; i < nombreFils; i++)
+	//{
+	//	champ += champMagnetiqueFil(voxel, fils[i]);
+	//}
 	for (int i = 0; i < nombreSolenoides; i++)
 	{
 		champ += champMagnetiqueSolenoide(voxel, solenoides[i]);
 	}
 
-	imageStore(voxelChamp, voxel, vec4(champ, 0.0f)); 
+	imageStore(voxelChamp, voxel, vec4(champ * 1.e12f, 0.0f)); 
 }

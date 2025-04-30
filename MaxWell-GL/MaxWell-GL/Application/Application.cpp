@@ -34,6 +34,8 @@ void Application::initialiser(Application* const app, glm::uvec2 tailleFenetre)
 	initialiserInterfaceUtilisateur(app);
 
 	initialiserMoteurGraphique(app);
+
+	initialiserSimulation(app);
 }
 
 void Application::executer(Application* const app)
@@ -118,6 +120,7 @@ void Application::executer(Application* const app)
 		ImGui::End();
 
 		executerEntrees(app, dt);
+		executerSimulation(app);
 		executerRendu(app);
 		//MoteurGX::copierRenduBackbuffer(app->moteurGX, glm::uvec2(800, 600));
 
@@ -514,36 +517,64 @@ glm::vec3 orientation(float yaw, float pitch) {
 
 void Application::initialiserSimulation(Application* const app)
 {
-	Ressource shaderIU, pipelineIU, vaoIU;
-	Shader& shader = MoteurGX::creerShader(&app->moteurGX, &shaderIU);
-	mgx::Pipeline& pipeline = MoteurGX::creerPipeline(&app->moteurGX, &pipelineIU);
-	mgx::Pipeline::renduStandard(&pipeline, true);
-	pipeline.fbo = 0;
-	pipeline.shader = shaderIU;
-	pipeline.tailleFenetre = glm::uvec2(app->fenetre.dimension.x, app->fenetre.dimension.y);
+	mgx::Pipeline& pipeline = MoteurGX::creerPipeline(&app->moteurGX, &app->moteurPhysique.pipeline);
+	pipeline.renduStandard(&pipeline, true);
+	pipeline.tailleFenetre = glm::uvec2(1000, 1000);
+	pipeline.modeDessin = Operation::Dessin::POINTS;
+	
+	{   //Framebufer
+		Framebuffer& fbo = MoteurGX::creerFramebuffer(&app->moteurGX, &pipeline.fbo);
+		Texture& tex = MoteurGX::creerTexture(&app->moteurGX, &app->moteurPhysique.texFbo);
+		Framebuffer::addAttachment(&fbo, &tex, pipeline.tailleFenetre.x, pipeline.tailleFenetre.y, Tex::FormatInterne::RVBA, Tex::Format::RVBA, Donnee::Type::U8, Tex::Filtre::LINEAIRE, Tex::Filtre::PROCHE);
+	}
 
-	{
+	{   //Charger les shaders pour 
+		Shader& shader = MoteurGX::creerShader(&app->moteurGX, &pipeline.shader);
+		
+		const std::string chemin = "Shaders/Plan/";
 		std::string shaderRaw;
 
-		chargerFichier("Shader/Vertex.glsl", &shaderRaw);
+		chargerFichier(chemin + "Vertex.glsl", &shaderRaw);
 		Shader::loadSubShader(shader, shaderRaw, TypeShader::VERTEX);
 		shaderRaw.clear();
 
-		chargerFichier("Shader/Geometry.glsl", &shaderRaw);
+		chargerFichier(chemin + "Geometry.glsl", &shaderRaw);
 		Shader::loadSubShader(shader, shaderRaw, TypeShader::GEOMETRIE);
 		shaderRaw.clear();
 
-		chargerFichier("Shader/Fragment.glsl", &shaderRaw);
+		chargerFichier(chemin + "Fragment.glsl", &shaderRaw);
 		Shader::loadSubShader(shader, shaderRaw, TypeShader::FRAGMENT);
+		
+		Shader::assembler(shader);
+		Shader::delier();
 	}
 
-	Shader::assembler(shader);
-	Shader::delier();
+	{   //Vertex Array Object
+		Vertexarray& vao = MoteurGX::creerVertexarray(&app->moteurGX, &app->moteurPhysique.vao);
+	}
 
-	MoteurGX::Ressource ressource;
+	{   //Texture du gradient d'intensité bleu à rouge
+		unsigned int contenu_gradient[] = { 0x00ff0002, 0x00fd7405, 0x00fbe701, 0x00dfff01, 0x004efd03, 0x0008fe49, 0x0003fde4, 0x0000e3ff, 0x000071fe, 0x000b00ff };
+		Texture& gradient = MoteurGX::creerTexture(&app->moteurGX, &app->moteurPhysique.texGradient);
+		Texture::allouer1D(&gradient, 0, glm::ivec1(10), Tex::FormatInterne::RVBA, Tex::Format::RVBA, Donnee::Type::U8, contenu_gradient);
+		Texture::specifierEtirement(gradient, Tex::Emballage::LIMITER_BORD, Tex::Emballage::LIMITER_BORD, Tex::Emballage::LIMITER_BORD);
+		Texture::specifierFiltre(gradient, Tex::Filtre::LINEAIRE, Tex::Filtre::LINEAIRE);
+	}
 
-	Vertexarray& vao = MoteurGX::creerVertexarray(&app->moteurGX, &ressource);
-	vao.nbTriangles = 1;
+	//Initialisation des ressources sur le GPU pour le compute shader
+	Espace::GPU::initialiser(&app->moteurPhysique.coordonnees, glm::ivec3(100, 100, 100));
+	Espace::GPU::initialiser(&app->moteurPhysique.champMagnetique, glm::ivec3(100, 100, 100));
+
+	MoteurPhysique::Info& info = app->moteurPhysique.info;
+	info.fils.push_back(MoteurPhysique::Fil::creer(glm::vec3(0, 0, 1), glm::vec3(-1.0f, -1.0f, 0.0f), -3.0f));
+	info.fils.push_back(MoteurPhysique::Fil::creer(glm::vec3(0, 0, 1), glm::vec3(1.0f, 1.0f, 0.0f), 1.0f));
+	info.fils.push_back(MoteurPhysique::Fil::creer(glm::vec3(0, 0, -1), glm::vec3(0.0f, 1.5f, 0.0f), 1.0f));
+
+	MoteurPhysique::GPU::genererBufferInfo(&info);
+	MoteurPhysique::GPU::soumettreBufferInfo(info);
+
+	MoteurPhysique::GPU::chargerShaders(&app->moteurPhysique, "Shaders/Physique/");
+	MoteurPhysique::GPU::assignerCoordonnees(app->moteurPhysique, glm::vec3(-2), glm::vec3(2));
 }
 
 void Application::executerEntrees(Application* const app, const float dt)
@@ -565,7 +596,7 @@ void Application::executerEntrees(Application* const app, const float dt)
 
 	camPos += dirCam * (float)((glfwGetKey(fenetre, GLFW_KEY_W) - glfwGetKey(fenetre, GLFW_KEY_S)) * dt * 30.0f);
 	camPos += coteCam * (float)((glfwGetKey(fenetre, GLFW_KEY_A) - glfwGetKey(fenetre, GLFW_KEY_D)) * dt * 30.0f);
-	camPos -= hautCam * (float)((glfwGetKey(fenetre, GLFW_KEY_R) - glfwGetKey(fenetre, GLFW_KEY_F)) * dt * 30.0f);
+	camPos -= hautCam * (float)((glfwGetKey(fenetre, GLFW_KEY_SPACE) - glfwGetKey(fenetre, GLFW_KEY_LEFT_SHIFT)) * dt * 30.0f);
 	
 }
 
@@ -598,7 +629,7 @@ void Application::executerRendu(Application* const app)
 	// Dessiner l'objet
 
 	{
-		const Shader& shader = MoteurGX::demarerCouche(app->moteurGX, 0);
+		const Shader& shader = MoteurGX::demarerProgramme(app->moteurGX, 0);
 		Shader::pousserConstanteMat4(shader, "u_cam", vueCam);
 		Shader::pousserConstanteVec3(shader, "u_couleur", app->donnesOperation.couleur);
 		Shader::pousserConstanteVec3(shader, "u_dirLumiere", posLumiere);
@@ -609,7 +640,7 @@ void Application::executerRendu(Application* const app)
 		Shader::pousserConstanteVirgule(shader, "u_kd", app->donnesOperation.kDiffuse);
 		Shader::pousserConstanteVirgule(shader, "u_exposantSpec", app->donnesOperation.esposantSpec);
 		Shader::pousserTexture(shader, "u_skybox", MoteurGX::retTexture(app->moteurGX, 0), 0);
-		MoteurGX::executerCouche(app->moteurGX, 0);
+		MoteurGX::executerProgramme(app->moteurGX, 0, 0);
 	}
 
 	// Dessiner le skybox
@@ -617,13 +648,13 @@ void Application::executerRendu(Application* const app)
 	{
 		glm::mat4 matrice = rotationCam;
 
-		const Shader& shader = MoteurGX::demarerCouche(app->moteurGX, 3);
+		const Shader& shader = MoteurGX::demarerProgramme(app->moteurGX, 3);
 		Texture::lier(MoteurGX::retTexture(app->moteurGX, app->donnesOperation.skyboxIU));
 		Shader::pousserTexture(shader, "u_skybox", MoteurGX::retTexture(app->moteurGX, 0), 0);
 		for (int i = 0; i < 1; i++)
 		{
 			Shader::pousserConstanteMat4(shader, "u_cam", proj * matrice);
-			MoteurGX::executerCouche(app->moteurGX, 3);
+			MoteurGX::executerProgramme(app->moteurGX, 0, 3);
 
 			matrice *= rotationCam;
 		}
@@ -640,89 +671,45 @@ void Application::executerRendu(Application* const app)
 
 	glm::mat4 matricePlan = glm::translate(glm::mat4(1.0f), glm::vec3(app->donnesOperation.disZ, 0, 5)) * matriceModel;
 
-	const Shader& shaderPlan = MoteurGX::demarerCouche(app->moteurGX, 2);
+	const Shader& shaderPlan = MoteurGX::demarerProgramme(app->moteurGX, 2);
 	Shader::pousserConstanteVec3(shaderPlan, "u_dirLumiere", posLumiere);
 	Shader::pousserConstanteVec3(shaderPlan, "u_posCam", camPos);
 
 	Shader::pousserConstanteMat4(shaderPlan, "u_cam", vueCam * glm::translate(glm::mat4(1.0f), 20.0f * posLumiere));
 	Shader::pousserConstanteVec3(shaderPlan, "u_couleur", glm::vec3(1, 1, 1));
-	MoteurGX::executerCouche(app->moteurGX, 2);
+	Shader::pousserTexture(shaderPlan, "u_framebuffer", MoteurGX::retTexture(app->moteurGX, app->moteurPhysique.texFbo), 0);
+	MoteurGX::executerProgramme(app->moteurGX, 2, 2);
 
 	Shader::pousserConstanteMat4(shaderPlan, "u_cam", vueCam * matricePlan);
 	Shader::pousserConstanteVec3(shaderPlan, "u_couleur", glm::vec3(0, 1, 1));
-	MoteurGX::executerCouche(app->moteurGX, 1);
+	MoteurGX::executerProgramme(app->moteurGX, 2, 1);
 
 	//MoteurGX::copierRenduBackbuffer(app->moteurGX, glm::uvec2(800, 600));
 }
 
 void Application::executerSimulation(Application* const app)
 {
-	auto tAvant = std::chrono::high_resolution_clock::now();
-
-	MoteurPhysique moteurPhysique;
-	Espace::GPU::initialiser(&moteurPhysique.coordonnees, glm::ivec3(100, 100, 100));
-	Espace::GPU::initialiser(&moteurPhysique.champMagnetique, glm::ivec3(100, 100, 100));
-
-	MoteurPhysique::Info info;
-	info.fils.push_back(MoteurPhysique::Fil::creer(glm::vec3(0, 0, 1), glm::vec3(-1.0f, -1.0f, 0.0f), -3.0f));
-	info.fils.push_back(MoteurPhysique::Fil::creer(glm::vec3(0, 0, 1), glm::vec3(1.0f, 1.0f, 0.0f), 1.0f));
-	info.fils.push_back(MoteurPhysique::Fil::creer(glm::vec3(0, 0, -1), glm::vec3(0.0f, 1.5f, 0.0f), 1.0f));
-
-	MoteurPhysique::GPU::genererBufferInfo(&info);
-	MoteurPhysique::GPU::soumettreBufferInfo(info);
-
-	MoteurPhysique::GPU::chargerShaders(&moteurPhysique, "Shader/");
-	MoteurPhysique::GPU::assignerCoordonnees(moteurPhysique, glm::vec3(-2), glm::vec3(2));
-
-	Texture gradient;
-	{
-		unsigned int contenu_gradient[] = { 0x00ff0002, 0x00fd7405, 0x00fbe701, 0x00dfff01, 0x004efd03, 0x0008fe49, 0x0003fde4, 0x0000e3ff, 0x000071fe, 0x000b00ff };
-		Texture::generer(&gradient);
-		Texture::specifierEtirement(gradient, Tex::Emballage::LIMITER_BORD, Tex::Emballage::LIMITER_BORD, Tex::Emballage::LIMITER_BORD);
-		Texture::specifierFiltre(gradient, Tex::Filtre::LINEAIRE, Tex::Filtre::LINEAIRE);
-		Texture::allouer1D(&gradient, 0, glm::ivec1(10), Tex::FormatInterne::RVBA, Tex::Format::RVBA, Donnee::Type::U8, contenu_gradient);
-	}
-
 	Camera camera = {};
 
-	GLuint vba;
-	Ressource vaoIU, vboIU;
-	APPEL_GX(glGenVertexArrays(1, &vba));
-	Vertexarray& vao = MoteurGX::creerVertexarray(&app->moteurGX, &vaoIU);
+	MoteurPhysique::GPU::executerCalcul(app->moteurPhysique.shaderChampMagnetique, app->moteurPhysique.coordonnees, app->moteurPhysique.champMagnetique, app->moteurPhysique.info);
+
+	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	glm::ivec2 nombreFleches = glm::ivec2(50);
+
+	Shader shader = MoteurGX::demarerProgramme(app->moteurGX, app->moteurPhysique.pipeline);
+
+	Vertexarray& vao = MoteurGX::retVertexarray(app->moteurGX, app->moteurPhysique.vao);
+	vao.nbTriangles = nombreFleches.x * nombreFleches.y;
 	Vertexarray::lier(vao);
-	Vertexbuffer& vbo = MoteurGX::creerVertexbuffer(&app->moteurGX, &vboIU);
-	Vertexbuffer::allocation(&vbo, 10);
-	Vertexarray::ajouterAttribut(vao, vbo, 0, 1, Donnee::Type::VIRGULE, false, 1, 0);
 
-	while (!glfwWindowShouldClose(app->fenetre.window))
-	{
-		auto tMaintenant = std::chrono::high_resolution_clock::now();
-		const float dt = (tMaintenant - tAvant).count() / 1000000000.0f;
-		tAvant = tMaintenant;
+	//Camera::input(&camera, &app->fenetre, dt);
+	Camera::transformer(&camera);
+	Shader::pousserConstanteIVec2(shader, "dimension", nombreFleches);
+	Shader::pousserConstanteMat4(shader, "transformation", camera.plan);
+	Shader::pousserTexture(shader, "carte", app->moteurPhysique.champMagnetique.tex, 0);
+	Shader::pousserTexture(shader, "gradient", MoteurGX::retTexture(app->moteurGX, app->moteurPhysique.texGradient), 1);
 
-		MoteurPhysique::GPU::executerCalcul(moteurPhysique.shaderChampMagnetique, moteurPhysique.coordonnees, moteurPhysique.champMagnetique, info);
-
-		glClear(GL_COLOR_BUFFER_BIT);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		APPEL_GX(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-		Shader& shader = MoteurGX::retShader(app->moteurGX, MoteurGX::retPipeline(app->moteurGX, 0).shader);
-		APPEL_GX(glUseProgram(shader.id));
-		APPEL_GX(glBindVertexArray(vba));
-
-		Camera::input(&camera, &app->fenetre, dt);
-		Camera::transformer(&camera);
-		glm::ivec2 nombreFleches = glm::ivec2(50);
-		Shader::pousserConstanteIVec2(shader, "dimension", nombreFleches);
-		Shader::pousserConstanteMat4(shader, "transformation", camera.plan);
-		Shader::pousserTexture(shader, "carte", moteurPhysique.champMagnetique.tex, 0);
-		Shader::pousserTexture(shader, "gradient", gradient, 1);
-
-		APPEL_GX(glDrawArrays(GL_POINTS, 0, nombreFleches.x * nombreFleches.y));
-
-		//Application::executerSimulation(app, dt);
-
-		glfwSwapBuffers(app->fenetre.window);
-		glfwPollEvents();
-	}
+	MoteurGX::executerProgramme(app->moteurGX, app->moteurPhysique.pipeline, app->moteurPhysique.vao);
 }

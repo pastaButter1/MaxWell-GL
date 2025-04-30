@@ -45,10 +45,10 @@ void Espace::GPU::initialiser(Espace* const espace, const glm::ivec3 dimension)
 	Shader::delier();
 
 	Texture::generer(&espace->tex);
+	Texture::allouer3D(&espace->tex, 0, espace->dimensions, Tex::FormatInterne::RVBA32F, Tex::Format::RVBA, Donnee::Type::VIRGULE, nullptr);
 	Texture::specifierEtirement(espace->tex, Tex::Emballage::LIMITER_BORDURE, Tex::Emballage::LIMITER_BORDURE, Tex::Emballage::LIMITER_BORDURE);
 	Texture::specifierCouleurBordure(espace->tex, glm::vec4(0.0f));
 	Texture::specifierFiltre(espace->tex, Tex::Filtre::LINEAIRE, Tex::Filtre::LINEAIRE);
-	Texture::allouer3D(&espace->tex, 0, espace->dimensions, Tex::FormatInterne::RVBA32F, Tex::Format::RVBA, Donnee::Type::VIRGULE, nullptr);
 }
 
 void Espace::GPU::soumettre(Espace* const espace)

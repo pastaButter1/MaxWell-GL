@@ -115,9 +115,9 @@ struct MoteurGX
 
 	static Vertexbuffer& retVertexbuffer(const MoteurGX& mGX, const Ressource res);
 
-	static const Shader& demarerCouche(const MoteurGX&  mGX, const Ressource pipeline);
+	static const Shader& demarerProgramme(const MoteurGX&  mGX, const Ressource pipeline);
 
-	static void executerCouche(const MoteurGX& mGX, const Ressource vaoIU);
+	static void executerProgramme(const MoteurGX& mGX, const Ressource pipelineIU, const Ressource vaoIU);
 
 	static void pousserMesh(MoteurGX* const mGX);
 

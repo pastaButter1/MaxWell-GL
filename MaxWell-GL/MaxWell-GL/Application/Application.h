@@ -6,11 +6,13 @@
 #include "Moteur Graphique/MoteurGx/MoteurGX.h"
 #include "Fenetre/Fenetre.h"
 #include "Moteur Graphique/MoteurGx/Mesh.h"
+#include "MoteurPhysique/MoteurPhysique/MoteurPhysique.h"
 
 struct Application {
 	Fenetre fenetre;
 	ImFont* police;
 	MoteurGX moteurGX;
+	MoteurPhysique moteurPhysique;
 
 	struct DonneesOperation
 	{

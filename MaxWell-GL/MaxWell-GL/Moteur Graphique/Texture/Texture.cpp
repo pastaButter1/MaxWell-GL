@@ -12,6 +12,7 @@ void Texture::detruire(Texture* const tex)
 
 void Texture::lier(const Texture& tex)
 {
+	//
 	APPEL_GX(glBindTexture((EnumGX)tex.cible, tex.id));
 }
 

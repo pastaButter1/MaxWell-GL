@@ -75,12 +75,12 @@
     <None Include="Shaders\Tesselation surface\Surface geometrie.glsl" />
     <None Include="Shaders\Tesselation surface\Surface tessControle.glsl" />
     <None Include="Shaders\Tesselation surface\Surface tessEval.glsl" />
-    <None Include="Shader\ChampMagnetique.glsl" />
-    <None Include="Shader\DessinerVecteurChamp.glsl" />
-    <None Include="Shader\Coordonnees.glsl" />
-    <None Include="Shader\Fragment.glsl" />
-    <None Include="Shader\Geometry.glsl" />
-    <None Include="Shader\Vertex.glsl" />
+    <None Include="Shaders\Physique\ChampMagnetique.glsl" />
+    <None Include="Shaders\Physique\DessinerVecteurChamp.glsl" />
+    <None Include="Shaders\Physique\Coordonnees.glsl" />
+    <None Include="Shaders\Plan\Fragment.glsl" />
+    <None Include="Shaders\Plan\Geometry.glsl" />
+    <None Include="Shaders\Plan\Vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="Mesh\Cube.obj" />

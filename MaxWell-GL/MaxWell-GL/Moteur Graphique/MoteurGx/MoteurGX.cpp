@@ -51,7 +51,7 @@ void mgx::Pipeline::init(const Pipeline& pipeline, const Framebuffer& fbo, const
 
 	if (pipeline.nettoyerCible)
 	{
-		APPEL_GX(glClearColor(0.1, 0.1, 0.3, 1));
+		APPEL_GX(glClearColor(0.0f, 0.0f, 0.0f, 0.0f));
 		APPEL_GX(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 	}
 	
@@ -215,7 +215,7 @@ Vertexbuffer& MoteurGX::retVertexbuffer(const MoteurGX& mGX, const Ressource res
 	return *(Vertexbuffer*)&mGX.listeVBOs.rechercherIndexUnique(res);
 }
 
-const Shader& MoteurGX::demarerCouche(const MoteurGX& mGX, const Ressource IndexPipeline)
+const Shader& MoteurGX::demarerProgramme(const MoteurGX& mGX, const Ressource IndexPipeline)
 {
 	const Pipeline& pipeline = mGX.listePipelines.rechercherIndexUnique(IndexPipeline);
 	const Framebuffer& fbo = MoteurGX::retFBO(mGX, pipeline.fbo);
@@ -224,13 +224,14 @@ const Shader& MoteurGX::demarerCouche(const MoteurGX& mGX, const Ressource Index
 	Pipeline::init(pipeline, fbo, shader);
 
 	return shader;
+
 }
 
-void MoteurGX::executerCouche(const MoteurGX& mGX, const Ressource vaoIU)
+void MoteurGX::executerProgramme(const MoteurGX& mGX, const Ressource pipelineIU, const Ressource vaoIU)
 {
 	const Couche& couche = mGX.coucheActive;
 
-	const Pipeline& pipeline = MoteurGX::retPipeline(mGX, 0);
+	const Pipeline& pipeline = MoteurGX::retPipeline(mGX, pipelineIU);
 
 	//APPEL_GX(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 

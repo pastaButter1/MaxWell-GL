@@ -8,12 +8,6 @@
 
 struct MoteurPhysique
 {
-	Espace coordonnees;
-	Espace champMagnetique;
-
-	Shader shaderCoordonnees;
-	Shader shaderChampMagnetique;
-
 	struct alignas(16) Fil
 	{
 		glm::vec3 direction;
@@ -40,6 +34,21 @@ struct MoteurPhysique
 		std::vector<Fil> fils;
 		std::vector<Solenoide> solenoides;
 	};
+
+	Espace coordonnees;
+	Espace champMagnetique;
+
+	Shader shaderCoordonnees;
+	Shader shaderChampMagnetique;
+
+	mgx::Ressource vao;
+	mgx::Ressource fbo;
+	mgx::Ressource texFbo;
+	mgx::Ressource texGradient;
+
+	mgx::Ressource pipeline;
+
+	Info info;
 
 	struct GPU
 	{

@@ -10,3 +10,5 @@
 *.tlog
 /MaxWell-GL/MaxWell-GL/Lib/STBImage/stb_image.cpp
 /MaxWell-GL/MaxWell-GL/Lib/STBImage/stb_image.h
+MaxWell-GL/MaxWell-GL/Mesh/Cube.obj
+MaxWell-GL/MaxWell-GL/Mesh/Sphere.obj

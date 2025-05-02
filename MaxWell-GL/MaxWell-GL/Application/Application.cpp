@@ -1,5 +1,6 @@
 #include "Application.h"
 #include "Moteur Graphique/Graphique.h"
+#include <Windows.h>
 #include "Lib/GLFW/include/GLFW/glfw3.h"
 
 #include "Lib/IMGUI/IMGUI/imgui.h"
@@ -29,6 +30,12 @@ void genererSolenoide(Model* const model, const uint32_t nbTriangles, const floa
 
 void Application::initialiser(Application* const app, glm::uvec2 tailleFenetre)
 {
+	std::string& dossier = app->dossierExecution;
+	dossier.resize(MAX_PATH);
+	GetCurrentDirectoryA(dossier.length(), (LPSTR)dossier.c_str());
+	dossier.resize(strnlen_s(dossier.c_str(), dossier.length()));
+	afficherLog("Dossier d'execution : %s", dossier.c_str());
+
 	Fenetre::init(&app->fenetre, tailleFenetre);
 
 	initialiserInterfaceUtilisateur(app);
@@ -266,15 +273,15 @@ void Application::initialiserMoteurGraphique(Application* const app)
 		{
 			std::string shaderRaw;
 
-			chargerFichier("Shaders/Simple/vertex.glsl", &shaderRaw);
+			chargerFichier("../../MaxWell-GL/Shaders/Simple/vertex.glsl", &shaderRaw);
 			Shader::loadSubShader(shader, shaderRaw, TypeShader::VERTEX);
 
 			shaderRaw.clear();
-			chargerFichier("Shaders/Simple/geometrie.glsl", &shaderRaw);
+			chargerFichier("../../MaxWell-GL/Shaders/Simple/geometrie.glsl", &shaderRaw);
 			Shader::loadSubShader(shader, shaderRaw, TypeShader::GEOMETRIE);
 
 			shaderRaw.clear();
-			chargerFichier("Shaders/Simple/fragment.glsl", &shaderRaw);
+			chargerFichier("../../MaxWell-GL/Shaders/Simple/fragment.glsl", &shaderRaw);
 			Shader::loadSubShader(shader, shaderRaw, TypeShader::FRAGMENT);
 		}
 		Shader::assembler(shader);
@@ -298,11 +305,11 @@ void Application::initialiserMoteurGraphique(Application* const app)
 		{
 			std::string shaderRaw;
 
-			chargerFichier("Shaders/PrefiltrageZ/vertex.glsl", &shaderRaw);
+			chargerFichier("../../MaxWell-GL/Shaders/PrefiltrageZ/vertex.glsl", &shaderRaw);
 			Shader::loadSubShader(shader, shaderRaw, TypeShader::VERTEX);
 
 			shaderRaw.clear();
-			chargerFichier("Shaders/PrefiltrageZ/fragment.glsl", &shaderRaw);
+			chargerFichier("../../MaxWell-GL/Shaders/PrefiltrageZ/fragment.glsl", &shaderRaw);
 			Shader::loadSubShader(shader, shaderRaw, TypeShader::FRAGMENT);
 		}
 		Shader::assembler(shader);
@@ -324,15 +331,15 @@ void Application::initialiserMoteurGraphique(Application* const app)
 		{
 			std::string shaderRaw;
 
-			chargerFichier("Shaders/Simple/vertex.glsl", &shaderRaw);
+			chargerFichier("../../MaxWell-GL/Shaders/Simple/vertex.glsl", &shaderRaw);
 			Shader::loadSubShader(shaderPlan, shaderRaw, TypeShader::VERTEX);
 
 			shaderRaw.clear();
-			chargerFichier("Shaders/Simple/geometrie.glsl", &shaderRaw);
+			chargerFichier("../../MaxWell-GL/Shaders/Simple/geometrie.glsl", &shaderRaw);
 			Shader::loadSubShader(shaderPlan, shaderRaw, TypeShader::GEOMETRIE);
 
 			shaderRaw.clear();
-			chargerFichier("Shaders/Simple/fragmentPlan.glsl", &shaderRaw);
+			chargerFichier("../../MaxWell-GL/Shaders/Simple/fragmentPlan.glsl", &shaderRaw);
 			Shader::loadSubShader(shaderPlan, shaderRaw, TypeShader::FRAGMENT);
 		}
 		Shader::assembler(shaderPlan);
@@ -367,12 +374,12 @@ void Application::initialiserMoteurGraphique(Application* const app)
 
 	mgx::Mesh sphere;
 	mgx::Mesh::creer(&sphere, &app->moteurGX);
-	decoderOBJ("Mesh/Sphere.obj", &model);
+	decoderOBJ("../../MaxWell-GL/Mesh/Cube.obj", &model);
 	mgx::Mesh::chargerModel<Vertex>(&sphere, &app->moteurGX, model.nbTriangle * 3, model.triangles);
 	delete[] model.triangles;
 
 	int32_t skyboxX, skyboxY, skyboxCanaux;
-	std::string dossier = "Skybox/Machine shop/1k/";
+	std::string dossier = "../../MaxWell-GL/Skybox/Machine shop/1k/";
 	std::string ext = ".hdr";
 	std::string noms[6] = { "px", "nx", "py", "ny", "pz", "nz"};
 	Texture& skybox = MoteurGX::creerTexture(&app->moteurGX, &app->donnesOperation.skyboxIU);
@@ -403,11 +410,11 @@ void Application::initialiserMoteurGraphique(Application* const app)
 		{
 			std::string shaderRaw;
 
-			chargerFichier("Shaders/Skybox/vertex.glsl", &shaderRaw);
+			chargerFichier("../../MaxWell-GL/Shaders/Skybox/vertex.glsl", &shaderRaw);
 			Shader::loadSubShader(shader, shaderRaw, TypeShader::VERTEX);
 
 			shaderRaw.clear();
-			chargerFichier("Shaders/Skybox/fragment.glsl", &shaderRaw);
+			chargerFichier("../../MaxWell-GL/Shaders/Skybox/fragment.glsl", &shaderRaw);
 			Shader::loadSubShader(shader, shaderRaw, TypeShader::FRAGMENT);
 		}
 		Shader::assembler(shader);
@@ -416,7 +423,7 @@ void Application::initialiserMoteurGraphique(Application* const app)
 
 	mgx::Mesh& cube = app->donnesOperation.meshCube;
 	mgx::Mesh::creer(&cube, &app->moteurGX);
-	decoderOBJ("Mesh/Cube.obj", &model);
+	decoderOBJ("../../MaxWell-GL/Mesh/Cube.obj", &model);
 	mgx::Mesh::chargerModel<Vertex>(&cube, &app->moteurGX, model.nbTriangle * 3, model.triangles);
 	delete[] model.triangles;
 }
@@ -531,7 +538,7 @@ void Application::initialiserSimulation(Application* const app)
 	{   //Charger les shaders pour 
 		Shader& shader = MoteurGX::creerShader(&app->moteurGX, &pipeline.shader);
 		
-		const std::string chemin = "Shaders/Plan/";
+		const std::string chemin = "../../MaxWell-GL/Shaders/Plan/";
 		std::string shaderRaw;
 
 		chargerFichier(chemin + "Vertex.glsl", &shaderRaw);
@@ -573,7 +580,7 @@ void Application::initialiserSimulation(Application* const app)
 	MoteurPhysique::GPU::genererBufferInfo(&info);
 	MoteurPhysique::GPU::soumettreBufferInfo(info);
 
-	MoteurPhysique::GPU::chargerShaders(&app->moteurPhysique, "Shaders/Physique/");
+	MoteurPhysique::GPU::chargerShaders(&app->moteurPhysique, "../../MaxWell-GL/Shaders/Physique/");
 	MoteurPhysique::GPU::assignerCoordonnees(app->moteurPhysique, glm::vec3(-2), glm::vec3(2));
 }
 

@@ -8,11 +8,14 @@
 #include "Moteur Graphique/MoteurGx/Mesh.h"
 #include "MoteurPhysique/MoteurPhysique/MoteurPhysique.h"
 
+#include <string>
+
 struct Application {
 	Fenetre fenetre;
 	ImFont* police;
 	MoteurGX moteurGX;
 	MoteurPhysique moteurPhysique;
+	std::string dossierExecution;
 
 	struct DonneesOperation
 	{

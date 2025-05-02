@@ -24,8 +24,11 @@ struct MoteurPhysique
 		glm::vec3 origine;
 		float nombreTours;
 		float longeur;
+		float diametre;
+		float rayonFil;
+		float rayonSolenoide;
 
-		static Solenoide creer(glm::vec3 direction, glm::vec3 origine, float courant, float nombreTours, float longeur);
+		static Solenoide creer(glm::vec3 direction, glm::vec3 origine, float courant, float nombreTours, float longeur, float diametre, float rayonFil, float rayonSolenoide);
 	};
 
 	struct Info

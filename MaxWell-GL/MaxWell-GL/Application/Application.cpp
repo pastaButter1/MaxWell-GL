@@ -33,6 +33,13 @@ void Application::initialiser(Application* const app, glm::uvec2 tailleFenetre)
 
 	initialiserInterfaceUtilisateur(app);
 
+	MoteurPhysique::Info& info = app->moteurPhysique.info;
+	info.fils.push_back(MoteurPhysique::Fil::creer(glm::vec3(0, 0, 1), glm::vec3(-1.0f, -1.0f, 0.0f), -3.0f));
+	info.fils.push_back(MoteurPhysique::Fil::creer(glm::vec3(0, 0, 1), glm::vec3(1.0f, 1.0f, 0.0f), 1.0f));
+	info.fils.push_back(MoteurPhysique::Fil::creer(glm::vec3(0, 0, -1), glm::vec3(0.0f, 1.5f, 0.0f), 1.0f));
+	info.solenoides.push_back(MoteurPhysique::Solenoide::creer(glm::vec3(0, 0, 0), glm::vec3(0, 0, -0.5f), 0.0001f, 10, 5, 1, 0.1, 1));
+	
+
 	initialiserMoteurGraphique(app);
 
 	initialiserSimulation(app);
@@ -81,23 +88,21 @@ void Application::executer(Application* const app)
 		ImGui::SliderFloat("Lumiere Y", &app->donnesOperation.angleLumiere.x, 0.0f, 360.0f);
 		ImGui::SliderFloat("Lumiere Z", &app->donnesOperation.angleLumiere.y, -90.0f, 90.0f);
 
-		auto& solFin = app->donnesOperation.solenoide;
-		auto solInit = solFin;
 
-		ImGui::SliderFloat("Solenoide L", &solFin.longueur, 0.0f, 30.0f);
-		ImGui::SliderFloat("Solenoide N", &solFin.nbRot, 0.1f, 10.0f);
-		ImGui::SliderFloat("Solenoide R", &solFin.R, 0.0f, 15.0f);
-		ImGui::SliderFloat("Solenoide r", &solFin.r, 0.0f, 1.0f);
 
-		if (memcmp(&solInit, &solFin, sizeof(solFin)) != 0)
+		MoteurPhysique::Solenoide& solenoide = app->moteurPhysique.info.solenoides[0];
+		MoteurPhysique::Solenoide solenoideImGUI = solenoide;
+		ImGui::SliderFloat("Solenoide L", &solenoideImGUI.longeur, 0.1f, 30.0f);
+		ImGui::SliderFloat("Solenoide N", &solenoideImGUI.nombreTours, 0.1f, 10.0f);
+		ImGui::SliderFloat("Solenoide R", &solenoideImGUI.rayonFil, 0.1f, 15.0f);
+		ImGui::SliderFloat("Solenoide r", &solenoideImGUI.rayonSolenoide, 0.1f, 1.0f);
+
+		if (memcmp(&solenoide, &solenoideImGUI, sizeof(solenoideImGUI)) != 0)
 		{
-			const float L = app->donnesOperation.solenoide.longueur;
-			const float R = app->donnesOperation.solenoide.R;
-			const float r = app->donnesOperation.solenoide.r;
-			const float rot = app->donnesOperation.solenoide.nbRot;
+			solenoide = solenoideImGUI;
 
 			Model model;
-			genererSolenoide(&model, 30000, R, r, L, rot);
+			genererSolenoide(&model, 30000, solenoide.rayonSolenoide, solenoide.rayonFil, solenoide.longeur, solenoide.nombreTours);
 			mgx::Mesh::chargerModel<Vertex>(&app->donnesOperation.meshSolenoide, &app->moteurGX, model.nbTriangle * 3, model.triangles);
 			delete[] model.triangles;
 		}
@@ -347,17 +352,11 @@ void Application::initialiserMoteurGraphique(Application* const app)
 	triangles[4] = { glm::vec3( 1, -1, 0), glm::vec2(1, 0), glm::vec3(0, 0, 0) };
 	triangles[5] = { glm::vec3(-1, -1, 0), glm::vec2(0, 0), glm::vec3(0, 0, 0) };
 
-	Model model;
-
-	//decoderOBJ("C:\\Users\\Alexandre\\Desktop\\général francais\\etoile2.obj", &model);
-	//decoderSTL("C:\\Users\\Alexandre\\Desktop\\Inventor proj\\Sous-marinV2\\C-Coque\\C-0015.stl", &model);
 	
+	MoteurPhysique::Solenoide solenoide = app->moteurPhysique.info.solenoides[0];
+	Model model;
+	genererSolenoide(&model, 30000, solenoide.rayonSolenoide, solenoide.rayonFil, solenoide.longeur, solenoide.nombreTours);
 	mgx::Mesh::creer(&app->donnesOperation.meshSolenoide, &app->moteurGX);
-	const float L = app->donnesOperation.solenoide.longueur;
-	const float R = app->donnesOperation.solenoide.R;
-	const float r = app->donnesOperation.solenoide.r;
-	const float rot = app->donnesOperation.solenoide.nbRot;
-	genererSolenoide(&model, 30000, R, r, L, rot);
 	mgx::Mesh::chargerModel<Vertex>(&app->donnesOperation.meshSolenoide, &app->moteurGX, model.nbTriangle * 3, model.triangles);
 
 	mgx::Mesh meshCarre;
@@ -519,7 +518,7 @@ void Application::initialiserSimulation(Application* const app)
 {
 	mgx::Pipeline& pipeline = MoteurGX::creerPipeline(&app->moteurGX, &app->moteurPhysique.pipeline);
 	pipeline.renduStandard(&pipeline, true);
-	pipeline.tailleFenetre = glm::uvec2(1000, 1000);
+	pipeline.tailleFenetre = glm::uvec2(10000, 10000);
 	pipeline.modeDessin = Operation::Dessin::POINTS;
 	
 	{   //Framebufer
@@ -562,20 +561,17 @@ void Application::initialiserSimulation(Application* const app)
 	}
 
 	//Initialisation des ressources sur le GPU pour le compute shader
-	Espace::GPU::initialiser(&app->moteurPhysique.coordonnees, glm::ivec3(100, 100, 10));
-	Espace::GPU::initialiser(&app->moteurPhysique.champMagnetique, glm::ivec3(100, 100, 10));
+	Espace::GPU::initialiser(&app->moteurPhysique.coordonnees, glm::ivec3(200, 200, 10));
+	Espace::GPU::initialiser(&app->moteurPhysique.champMagnetique, glm::ivec3(200, 200, 10));
 
-	MoteurPhysique::Info& info = app->moteurPhysique.info;
-	info.fils.push_back(MoteurPhysique::Fil::creer(glm::vec3(0, 0, 1), glm::vec3(-1.0f, -1.0f, 0.0f), -3.0f));
-	info.fils.push_back(MoteurPhysique::Fil::creer(glm::vec3(0, 0, 1), glm::vec3(1.0f, 1.0f, 0.0f), 1.0f));
-	info.fils.push_back(MoteurPhysique::Fil::creer(glm::vec3(0, 0, -1), glm::vec3(0.0f, 1.5f, 0.0f), 1.0f));
-	info.solenoides.push_back(MoteurPhysique::Solenoide::creer(glm::vec3(0, 0, 0), glm::vec3(0, 0, -0.5f), 0.001f, 10, 10));
-
+	MoteurPhysique::Info info = app->moteurPhysique.info;
 	MoteurPhysique::GPU::genererBufferInfo(&info);
 	MoteurPhysique::GPU::soumettreBufferInfo(info);
 
 	MoteurPhysique::GPU::chargerShaders(&app->moteurPhysique, "Shaders/Physique/");
-	MoteurPhysique::GPU::assignerCoordonnees(app->moteurPhysique, glm::vec3(-10), glm::vec3(10));
+	MoteurPhysique::GPU::assignerCoordonnees(app->moteurPhysique, glm::vec3(-10, -5, -10), glm::vec3(10, 15, 10));
+
+	MoteurPhysique::GPU::executerCalcul(app->moteurPhysique.shaderChampMagnetique, app->moteurPhysique.coordonnees, app->moteurPhysique.champMagnetique, app->moteurPhysique.info);
 }
 
 void Application::executerEntrees(Application* const app, const float dt)
@@ -690,11 +686,11 @@ void Application::executerRendu(Application* const app)
 
 void Application::executerSimulation(Application* const app)
 {
-	Camera camera = {};
-	camera.position = glm::vec3(0.0f, 0.0f, 0.5f);
-	camera.rotation = glm::vec2(0.0f, 0.0f);
-
 	MoteurPhysique::GPU::executerCalcul(app->moteurPhysique.shaderChampMagnetique, app->moteurPhysique.coordonnees, app->moteurPhysique.champMagnetique, app->moteurPhysique.info);
+
+	Camera camera = {};
+	camera.position = glm::vec3(0.0f, 0.0f, 0.4f);
+	camera.rotation = glm::vec2(0.0f, 0.0f);
 
 	glClear(GL_COLOR_BUFFER_BIT);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

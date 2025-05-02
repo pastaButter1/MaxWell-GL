@@ -14,6 +14,9 @@ struct Solenoide
 	vec3 origine;
 	float N;
 	float L;
+	float D;
+	float R;
+	float r;
 };
 
 layout(local_size_x = 10, local_size_y = 10, local_size_z = 1) in;
@@ -63,13 +66,14 @@ vec3 champMagnetiqueSolenoide(ivec3 voxel, Solenoide solenoide)
 	const float i = solenoide.i;
 	const float N = solenoide.N;
 	const float L = solenoide.L;
+	const float D = solenoide.D;
 
 	vec3 integrale = vec3(0.0f);
 
 	for (float teta = 0.0f; teta < solenoide.N * 2.0f*pi; teta += 0.1f)
 	{
-		vec3 dl = vec3(-sin(teta), cos(teta), L/N);
-		vec3 u = vec3(cos(teta), sin(teta), teta*L / (2*pi*N)) + (origine - coordonnee);
+		vec3 dl = vec3(L/N, cos(teta), -sin(teta));
+		vec3 u = vec3(teta*L / (2*pi*N), sin(teta)*D, cos(teta)*D) + (origine - coordonnee);
 		float r = length(u);
 
 		integrale += cross(dl,u) * pow(r, -3.0f);

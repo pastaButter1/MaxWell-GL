@@ -84,5 +84,6 @@
   </ItemGroup>
   <ItemGroup>
     <Object Include="Mesh\Cube.obj" />
+    <Object Include="Mesh\Sphere.obj" />
   </ItemGroup>
 </Project>

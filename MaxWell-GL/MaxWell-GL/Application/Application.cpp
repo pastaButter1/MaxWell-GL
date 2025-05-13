@@ -1,5 +1,6 @@
 #include "Application.h"
 #include "Moteur Graphique/Graphique.h"
+#include <Windows.h>
 #include "Lib/GLFW/include/GLFW/glfw3.h"
 
 #include "Lib/IMGUI/IMGUI/imgui.h"
@@ -29,6 +30,12 @@ void genererSolenoide(Model* const model, const uint32_t nbTriangles, const floa
 
 void Application::initialiser(Application* const app, glm::uvec2 tailleFenetre)
 {
+	std::string dossier;// = app->dossierExecution;
+	dossier.resize(MAX_PATH);
+	GetCurrentDirectoryA(dossier.length(), (LPSTR)dossier.c_str());
+	dossier.resize(strnlen_s(dossier.c_str(), dossier.length()));
+	afficherLog("Dossier d'execution : %s", dossier.c_str());
+
 	Fenetre::init(&app->fenetre, tailleFenetre);
 
 	initialiserInterfaceUtilisateur(app);
@@ -37,7 +44,7 @@ void Application::initialiser(Application* const app, glm::uvec2 tailleFenetre)
 	info.fils.push_back(MoteurPhysique::Fil::creer(glm::vec3(0, 0, 1), glm::vec3(-1.0f, -1.0f, 0.0f), -3.0f));
 	info.fils.push_back(MoteurPhysique::Fil::creer(glm::vec3(0, 0, 1), glm::vec3(1.0f, 1.0f, 0.0f), 1.0f));
 	info.fils.push_back(MoteurPhysique::Fil::creer(glm::vec3(0, 0, -1), glm::vec3(0.0f, 1.5f, 0.0f), 1.0f));
-	info.solenoides.push_back(MoteurPhysique::Solenoide::creer(glm::vec3(0, 0, 0), glm::vec3(0, 0, -0.5f), 0.0001f, 10, 5, 1, 0.1, 1));
+	info.solenoides.push_back(MoteurPhysique::Solenoide::creer(glm::vec3(0, 0, 0), glm::vec3(5, 0, 0), 0.001f, 10, 5, 1, 0.1, 1));
 	
 
 	initialiserMoteurGraphique(app);
@@ -93,18 +100,21 @@ void Application::executer(Application* const app)
 		MoteurPhysique::Solenoide& solenoide = app->moteurPhysique.info.solenoides[0];
 		MoteurPhysique::Solenoide solenoideImGUI = solenoide;
 		ImGui::SliderFloat("Solenoide L", &solenoideImGUI.longeur, 0.1f, 30.0f);
-		ImGui::SliderFloat("Solenoide N", &solenoideImGUI.nombreTours, 0.1f, 10.0f);
-		ImGui::SliderFloat("Solenoide R", &solenoideImGUI.rayonFil, 0.1f, 15.0f);
-		ImGui::SliderFloat("Solenoide r", &solenoideImGUI.rayonSolenoide, 0.1f, 1.0f);
+		ImGui::SliderFloat("Solenoide N", &solenoideImGUI.nombreTours, 0.1f, 30.0f);
+		ImGui::SliderFloat("Solenoide R", &solenoideImGUI.rayonSolenoide, 0.1f, 4.0f);
+		ImGui::SliderFloat("Solenoide r", &solenoideImGUI.rayonFil, 0.1f, 1.0f);
 
 		if (memcmp(&solenoide, &solenoideImGUI, sizeof(solenoideImGUI)) != 0)
 		{
 			solenoide = solenoideImGUI;
 
 			Model model;
-			genererSolenoide(&model, 30000, solenoide.rayonSolenoide, solenoide.rayonFil, solenoide.longeur, solenoide.nombreTours);
+			genererSolenoide(&model, 100000, solenoide.rayonSolenoide, solenoide.rayonFil, solenoide.longeur, solenoide.nombreTours);
 			mgx::Mesh::chargerModel<Vertex>(&app->donnesOperation.meshSolenoide, &app->moteurGX, model.nbTriangle * 3, model.triangles);
 			delete[] model.triangles;
+
+			MoteurPhysique::GPU::soumettreBufferInfo(app->moteurPhysique.info);
+			MoteurPhysique::GPU::executerCalcul(app->moteurPhysique.shaderChampMagnetique, app->moteurPhysique.coordonnees, app->moteurPhysique.champMagnetique, app->moteurPhysique.info);
 		}
 
 		ImGui::SliderFloat("Ambient", &app->donnesOperation.kAmbient, 0.0f, 1.0f);
@@ -355,7 +365,7 @@ void Application::initialiserMoteurGraphique(Application* const app)
 	
 	MoteurPhysique::Solenoide solenoide = app->moteurPhysique.info.solenoides[0];
 	Model model;
-	genererSolenoide(&model, 30000, solenoide.rayonSolenoide, solenoide.rayonFil, solenoide.longeur, solenoide.nombreTours);
+	genererSolenoide(&model, 100000, solenoide.rayonSolenoide, solenoide.rayonFil, solenoide.longeur, solenoide.nombreTours);
 	mgx::Mesh::creer(&app->donnesOperation.meshSolenoide, &app->moteurGX);
 	mgx::Mesh::chargerModel<Vertex>(&app->donnesOperation.meshSolenoide, &app->moteurGX, model.nbTriangle * 3, model.triangles);
 
@@ -514,65 +524,7 @@ glm::vec3 orientation(float yaw, float pitch) {
 	return glm::vec3(sin(yawR) * cos(pitchR), sin(pitchR), cos(yawR) * cos(pitchR));
 }
 
-void Application::initialiserSimulation(Application* const app)
-{
-	mgx::Pipeline& pipeline = MoteurGX::creerPipeline(&app->moteurGX, &app->moteurPhysique.pipeline);
-	pipeline.renduStandard(&pipeline, true);
-	pipeline.tailleFenetre = glm::uvec2(10000, 10000);
-	pipeline.modeDessin = Operation::Dessin::POINTS;
-	
-	{   //Framebufer
-		Framebuffer& fbo = MoteurGX::creerFramebuffer(&app->moteurGX, &pipeline.fbo);
-		Texture& tex = MoteurGX::creerTexture(&app->moteurGX, &app->moteurPhysique.texFbo);
-		Framebuffer::addAttachment(&fbo, &tex, pipeline.tailleFenetre.x, pipeline.tailleFenetre.y, Tex::FormatInterne::RVBA, Tex::Format::RVBA, Donnee::Type::U8, Tex::Filtre::LINEAIRE, Tex::Filtre::PROCHE);
-	}
 
-	{   //Charger les shaders pour 
-		Shader& shader = MoteurGX::creerShader(&app->moteurGX, &pipeline.shader);
-		
-		const std::string chemin = "Shaders/Plan/";
-		std::string shaderRaw;
-
-		chargerFichier(chemin + "Vertex.glsl", &shaderRaw);
-		Shader::loadSubShader(shader, shaderRaw, TypeShader::VERTEX);
-		shaderRaw.clear();
-
-		chargerFichier(chemin + "Geometry.glsl", &shaderRaw);
-		Shader::loadSubShader(shader, shaderRaw, TypeShader::GEOMETRIE);
-		shaderRaw.clear();
-
-		chargerFichier(chemin + "Fragment.glsl", &shaderRaw);
-		Shader::loadSubShader(shader, shaderRaw, TypeShader::FRAGMENT);
-		
-		Shader::assembler(shader);
-		Shader::delier();
-	}
-
-	{   //Vertex Array Object
-		Vertexarray& vao = MoteurGX::creerVertexarray(&app->moteurGX, &app->moteurPhysique.vao);
-	}
-
-	{   //Texture du gradient d'intensité bleu à rouge
-		unsigned int contenu_gradient[] = { 0x00ff0002, 0x00fd7405, 0x00fbe701, 0x00dfff01, 0x004efd03, 0x0008fe49, 0x0003fde4, 0x0000e3ff, 0x000071fe, 0x000b00ff };
-		Texture& gradient = MoteurGX::creerTexture(&app->moteurGX, &app->moteurPhysique.texGradient);
-		Texture::allouer1D(&gradient, 0, glm::ivec1(10), Tex::FormatInterne::RVBA, Tex::Format::RVBA, Donnee::Type::U8, contenu_gradient);
-		Texture::specifierEtirement(gradient, Tex::Emballage::LIMITER_BORD, Tex::Emballage::LIMITER_BORD, Tex::Emballage::LIMITER_BORD);
-		Texture::specifierFiltre(gradient, Tex::Filtre::LINEAIRE, Tex::Filtre::LINEAIRE);
-	}
-
-	//Initialisation des ressources sur le GPU pour le compute shader
-	Espace::GPU::initialiser(&app->moteurPhysique.coordonnees, glm::ivec3(200, 200, 10));
-	Espace::GPU::initialiser(&app->moteurPhysique.champMagnetique, glm::ivec3(200, 200, 10));
-
-	MoteurPhysique::Info info = app->moteurPhysique.info;
-	MoteurPhysique::GPU::genererBufferInfo(&info);
-	MoteurPhysique::GPU::soumettreBufferInfo(info);
-
-	MoteurPhysique::GPU::chargerShaders(&app->moteurPhysique, "Shaders/Physique/");
-	MoteurPhysique::GPU::assignerCoordonnees(app->moteurPhysique, glm::vec3(-10, -5, -10), glm::vec3(10, 15, 10));
-
-	MoteurPhysique::GPU::executerCalcul(app->moteurPhysique.shaderChampMagnetique, app->moteurPhysique.coordonnees, app->moteurPhysique.champMagnetique, app->moteurPhysique.info);
-}
 
 void Application::executerEntrees(Application* const app, const float dt)
 {
@@ -684,12 +636,70 @@ void Application::executerRendu(Application* const app)
 	//MoteurGX::copierRenduBackbuffer(app->moteurGX, glm::uvec2(800, 600));
 }
 
+void Application::initialiserSimulation(Application* const app)
+{
+	mgx::Pipeline& pipeline = MoteurGX::creerPipeline(&app->moteurGX, &app->moteurPhysique.pipeline);
+	pipeline.renduStandard(&pipeline, true);
+	pipeline.tailleFenetre = glm::uvec2(10000, 10000);
+	pipeline.modeDessin = Operation::Dessin::POINTS;
+
+	{   //Framebufer
+		Framebuffer& fbo = MoteurGX::creerFramebuffer(&app->moteurGX, &pipeline.fbo);
+		Texture& tex = MoteurGX::creerTexture(&app->moteurGX, &app->moteurPhysique.texFbo);
+		Framebuffer::addAttachment(&fbo, &tex, pipeline.tailleFenetre.x, pipeline.tailleFenetre.y, Tex::FormatInterne::RVBA, Tex::Format::RVBA, Donnee::Type::U8, Tex::Filtre::LINEAIRE, Tex::Filtre::PROCHE);
+	}
+
+	{   //Charger les shaders pour 
+		Shader& shader = MoteurGX::creerShader(&app->moteurGX, &pipeline.shader);
+
+		const std::string chemin = "Shaders/Plan/";
+		std::string shaderRaw;
+
+		chargerFichier(chemin + "Vertex.glsl", &shaderRaw);
+		Shader::loadSubShader(shader, shaderRaw, TypeShader::VERTEX);
+		shaderRaw.clear();
+
+		chargerFichier(chemin + "Geometry.glsl", &shaderRaw);
+		Shader::loadSubShader(shader, shaderRaw, TypeShader::GEOMETRIE);
+		shaderRaw.clear();
+
+		chargerFichier(chemin + "Fragment.glsl", &shaderRaw);
+		Shader::loadSubShader(shader, shaderRaw, TypeShader::FRAGMENT);
+
+		Shader::assembler(shader);
+		Shader::delier();
+	}
+
+	{   //Vertex Array Object
+		Vertexarray& vao = MoteurGX::creerVertexarray(&app->moteurGX, &app->moteurPhysique.vao);
+	}
+
+	{   //Texture du gradient d'intensité bleu à rouge
+		unsigned int contenu_gradient[] = { 0x00ff0002, 0x00fd7405, 0x00fbe701, 0x00dfff01, 0x004efd03, 0x0008fe49, 0x0003fde4, 0x0000e3ff, 0x000071fe, 0x000b00ff };
+		Texture& gradient = MoteurGX::creerTexture(&app->moteurGX, &app->moteurPhysique.texGradient);
+		Texture::allouer1D(&gradient, 0, glm::ivec1(10), Tex::FormatInterne::RVBA, Tex::Format::RVBA, Donnee::Type::U8, contenu_gradient);
+		Texture::specifierEtirement(gradient, Tex::Emballage::LIMITER_BORD, Tex::Emballage::LIMITER_BORD, Tex::Emballage::LIMITER_BORD);
+		Texture::specifierFiltre(gradient, Tex::Filtre::LINEAIRE, Tex::Filtre::LINEAIRE);
+	}
+
+	//Initialisation des ressources sur le GPU pour le compute shader
+	Espace::GPU::initialiser(&app->moteurPhysique.coordonnees, glm::ivec3(200, 200, 50));
+	Espace::GPU::initialiser(&app->moteurPhysique.champMagnetique, glm::ivec3(200, 200, 50));
+
+	MoteurPhysique::Info& info = app->moteurPhysique.info;
+	MoteurPhysique::GPU::genererBufferInfo(&info);
+	MoteurPhysique::GPU::soumettreBufferInfo(info);
+
+	MoteurPhysique::GPU::chargerShaders(&app->moteurPhysique, "Shaders/Physique/");
+	MoteurPhysique::GPU::assignerCoordonnees(app->moteurPhysique, glm::vec3(-10, -10, -10), glm::vec3(10, 10, 10));
+
+	MoteurPhysique::GPU::executerCalcul(app->moteurPhysique.shaderChampMagnetique, app->moteurPhysique.coordonnees, app->moteurPhysique.champMagnetique, app->moteurPhysique.info);
+}
+
 void Application::executerSimulation(Application* const app)
 {
-	MoteurPhysique::GPU::executerCalcul(app->moteurPhysique.shaderChampMagnetique, app->moteurPhysique.coordonnees, app->moteurPhysique.champMagnetique, app->moteurPhysique.info);
-
 	Camera camera = {};
-	camera.position = glm::vec3(0.0f, 0.0f, 0.4f);
+	camera.position = glm::vec3(0.0f, 0.0f, app->donnesOperation.disZ*0.05+0.5);
 	camera.rotation = glm::vec2(0.0f, 0.0f);
 
 	glClear(GL_COLOR_BUFFER_BIT);

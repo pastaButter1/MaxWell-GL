@@ -77,5 +77,5 @@ MoteurPhysique::Fil MoteurPhysique::Fil::creer(glm::vec3 direction, glm::vec3 or
 
 MoteurPhysique::Solenoide MoteurPhysique::Solenoide::creer(glm::vec3 direction, glm::vec3 origine, float courant, float nombreTours, float longeur, float diametre, float rayonFil, float rayonSolenoide)
 {
-	return { direction, courant, origine, nombreTours, longeur, diametre, rayonFil, rayonSolenoide };
+	return { direction, courant, origine, nombreTours, longeur, rayonFil, rayonSolenoide };
 }

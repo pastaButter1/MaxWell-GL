@@ -24,7 +24,6 @@ struct MoteurPhysique
 		glm::vec3 origine;
 		float nombreTours;
 		float longeur;
-		float diametre;
 		float rayonFil;
 		float rayonSolenoide;
 

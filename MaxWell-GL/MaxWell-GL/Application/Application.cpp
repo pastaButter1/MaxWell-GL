@@ -243,9 +243,9 @@ void genererSolenoide(Model* const model, const uint32_t nbTriangles, const floa
 			int j2 = j + 1;
 			j2 = j2 >= nbPointCirconference ? 0 : j2;
 
-			tri1.verts[v0] = { points[indexPoints + j1], glm::vec2(0, 0), -dirFace };
+			tri1.verts[2] = { points[indexPoints + j1], glm::vec2(0, 0), -dirFace };
 			tri1.verts[v1] = { points[indexPoints + j2], glm::vec2(0, 0), -dirFace };
-			tri1.verts[2]  = { pointCentreFace,          glm::vec2(0, 0), -dirFace };
+			tri1.verts[v0]  = { pointCentreFace,          glm::vec2(0, 0), -dirFace };
 		}
 	}
 
@@ -374,7 +374,7 @@ void Application::initialiserMoteurGraphique(Application* const app)
 
 	mgx::Mesh sphere;
 	mgx::Mesh::creer(&sphere, &app->moteurGX);
-	decoderOBJ("../../MaxWell-GL/Mesh/Cube.obj", &model);
+	decoderOBJ("../../MaxWell-GL/Mesh/Camera.obj", &model);
 	mgx::Mesh::chargerModel<Vertex>(&sphere, &app->moteurGX, model.nbTriangle * 3, model.triangles);
 	delete[] model.triangles;
 
@@ -637,7 +637,8 @@ void Application::executerRendu(Application* const app)
 
 	{
 		const Shader& shader = MoteurGX::demarerProgramme(app->moteurGX, 0);
-		Shader::pousserConstanteMat4(shader, "u_cam", vueCam);
+		Shader::pousserConstanteMat4(shader, "u_matriceVP", vueCam);
+		Shader::pousserConstanteMat4(shader, "u_matriceM", glm::mat4(1.0f));
 		Shader::pousserConstanteVec3(shader, "u_couleur", app->donnesOperation.couleur);
 		Shader::pousserConstanteVec3(shader, "u_dirLumiere", posLumiere);
 		Shader::pousserConstanteVec3(shader, "u_posCam", camPos);
@@ -648,6 +649,9 @@ void Application::executerRendu(Application* const app)
 		Shader::pousserConstanteVirgule(shader, "u_exposantSpec", app->donnesOperation.esposantSpec);
 		Shader::pousserTexture(shader, "u_skybox", MoteurGX::retTexture(app->moteurGX, 0), 0);
 		MoteurGX::executerProgramme(app->moteurGX, 0, 0);
+
+		Shader::pousserConstanteMat4(shader, "u_matriceM", glm::translate(glm::mat4(1.0f), 20.0f * posLumiere));
+		MoteurGX::executerProgramme(app->moteurGX, 0, 2);
 	}
 
 	// Dessiner le skybox
@@ -682,12 +686,14 @@ void Application::executerRendu(Application* const app)
 	Shader::pousserConstanteVec3(shaderPlan, "u_dirLumiere", posLumiere);
 	Shader::pousserConstanteVec3(shaderPlan, "u_posCam", camPos);
 
-	Shader::pousserConstanteMat4(shaderPlan, "u_cam", vueCam * glm::translate(glm::mat4(1.0f), 20.0f * posLumiere));
+	Shader::pousserConstanteMat4(shaderPlan, "u_matriceVP", vueCam);
+	Shader::pousserConstanteMat4(shaderPlan, "u_matriceM", glm::translate(glm::mat4(1.0f), 20.0f * posLumiere));
 	Shader::pousserConstanteVec3(shaderPlan, "u_couleur", glm::vec3(1, 1, 1));
 	Shader::pousserTexture(shaderPlan, "u_framebuffer", MoteurGX::retTexture(app->moteurGX, app->moteurPhysique.texFbo), 0);
-	MoteurGX::executerProgramme(app->moteurGX, 2, 2);
+	//MoteurGX::executerProgramme(app->moteurGX, 2, 2);
 
-	Shader::pousserConstanteMat4(shaderPlan, "u_cam", vueCam * matricePlan);
+	Shader::pousserConstanteMat4(shaderPlan, "u_matriceVP", vueCam);
+	Shader::pousserConstanteMat4(shaderPlan, "u_matriceM", matricePlan);
 	Shader::pousserConstanteVec3(shaderPlan, "u_couleur", glm::vec3(0, 1, 1));
 	MoteurGX::executerProgramme(app->moteurGX, 2, 1);
 

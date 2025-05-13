@@ -8,12 +8,13 @@ out vec3 g_pos;
 out vec2 g_uv;
 out vec3 g_normale;
 
-uniform mat4 u_cam;
+uniform mat4 u_matriceVP;
+uniform mat4 u_matriceM;
 
 void main()
 {
-	gl_Position = u_cam * vec4(a_pos, 1.0f);
-	g_pos = a_pos;
+	gl_Position = u_matriceVP * u_matriceM * vec4(a_pos, 1.0f);
+	g_pos = (u_matriceM * vec4(a_pos, 1.0f)).xyz;
 	g_uv = a_uv;
 	g_normale = a_normale;
 }

@@ -26,7 +26,7 @@ struct Application {
 		float disZ = 0.0f;
 
 		glm::vec3 camPos = glm::vec3(0.0f);
-		glm::vec2 angleLumiere = glm::vec2(0.0f);
+		glm::vec2 angleLumiere = glm::vec2(325.0f, 44.0f);
 
 		struct Solenoide
 		{

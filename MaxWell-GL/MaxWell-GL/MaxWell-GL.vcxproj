@@ -123,13 +123,14 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;user32.lib;gdi32.lib;shell32.lib;glew32s.lib</AdditionalDependencies>
+      <AdditionalDependencies>glfw3_mt.lib;opengl32.lib;user32.lib;gdi32.lib;shell32.lib;glew32s.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)MaxWell-GL\Lib\GLFW\lib-vc2017\x64;$(SolutionDir)MaxWell-GL\Lib\GLEW\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -220,14 +221,6 @@
     <None Include="Shaders\Plan\Fragment.glsl" />
     <None Include="Shaders\Plan\Geometry.glsl" />
     <None Include="Shaders\Plan\Vertex.glsl" />
-  </ItemGroup>
-  <ItemGroup>
-    <Object Include="Mesh\Cube.obj">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </Object>
-    <Object Include="Mesh\Sphere.obj">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </Object>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

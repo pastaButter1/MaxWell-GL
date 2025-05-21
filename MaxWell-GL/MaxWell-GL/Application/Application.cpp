@@ -24,6 +24,10 @@
 
 #include "MoteurPhysique/MoteurPhysique/MoteurPhysique.h"
 
+#define REPERTOIRE_EXEC "../../Maxwell-GL/"
+#define REPERTOIRE_PROJ ""
+#define ADDRESSE(x) REPERTOIRE_EXEC x
+
 using Ressource = MoteurGX::Ressource;
 
 void genererSolenoide(Model* const model, const uint32_t nbTriangles, const float R, const float r, const float l, const float rot);
@@ -281,15 +285,17 @@ void Application::initialiserMoteurGraphique(Application* const app)
 		{
 			std::string shaderRaw;
 
-			chargerFichier("Shaders/Simple/vertex.glsl", &shaderRaw);
+			chargerFichier(ADDRESSE("Shaders/Simple/vertex.glsl"), &shaderRaw);
 			Shader::loadSubShader(shader, shaderRaw, TypeShader::VERTEX);
 
 			shaderRaw.clear();
-			chargerFichier("Shaders/Simple/geometrie.glsl", &shaderRaw);
+			chargerFichier(ADDRESSE("Shaders/Simple/geometrie.glsl"), &shaderRaw);
 			Shader::loadSubShader(shader, shaderRaw, TypeShader::GEOMETRIE);
 
+			const char* p = "allo "  "le "  "monde";
+
 			shaderRaw.clear();
-			chargerFichier("Shaders/Simple/fragment.glsl", &shaderRaw);
+			chargerFichier(ADDRESSE("Shaders/Simple/fragment.glsl"), &shaderRaw);
 			Shader::loadSubShader(shader, shaderRaw, TypeShader::FRAGMENT);
 		}
 		Shader::assembler(shader);
@@ -313,11 +319,11 @@ void Application::initialiserMoteurGraphique(Application* const app)
 		{
 			std::string shaderRaw;
 
-			chargerFichier("Shaders/PrefiltrageZ/vertex.glsl", &shaderRaw);
+			chargerFichier(ADDRESSE("Shaders/PrefiltrageZ/vertex.glsl"), &shaderRaw);
 			Shader::loadSubShader(shader, shaderRaw, TypeShader::VERTEX);
 
 			shaderRaw.clear();
-			chargerFichier("Shaders/PrefiltrageZ/fragment.glsl", &shaderRaw);
+			chargerFichier(ADDRESSE("Shaders/PrefiltrageZ/fragment.glsl"), &shaderRaw);
 			Shader::loadSubShader(shader, shaderRaw, TypeShader::FRAGMENT);
 		}
 		Shader::assembler(shader);
@@ -339,15 +345,15 @@ void Application::initialiserMoteurGraphique(Application* const app)
 		{
 			std::string shaderRaw;
 
-			chargerFichier("Shaders/Simple/vertex.glsl", &shaderRaw);
+			chargerFichier(ADDRESSE("Shaders/Simple/vertex.glsl"), &shaderRaw);
 			Shader::loadSubShader(shaderPlan, shaderRaw, TypeShader::VERTEX);
 
 			shaderRaw.clear();
-			chargerFichier("Shaders/Simple/geometrie.glsl", &shaderRaw);
+			chargerFichier(ADDRESSE("Shaders/Simple/geometrie.glsl"), &shaderRaw);
 			Shader::loadSubShader(shaderPlan, shaderRaw, TypeShader::GEOMETRIE);
 
 			shaderRaw.clear();
-			chargerFichier("Shaders/Simple/fragmentPlan.glsl", &shaderRaw);
+			chargerFichier(ADDRESSE("Shaders/Simple/fragmentPlan.glsl"), &shaderRaw);
 			Shader::loadSubShader(shaderPlan, shaderRaw, TypeShader::FRAGMENT);
 		}
 		Shader::assembler(shaderPlan);
@@ -376,12 +382,12 @@ void Application::initialiserMoteurGraphique(Application* const app)
 
 	mgx::Mesh sphere;
 	mgx::Mesh::creer(&sphere, &app->moteurGX);
-	decoderOBJ("Mesh/Sphere.obj", &model);
+	decoderOBJ(ADDRESSE("Mesh/Sphere.obj"), &model);
 	mgx::Mesh::chargerModel<Vertex>(&sphere, &app->moteurGX, model.nbTriangle * 3, model.triangles);
 	delete[] model.triangles;
 
 	int32_t skyboxX, skyboxY, skyboxCanaux;
-	std::string dossier = "Skybox/Machine shop/1k/";
+	std::string dossier = ADDRESSE("Skybox/Machine shop/1k/");
 	std::string ext = ".hdr";
 	std::string noms[6] = { "px", "nx", "py", "ny", "pz", "nz"};
 	Texture& skybox = MoteurGX::creerTexture(&app->moteurGX, &app->donnesOperation.skyboxIU);
@@ -412,11 +418,11 @@ void Application::initialiserMoteurGraphique(Application* const app)
 		{
 			std::string shaderRaw;
 
-			chargerFichier("Shaders/Skybox/vertex.glsl", &shaderRaw);
+			chargerFichier(ADDRESSE("Shaders/Skybox/vertex.glsl"), &shaderRaw);
 			Shader::loadSubShader(shader, shaderRaw, TypeShader::VERTEX);
 
 			shaderRaw.clear();
-			chargerFichier("Shaders/Skybox/fragment.glsl", &shaderRaw);
+			chargerFichier(ADDRESSE("Shaders/Skybox/fragment.glsl"), &shaderRaw);
 			Shader::loadSubShader(shader, shaderRaw, TypeShader::FRAGMENT);
 		}
 		Shader::assembler(shader);
@@ -425,7 +431,7 @@ void Application::initialiserMoteurGraphique(Application* const app)
 
 	mgx::Mesh& cube = app->donnesOperation.meshCube;
 	mgx::Mesh::creer(&cube, &app->moteurGX);
-	decoderOBJ("Mesh/Cube.obj", &model);
+	decoderOBJ(ADDRESSE("Mesh/Cube.obj"), &model);
 	mgx::Mesh::chargerModel<Vertex>(&cube, &app->moteurGX, model.nbTriangle * 3, model.triangles);
 	delete[] model.triangles;
 }
@@ -600,13 +606,8 @@ void Application::executerRendu(Application* const app)
 		const Shader& shader = MoteurGX::demarerProgramme(app->moteurGX, 3);
 		Texture::lier(MoteurGX::retTexture(app->moteurGX, app->donnesOperation.skyboxIU));
 		Shader::pousserTexture(shader, "u_skybox", MoteurGX::retTexture(app->moteurGX, 0), 0);
-		for (int i = 0; i < 1; i++)
-		{
-			Shader::pousserConstanteMat4(shader, "u_cam", proj * matrice);
-			MoteurGX::executerProgramme(app->moteurGX, 0, 3);
-
-			matrice *= rotationCam;
-		}
+		Shader::pousserConstanteMat4(shader, "u_cam", proj * matrice);
+		MoteurGX::executerProgramme(app->moteurGX, 0, 3);
 	}
 
 	// Dessiner le plan
@@ -623,11 +624,11 @@ void Application::executerRendu(Application* const app)
 	const Shader& shaderPlan = MoteurGX::demarerProgramme(app->moteurGX, 2);
 	Shader::pousserConstanteVec3(shaderPlan, "u_dirLumiere", posLumiere);
 	Shader::pousserConstanteVec3(shaderPlan, "u_posCam", camPos);
-
-	Shader::pousserConstanteMat4(shaderPlan, "u_cam", vueCam * glm::translate(glm::mat4(1.0f), 20.0f * posLumiere));
-	Shader::pousserConstanteVec3(shaderPlan, "u_couleur", glm::vec3(1, 1, 1));
 	Shader::pousserTexture(shaderPlan, "u_framebuffer", MoteurGX::retTexture(app->moteurGX, app->moteurPhysique.texFbo), 0);
-	MoteurGX::executerProgramme(app->moteurGX, 2, 2);
+
+	//Shader::pousserConstanteMat4(shaderPlan, "u_cam", vueCam * glm::translate(glm::mat4(1.0f), 20.0f * posLumiere));
+	//Shader::pousserConstanteVec3(shaderPlan, "u_couleur", glm::vec3(1, 1, 1));
+	//MoteurGX::executerProgramme(app->moteurGX, 2, 2);
 
 	Shader::pousserConstanteMat4(shaderPlan, "u_cam", vueCam * matricePlan);
 	Shader::pousserConstanteVec3(shaderPlan, "u_couleur", glm::vec3(0, 1, 1));
@@ -652,7 +653,7 @@ void Application::initialiserSimulation(Application* const app)
 	{   //Charger les shaders pour 
 		Shader& shader = MoteurGX::creerShader(&app->moteurGX, &pipeline.shader);
 
-		const std::string chemin = "Shaders/Plan/";
+		const std::string chemin = ADDRESSE("Shaders/Plan/");
 		std::string shaderRaw;
 
 		chargerFichier(chemin + "Vertex.glsl", &shaderRaw);
@@ -690,7 +691,7 @@ void Application::initialiserSimulation(Application* const app)
 	MoteurPhysique::GPU::genererBufferInfo(&info);
 	MoteurPhysique::GPU::soumettreBufferInfo(info);
 
-	MoteurPhysique::GPU::chargerShaders(&app->moteurPhysique, "Shaders/Physique/");
+	MoteurPhysique::GPU::chargerShaders(&app->moteurPhysique, ADDRESSE("Shaders/Physique/"));
 	MoteurPhysique::GPU::assignerCoordonnees(app->moteurPhysique, glm::vec3(-10, -10, -10), glm::vec3(10, 10, 10));
 
 	MoteurPhysique::GPU::executerCalcul(app->moteurPhysique.shaderChampMagnetique, app->moteurPhysique.coordonnees, app->moteurPhysique.champMagnetique, app->moteurPhysique.info);

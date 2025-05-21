@@ -108,7 +108,7 @@ void Shader::pousserConstanteIVec2(const Shader& shader, const std::string& name
 void Shader::pousserConstanteVirgule(const Shader& shader, const std::string& name, float f)
 {
 	uint32_t loc = APPEL_GX(glGetUniformLocation(shader.id, name.c_str()));
-	APPEL_GX(glUniform1f(loc, f))
+	APPEL_GX(glUniform1f(loc, f));
 }
 
 void Shader::pousserTexture(const Shader& shader, const std::string& name, const Texture& tex, GLuint unite)

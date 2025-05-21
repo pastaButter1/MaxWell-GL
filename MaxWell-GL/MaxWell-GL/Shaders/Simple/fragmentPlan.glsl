@@ -21,5 +21,5 @@ void main()
 
 	float speculaire = dot(dirVue, reflect(normale, u_dirLumiere));
 
-	r_couleur = texture2D(u_framebuffer, f_uv);
+	r_couleur = texture(u_framebuffer, f_uv);
 }

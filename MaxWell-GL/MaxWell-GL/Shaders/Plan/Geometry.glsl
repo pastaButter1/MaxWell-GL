@@ -17,7 +17,7 @@ void main()
 
     intensite = length(champ);
 
-    vec4 force =  normalize(champ);
+    vec4 force =  champ / length(champ.xy);
     vec4 pos = coord * vec4(2.0f, 2.0f, 2.0f, 1.0f) - vec4(1.0f, 1.0f, 0.0f, 0.0f);
 
     gl_Position = pos + force * scalaire; 

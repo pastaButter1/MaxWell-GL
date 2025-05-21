@@ -18,8 +18,7 @@
 
 #ifdef _DEBUG
 #define APPEL_GX(x) x; { GLuint erreur = glGetError(); int i = 0; while(erreur != GL_NO_ERROR && i < 1) { printf("ERREUR | %s(%i) : %i\n", __FILE__, __LINE__, erreur); erreur = glGetError(); i++; }}
-#endif
-#ifdef _RELEASE
+#else
 #define APPEL_GX(x) x
 #endif
 

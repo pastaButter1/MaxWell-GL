@@ -64,6 +64,13 @@ namespace mgx
 	};
 }
 
+/**
+* 
+* Structure permettant facilement d'effectuer des tâches graphiques sur le GPU
+* 
+* Note : Le ressource ne sont que des index étant utilisés par les tampons pour distinguer les objets qu'ils contiennent
+* 
+*/
 struct MoteurGX
 {
 	using Ressource = mgx::Ressource;
@@ -89,6 +96,7 @@ struct MoteurGX
 	MoteurGX(const MoteurGX&) = delete;
 	MoteurGX& operator=(const MoteurGX&) = delete;
 
+	/** Initialisation des tampons de ressources et création des ressources de base comme une cible graphique (FBO) */
 	static void init(MoteurGX* const mGX);
 
 	static Pipeline& creerPipeline(MoteurGX* const mGX, Ressource* const res);
@@ -115,11 +123,19 @@ struct MoteurGX
 
 	static Vertexbuffer& retVertexbuffer(const MoteurGX& mGX, const Ressource res);
 
+	/** 
+	* Initialise le ressource et les paramètres nécessaires à un programme (shader) particulier
+	* 
+	* Les constantes "uniform" d'un programme doivent être envoyer manuellement à l'aide des fonctions dans la classe shader
+	*/
 	static const Shader& demarerProgramme(const MoteurGX&  mGX, const Ressource pipeline);
 
+	/** Envoie une requête au GPU pour éxécuter une tâche (Drawcall) avec un tampon de triangles (vaoIU) */
 	static void executerProgramme(const MoteurGX& mGX, const Ressource pipelineIU, const Ressource vaoIU);
 
+	/** Ne fait rien, à retirer */
 	static void pousserMesh(MoteurGX* const mGX);
 
+	/** Copie l'image produite avec les divers programmes sur le FBO de l'écran */
 	static void copierRenduBackbuffer(const MoteurGX& mGX, const glm::uvec2 dimensionBackbuffer);
 };

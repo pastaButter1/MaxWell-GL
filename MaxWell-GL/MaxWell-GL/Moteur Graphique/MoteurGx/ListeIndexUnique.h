@@ -17,6 +17,7 @@ public:
 
 	}
 
+	/** Allocation d'un bloc de donnée sur le heap */
 	void reserverLongueur(const uint32_t longueur)
 	{
 		if (longueur <= tamponIndex.size())
@@ -26,6 +27,7 @@ public:
 		tamponDonnees.reserve(longueur);
 	}
 
+	/** Ajouter un élément selon son constructeur de base ainsi que son index unique associé à la fin de la pile */
 	TypeCompteur ajouter()
 	{
 		TypeCompteur indexUnique = compteurTotal;
@@ -40,6 +42,7 @@ public:
 		return indexUnique;
 	}
 
+	/** Ajouter un élément créé à l'avance ainsi que son index unique associé à la fin de la pile */
 	TypeCompteur ajouter(const Contenant& item)
 	{
 		TypeCompteur indexUnique = ajouter();
@@ -52,6 +55,7 @@ public:
 		return indexUnique;
 	}
 
+	/** Retire un élément du tampon à l'aide de sa position dans le tampon par rapport au début du tampon et déplace les éléments suivant l'élément retiré pour refermer le trou généré */
 	void retirerIndex(const TypeCompteur index)
 	{
 		if (index < tamponIndex.size())
@@ -71,6 +75,7 @@ public:
 		}
 	}
 
+	/** Retire un élément du tampon à l'aide de son index unique et déplace les éléments suivant l'élément retiré pour refermer le trou généré */
 	void retirerIndexUnique(const TypeCompteur indexUnique)
 	{
 		TypeCompteur index = retournerIndex(indexUnique);
@@ -81,6 +86,7 @@ public:
 		}
 	}
 
+	/** Retourne la position de l'élément dans le tampon par rapport au début du tampon grâce à l'index unique associé à cet élément */
 	const TypeCompteur retournerIndex(const TypeCompteur indexUnique) const
 	{
 		if (indexUnique >= compteurTotal)
@@ -132,6 +138,7 @@ public:
 		return essai;
 	}
 
+	/** Retourne la référence à un élément grâce à sa position dans le tampon */
 	Contenant& rechercherIndex(const TypeCompteur index)
 	{
 		if (index < compteurMax - 1)
@@ -144,16 +151,19 @@ public:
 		return *ptrNull;
 	}
 
+	/** Retourne la référence à un élément grâce à son index unique */
 	Contenant& rechercherIndexUnique(const TypeCompteur indexUnique)
 	{
 		return rechercherIndex(retournerIndex(indexUnique));
 	}
 
+	/** Retourne la référence constante à un élément grâce à sa position dans le tampon */
 	const Contenant& rechercherIndex(const TypeCompteur index) const
 	{
 		return ((ListeIndexUnique < TypeCompteur, Contenant>*)this)->rechercherIndex(index);
 	}
 
+	/** Retourne la référence constante à un élément grâce à son index unique */
 	const Contenant& rechercherIndexUnique(const TypeCompteur indexUnique) const
 	{
 		return ((ListeIndexUnique < TypeCompteur, Contenant>*)this)->rechercherIndexUnique(indexUnique);

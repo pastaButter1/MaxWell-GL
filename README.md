@@ -24,9 +24,7 @@ Encore, l'utilisation d'API d'aussi pas niveau que OpenGL par rapport à des mot
 #### GLM
 Enfin, nous avons eu besoin d'une dernière libraire: [GLM](https://github.com/g-truc/glm). C'est une librairie en C++, basée sur les templates ou generics dans d'autres languages et la surcharge d'opérateur, qui contient énormément de définitions de types mathématiques que cela soit de vecteurs ou matrices ainsi que des fonctions connexes qui facilitent grandement la programation dans un environnement 3D, mais qui présente aussi les données dans un format qui est directement compatibles avec les API graphiques comme OpenGL que nous utilisons.
 
-[<img src="https://img.youtube.com/vi/https://youtu.be/CFjZAVqjIHM/hqdefault.jpg" width="600" height="300"
-/>](https://www.youtube.com/embed/https://youtu.be/CFjZAVqjIHM)
-
+[![Watch the video](https://img.youtube.com/vi/CFjZAVqjIHM/hqdefault.jpg)](https://www.youtube.com/embed/CFjZAVqjIHM)
 ## Les difficultés
 Bien que nous avions de l'expérience avec les outils que nous avons utilisés, nous avons tout de même fait face à des difficultés. La majorité étaient en lien direct avec OpenGL. Les outils de déboguage sont limités. Il est donc du devoir du codeur d'avoir une compréhension assez appronfie de son programme et de la  manière avec laquelle fonctionne OpenGL. 
 

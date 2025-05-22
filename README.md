@@ -36,6 +36,7 @@ Bien que nous avions de l'expérience avec les outils que nous avons utilisés, 
 Le projet, bien qu'à un stade fonctionnel, est encore loin d'être fini. Nous aurions aimé avoir été capable d'intégrer plus de fonctionnalités dans l'application. Il aurait été intéressant de d'avoir plus de composantes électroniques comme des fils, des toroïdes, etc. Il aurait aussi été plaisant d'intégrer des simulations dans le temps où le champ magnétique pourait varier selon un programme défini. L'utlisateur aurait ainsi pu étudier en plus grande profondeur les mécaniques du courant alternatif. Avant tout, il faudrait aussi revoir l'interface utilisateur pour réduire le plus possible tout information écrite statiquement danns le code et permettre à l'utilisateur de contrôler le plus possible son environnement. Il devrait être capable d'ajouter ou de retirer des composantes, de modifier la position et l'orientation de celles-ci, de modifier leurs propriétés électriques ou graphiques, etc.
 
 ## La conclusion
+En conclusion, notre planification était plus ambitieuse que ce que l'on a pu réaliser. Nous avons tout de même atteins certains buts. Nous avons une application OpenGL fonctionnelle qui affiche certaines fonctionnalité.
 
 ## Crédit
 Le projet développé dans le cours d'intégration en sciences informatiques et mathématiques au Collège Bois-de-Boulogne.

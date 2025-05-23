@@ -29,6 +29,7 @@ Enfin, nous avons eu besoin d'une dernière libraire: [GLM](https://github.com/g
 
 ### L'application
 
+
 ### Les équations
 À ce stade du projet, seule l'équation de Biot-Savard a été utilisé pour calculer le champ magnétique autour d'un fil ou d'un solénoïde.
 
@@ -49,36 +50,48 @@ $$ \vec{B} = {\mu_0 i \over 2 \pi} \int\limits_0^{2 \pi L \over N} {{{\mathrm d 
 ##### Voici une démonstration de l'éxécutable à ce moment:
 [![Watch the video](https://img.youtube.com/vi/CFjZAVqjIHM/hqdefault.jpg)](https://www.youtube.com/embed/CFjZAVqjIHM)
 
+
 ## Les difficultés
-Bien que nous avions de l'expérience avec les outils que nous avons utilisés, nous avons tout de même fait face à des difficultés. La majorité étaient en lien direct avec OpenGL. Des outils de déboguage sont disponible. [RenderDoc](https://renderdoc.org/) est libre de droits et nous l'avons utilisé. 
+Bien que nous avions de l'expérience avec les outils que nous avons utilisés, nous avons tout de même fait face à des difficultés. La majorité étaient en lien direct avec OpenGL. Des outils de déboguage sont disponible. [RenderDoc](https://renderdoc.org/) est libre de droits et nous l'avons utilisé. Voici quelques captures d'écran que nous avons prises.
 
 |       |       |
 | :---: | :---: |
-| ![]() | ![]() |
+| Application <img src="RessourceReadme/Capture d’écran 2025-05-22 221212.png" width="600" height="400" /> | Texture <img src="RessourceReadme/Capture d’écran 2025-05-22 221321.png" width="600" height="400" /> |
+| Pipeline <img src="RessourceReadme/Capture d’écran 2025-05-22 221417.png" width="600" height="400" /> | Mesh <img src="RessourceReadme/Capture d’écran 2025-05-22 221442.png" width="600" height="400" /> |
 
-Il est donc du devoir du progammeur d'avoir une compréhension assez appronfie de son programme et de la  manière avec laquelle fonctionne OpenGL. 
+Toutefois, certaines erreurs sont complexes. Par exemple, si un buffer n'est pas lié correctement, le débogueur n'affichera aucune erreur. Il nous informera seulement qu'il n'a pas trouvé la ressource. Si une erreur arrive, l'application pourrait tout simplement se fermer sans laisser la chance au programmeur de l'inspecter. Certaines erreurs peuvent être surnoises dans le cas où un type n'accepte que des valeurs bien spécifique. La lecture de la documentation devient une étape essentielle. C'est donc au programmeur de devoir déduire la provenance des erreurs. Des techniques de déboguages où on retire peu à peu du code jusqu'à ce qu'on retrouve un projet fonctionnel deviennent extrèmement utiles.
+
+Même avec ces précautions, certains bogues sont tout simplement impossible à corriger dans le programme parce qu'il ne provienne pas de lui. Une fois, il m'est arrivé que les drivers de ma carte graphique causaient des erreurs. J'ai perdu quelques jours à tenter de résoudre le problème avant d'y penser. Le problème est parti après que je les aie mis à jour.
+
+Du même coup, implémenter des fonctionnalités qu'aucun de nous deux n'a déjà utilisé devient compliqué. La documentation donne juste assez d'information pour s'en sortir. Cela nous oublige à fouiller sur divers forums et à perdre énormément de temps à comprendre toutes les spécificités d'une fonctionnalité.
 
 ## L'échéancier
 Bien que nous n'ayons pas pu paufiner le projet comme nous le voulions, nous avons tout de même atteints la majorité de nos objectifs. Certaines parties de l'échéancier ont pris un peu de retard en cours de chemin: principalement l'interface fonctionnelle, mais incomplète et la simulation. Toutefois, les simulations des solénoïdes et des fils sont présentes et fonctionnelles dans le projet, il est seulement arrivé que nous n'avons pas eu la détermination d'ajuster la fonction qui crée le solénoïde pour qu'elle crée un fil à la place. Ainsi, sans modèle et interface pour facilement aller d'un à l'autre, nous avons inclus qu'un solénoïde.
 
 <img src="RessourceReadme/Capture d’écran 2025-05-22 220136.png" width="1000" height="400" />
 
+
 ## La structure UML
 Pour ce projet, nous n'avons pas formellement utilisé de programmation orientée objet. Cela implique que nous n'avons pas utilisé de polyformisme ni d'héritage. Les données sont plutôt assemblés en structures dans lesquelles sont aussi définies des fonctions statiques. Ces fonctions statiques prennent en paramètre la structure dont elles font partie. Ces définitions peuvent s'apparenter à des namespaces. Le graphique ci-dessous, fait par l'outil de documentation [Doxygen](https://www.doxygen.nl/) indique les liens de dépendance entre nos structures.
 
 <img src="RessourceReadme/Diagramme intégration.png" width="400" height="400" />
 
+
 ## Les perspectives
 Le projet, bien qu'à un stade fonctionnel, est encore loin d'être fini. Nous aurions aimé avoir été capable d'intégrer plus de fonctionnalités dans l'application. Il aurait été intéressant de d'avoir plus de composantes électroniques comme des fils, des toroïdes, etc. Il aurait aussi été plaisant d'intégrer des simulations dans le temps où le champ magnétique pourait varier selon un programme défini. L'utlisateur aurait ainsi pu étudier en plus grande profondeur les mécaniques du courant alternatif. Avant tout, il faudrait aussi revoir l'interface utilisateur pour réduire le plus possible tout information écrite statiquement danns le code et permettre à l'utilisateur de contrôler le plus possible son environnement. Il devrait être capable d'ajouter ou de retirer des composantes, de modifier la position et l'orientation de celles-ci, de modifier leurs propriétés électriques ou graphiques, etc.
 
-![Toroïde](https://i5.walmartimages.com/asr/673fcd95-2bfd-405d-88f6-0744d2af719e.6d74a8f705166fa7dfd0bf0512c75b7a.jpeg?odnHeight=612&odnWidth=612&odnBg=FFFFFF)
+<img src="https://i5.walmartimages.com/asr/673fcd95-2bfd-405d-88f6-0744d2af719e.6d74a8f705166fa7dfd0bf0512c75b7a.jpeg?odnHeight=612&odnWidth=612&odnBg=FFFFFF" width="400" height="400" />
+
 [source](https://i5.walmartimages.com/asr/673fcd95-2bfd-405d-88f6-0744d2af719e.6d74a8f705166fa7dfd0bf0512c75b7a.jpeg?odnHeight=612&odnWidth=612&odnBg=FFFFFF)
+
 
 ## La conclusion
 En conclusion, notre planification était plus ambitieuse que ce que l'on a pu réaliser. Nous avons tout de même atteins certains buts. Nous avons une application OpenGL fonctionnelle qui permet tout de même d'en apprendre plus sur l'électromagnétisme.
 
+
 ## Crédit
 Le projet a été codéveloppé dans le cours d'intégration en sciences informatiques et mathématiques au Collège Bois-de-Boulogne par Charles-Antoineet Alexandre Lafrenière.
+
 
 ## Licence
 Le projet est libre de droits sous la licence GNU. Voir [GPL-3.0 licence.txt](https://github.com/pastaButter1/MaxWell-GL?tab=GPL-3.0-1-ov-file#) pour plus d'information.

@@ -28,6 +28,11 @@ Encore, l'utilisation d'API d'aussi bas niveau que OpenGL par rapport à des mot
 #### GLM
 Enfin, nous avons eu besoin d'une dernière libraire: [GLM](https://github.com/g-truc/glm). C'est une librairie en C++, basée sur les *templates* ou *generics* dans d'autres languages ainsi que la surcharge d'opérateur, qui contient énormément de définitions de types mathématiques que cela soit de vecteurs ou matrices ainsi que des fonctions connexes qui facilitent grandement la programation dans un environnement 3D Elle présente aussi les données dans un format qui est directement compatibles avec les API graphiques comme OpenGL que nous utilisons.
 
+### L'environnement 3D
+Nous avons bâti suffisament de fonctions pour nous permettre de bâtir quelque chose d'équivalent à un petit moteur graphique. Nous sommes capables d'afficher une scène avec un *skybox* (arrière plan dans toutes les directions) dans laquelle se trouve un solénoïde et dans le futur, d'autres composantes électroniques. Or pour être capable d'efficacement observer le champ magnétique, nous avons décidés de créer un plan de coupe mobile qui affichera le champ selon sa position. Ainsi, l'utilisateur peut passer à travers la composante et observer les changements d'intensité, mais aussi de direction du champ magnétique. Ce champ est représenté par des flèches 2D sur le plan. Encore, pour améliorer l'intéret de l'application, nous avons rendu le solénoïde modifiable. Il est possible d'en changer la lonogueur, le rayon ainsi que le nombre de spires.
+
+Du fait d'un monde en 3D, il est possible de déplacer la caméra en utilisant W/S pour avancer et reculer, A/D pour aller à gauche ou à droite, Espace/Shift pour monter ou descendre et les quatres flèches pour tourner la vue sur les axes vertical et horizontal.
+
 ### Les calculs physiques
 Pour calculer le champ magnétique dans noter simulation, nous divisons l'espace au grand complet en petits cubes appelés *voxels* qui contiennent la valeur du champ magnétique à cet endroit en particulier. Aussi, les cartes graphiques sont conçues avec énormément de coeurs capables de faire énormément de calculs, mais peu de logique ce qui les rendent très utiles afin d'accélérer des calculs. Justement, le champ dans chaque voxel est calculé indépendament de celui de son voisin. De ce fait, nous pouvons séparer les dépendances enter les calculs de la même manière que nous avons séparés le stockage, soit dans un espace en trois dimensions. C'est pour cela que les *compute shader* sont utiles. Il est possible d'invoquer les tâches dans les trois dimensions en même temps en ajustant le nombre de *work group* dans chacune des dimensions comme dans le diagram ci-dessous. Chacun des cubes représente une tâche à effectuer. La carte graphique effectuera le compute shader pour chacun d'eux.
 Enfin, une fois les calculs finis, les flèches disposés sur le plan de coupe interpolent les données qui indiquent leur magnitude et leur direction.
@@ -72,6 +77,8 @@ Du même coup, implémenter des fonctionnalités qu'aucun de nous deux n'a déj�
 ## L'échéancier
 Bien que nous n'ayons pas pu paufiner le projet comme nous le voulions, nous avons tout de même atteints la majorité de nos objectifs. Certaines parties de l'échéancier ont pris un peu de retard en cours de chemin: principalement l'interface,  fonctionnelle mais incomplète, et la simulation. Ce retard est dû aux diffultés qui ont étés rencontrés lorsque je [Charles-Antoine] ai essayé d'ajouter mon code à celui de mon frère. Il a parfois été nécessaire de réécrire des parties entières. Toutefois, les simulations des solénoïdes et des fils sont présentes et fonctionnelles dans le projet, il est seulement arrivé que nous n'avons pas eu la détermination afin d'ajuster la fonction qui crée le solénoïde pour qu'elle crée un fil à la place. Ainsi, sans modèle et interface pour facilement aller d'un à l'autre, nous n'avons inclus que le solénoïde.
 
+Aussi, bien que nous nous occupions de parties différentes du projet, Alexandre s'occupant de la partie graphique et Charles-Antoine de la partie physique, nous avons les deux soufferts de problèmes retardant notre avancement. Ces impacts pouvaient aussi nous affecter mutuellement puisque nous étions parfois dépendant sur le travail de l'autre.
+
 <img src="https://github.com/pastaButter1/MaxWell-GL/blob/main/RessourceReadme/Capture d’écran 2025-05-22 220136.png" width="1000" height="400" />
 
 
@@ -86,7 +93,7 @@ Pour ce projet, nous n'avons pas formellement utilisé de programmation orienté
 
 
 ## Les perspectives
-Le projet, bien qu'à un stade fonctionnel, est encore loin d'être fini. Nous aurions aimé avoir été capable d'intégrer plus de fonctionnalités dans l'application. Il aurait été intéressant de d'avoir plus de composantes électroniques comme des fils, des toroïdes, etc. Il aurait aussi été plaisant d'intégrer des simulations dans le temps où le champ magnétique pourait varier selon un courant défini. L'utlisateur aurait ainsi pu étudier en plus grande profondeur les mécaniques du courant alternatif. Avant tout, il faudrait aussi revoir l'interface utilisateur afin de réduire le plus possible tout information écrite statiquement dans le code et afin de permettre à l'utilisateur de contrôler son environnement le plus possible. Il devrait être capable d'ajouter ou de retirer des composantes, de modifier la position et l'orientation de celles-ci, de modifier leurs propriétés électriques ou graphiques, etc.
+Le projet, bien qu'à un stade fonctionnel, est encore loin d'être fini. Nous aurions aimé avoir été capable d'intégrer plus de fonctionnalités dans l'application. Il aurait été intéressant de d'avoir plus de composantes électroniques comme des fils, des toroïdes, etc. Il aurait aussi été plaisant d'intégrer des simulations dans le temps où le champ magnétique pourait varier selon un courant défini. L'utlisateur aurait ainsi pu étudier en plus grande profondeur les mécaniques du courant alternatif. Avant tout, il faudrait aussi revoir l'interface utilisateur afin de réduire le plus possible tout information écrite statiquement dans le code et afin de permettre à l'utilisateur de contrôler son environnement le plus possible. Il devrait être capable d'ajouter ou de retirer des composantes, de modifier la position et l'orientation de celles-ci ou de modifier leurs propriétés électriques ou graphiques. Encore, il serait nécessaire de permettre de modifier l'intensité du champ affiché alors qu'il serait aussi très intéressant de pourvoir mesurer à l'aide de la souris le champ à un endroit précis.
 
 <img src="https://i5.walmartimages.com/asr/673fcd95-2bfd-405d-88f6-0744d2af719e.6d74a8f705166fa7dfd0bf0512c75b7a.jpeg?odnHeight=612&odnWidth=612&odnBg=FFFFFF" width="400" height="400" />
 
@@ -97,7 +104,7 @@ Le projet, bien qu'à un stade fonctionnel, est encore loin d'être fini. Nous a
 En conclusion, notre planification était plus ambitieuse que ce que l'on a pu réaliser. Nous avons tout de même atteins certains buts. Nous avons une application OpenGL fonctionnelle qui permet tout de même d'en apprendre plus sur l'électromagnétisme.
 
 
-## Crédit
+## Crédits
 Le projet a été codéveloppé dans le cours d'intégration en sciences informatiques et mathématiques au Collège Bois-de-Boulogne par Charles-Antoineet Alexandre Lafrenière.
 
 

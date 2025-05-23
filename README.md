@@ -2,7 +2,7 @@
 ## L'Idée
 Au début de la session nous avions le goût de construire nous même un projet incorporant des composantes graphiques et des notions scientifiques. C'est de cette manière que nous avons eu l'idée de simuler le champ magnétique de composantes électroniques. Notre objectif était de créer une application interactive en 3 dimensions avec le moins de dépendances possible qui permettraient à des étudians et à des professeur d'explorer les propriétés pratiquement magiques de l'électromagnétisme. Rapidement, nous avons bati un prototype avec trois fils parallèles. Les flèches indiquent la direction du champ alors que l'intensité du rouge est liée à l'intensité du champ magnétisme.
 
-<img src="RessourceReadme/Prototype.png" width="400" height="400" />
+<img src="https://github.com/pastaButter1/MaxWell-GL/blob/main/RessourceReadme/Prototype.png" width="400" height="400" />
 
 ## Le projet
 ### Visual Studio
@@ -56,8 +56,8 @@ Bien que nous avions de l'expérience avec les outils que nous avons utilisés, 
 
 |       |       |
 | :---: | :---: |
-| Application <img src="RessourceReadme/Capture d’écran 2025-05-22 221212.png" width="600" height="400" /> | Texture <img src="RessourceReadme/Capture d’écran 2025-05-22 221321.png" width="600" height="400" /> |
-| Pipeline <img src="RessourceReadme/Capture d’écran 2025-05-22 221417.png" width="600" height="400" /> | Mesh <img src="RessourceReadme/Capture d’écran 2025-05-22 221442.png" width="600" height="400" /> |
+| Application <img src="https://github.com/pastaButter1/MaxWell-GL/blob/main/RessourceReadme/Capture d’écran 2025-05-22 221212.png" width="600" height="400" /> | Texture <img src="https://github.com/pastaButter1/MaxWell-GL/blob/main/RessourceReadme/Capture d’écran 2025-05-22 221321.png" width="600" height="400" /> |
+| Pipeline <img src="https://github.com/pastaButter1/MaxWell-GL/blob/main/RessourceReadme/Capture d’écran 2025-05-22 221417.png" width="600" height="400" /> | Mesh <img src="https://github.com/pastaButter1/MaxWell-GL/blob/main/RessourceReadme/Capture d’écran 2025-05-22 221442.png" width="600" height="400" /> |
 
 Toutefois, certaines erreurs sont complexes. Par exemple, si un buffer n'est pas lié correctement, le débogueur n'affichera aucune erreur. Il nous informera seulement qu'il n'a pas trouvé la ressource. Si une erreur arrive, l'application pourrait tout simplement se fermer sans laisser la chance au programmeur de l'inspecter. Certaines erreurs peuvent être surnoises dans le cas où un type n'accepte que des valeurs bien spécifique. La lecture de la documentation devient une étape essentielle. C'est donc au programmeur de devoir déduire la provenance des erreurs. Des techniques de déboguages où on retire peu à peu du code jusqu'à ce qu'on retrouve un projet fonctionnel deviennent extrèmement utiles.
 
@@ -68,13 +68,13 @@ Du même coup, implémenter des fonctionnalités qu'aucun de nous deux n'a déj�
 ## L'échéancier
 Bien que nous n'ayons pas pu paufiner le projet comme nous le voulions, nous avons tout de même atteints la majorité de nos objectifs. Certaines parties de l'échéancier ont pris un peu de retard en cours de chemin: principalement l'interface fonctionnelle, mais incomplète et la simulation. Toutefois, les simulations des solénoïdes et des fils sont présentes et fonctionnelles dans le projet, il est seulement arrivé que nous n'avons pas eu la détermination d'ajuster la fonction qui crée le solénoïde pour qu'elle crée un fil à la place. Ainsi, sans modèle et interface pour facilement aller d'un à l'autre, nous avons inclus qu'un solénoïde.
 
-<img src="RessourceReadme/Capture d’écran 2025-05-22 220136.png" width="1000" height="400" />
+<img src="https://github.com/pastaButter1/MaxWell-GL/blob/main/RessourceReadme/Capture d’écran 2025-05-22 220136.png" width="1000" height="400" />
 
 
 ## La structure UML
 Pour ce projet, nous n'avons pas formellement utilisé de programmation orientée objet. Cela implique que nous n'avons pas utilisé de polyformisme ni d'héritage. Les données sont plutôt assemblés en structures dans lesquelles sont aussi définies des fonctions statiques. Ces fonctions statiques prennent en paramètre la structure dont elles font partie. Ces définitions peuvent s'apparenter à des namespaces. Le graphique ci-dessous, fait par l'outil de documentation [Doxygen](https://www.doxygen.nl/) indique les liens de dépendance entre nos structures.
 
-<img src="RessourceReadme/Diagramme intégration.png" width="400" height="400" />
+<img src="https://github.com/pastaButter1/MaxWell-GL/blob/main/RessourceReadme/Diagramme intégration.png" width="400" height="400" />
 
 
 ## Les perspectives

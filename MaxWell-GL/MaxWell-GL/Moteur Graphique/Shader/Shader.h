@@ -14,8 +14,10 @@ struct Shader
 
 	static void detruire(const Shader shader);
 
+	/**  */
 	static void loadSubShader(const Shader& shader, const std::string& fileData, TypeShader type);
 
+	/** Compiler le shader (nécessaire avant l'utilisation) */
 	static void assembler(const Shader& shader);
 
 	static void lier(const Shader& shader);

@@ -34,15 +34,23 @@ void genererSolenoide(Model* const model, const uint32_t nbTriangles, const floa
 
 void Application::initialiser(Application* const app, glm::uvec2 tailleFenetre)
 {
+	// Permet de connaître le dossier d'éxécution pour faciliter le débogage dans le cas où le programme n'arrive pas à trouver les fichiers requis
+
 	std::string dossier;// = app->dossierExecution;
 	dossier.resize(MAX_PATH);
 	GetCurrentDirectoryA(dossier.length(), (LPSTR)dossier.c_str());
 	dossier.resize(strnlen_s(dossier.c_str(), dossier.length()));
 	afficherLog("Dossier d'execution : %s", dossier.c_str());
 
+	// Création de la fenêtre
+
 	Fenetre::init(&app->fenetre, tailleFenetre);
 
+	// ImGUI
+
 	initialiserInterfaceUtilisateur(app);
+
+	// La simulation
 
 	MoteurPhysique::Info& info = app->moteurPhysique.info;
 	info.fils.push_back(MoteurPhysique::Fil::creer(glm::vec3(0, 0, 1), glm::vec3(-1.0f, -1.0f, 0.0f), -3.0f));
@@ -50,6 +58,7 @@ void Application::initialiser(Application* const app, glm::uvec2 tailleFenetre)
 	info.fils.push_back(MoteurPhysique::Fil::creer(glm::vec3(0, 0, -1), glm::vec3(0.0f, 1.5f, 0.0f), 1.0f));
 	info.solenoides.push_back(MoteurPhysique::Solenoide::creer(glm::vec3(0, 0, 0), glm::vec3(5, 0, 0), 0.001f, 10, 5, 1, 0.1, 1));
 	
+	// OPENGL
 
 	initialiserMoteurGraphique(app);
 
@@ -108,6 +117,8 @@ void Application::executer(Application* const app)
 		ImGui::SliderFloat("Solenoide R", &solenoideImGUI.rayonSolenoide, 0.1f, 4.0f);
 		ImGui::SliderFloat("Solenoide r", &solenoideImGUI.rayonFil, 0.1f, 1.0f);
 
+		// Ne regénère le solénoïde que si les paramètres ont changés
+
 		if (memcmp(&solenoide, &solenoideImGUI, sizeof(solenoideImGUI)) != 0)
 		{
 			solenoide = solenoideImGUI;
@@ -120,6 +131,8 @@ void Application::executer(Application* const app)
 			MoteurPhysique::GPU::soumettreBufferInfo(app->moteurPhysique.info);
 			MoteurPhysique::GPU::executerCalcul(app->moteurPhysique.shaderChampMagnetique, app->moteurPhysique.coordonnees, app->moteurPhysique.champMagnetique, app->moteurPhysique.info);
 		}
+
+		// Paramètre pour le contrôle des caractéristiques de l'éclairage
 
 		ImGui::SliderFloat("Ambient", &app->donnesOperation.kAmbient, 0.0f, 1.0f);
 		ImGui::SliderFloat("Diffuse", &app->donnesOperation.kDiffuse, 0.0f, 1.0f);
@@ -169,6 +182,8 @@ void genererSolenoide(Model* const model, const uint32_t nbTriangles, const floa
 {
 	Model& m = *model;
 
+	// Tentative d'estimation du nombre de triangle à générer pour faire une paroie circulaire
+
 	const uint32_t nbTranches = rot * sqrt(nbTriangles);
 	const uint32_t nbTriSurface = (nbTriangles / nbTranches) & (~1);
 	const uint32_t nbPointCirconference = nbTriSurface >> 1;
@@ -181,8 +196,12 @@ void genererSolenoide(Model* const model, const uint32_t nbTriangles, const floa
 	glm::vec3* points = new glm::vec3[nbTranches * nbPointCirconference];
 	glm::vec3* normales = new glm::vec3[nbTranches * nbPointCirconference];
 
+	// Création des points générant la surface du solénoïde
+
 	for (int i = 0; i < nbTranches; i++)
 	{
+		// Les points sont générés en cercle le long d'une spirale
+
 		const float theta = i * pasArcExt;
 		glm::vec3 face = glm::vec3(cos(theta), sin(theta), L * i / nbTranches);
 		glm::vec3 dirFace = valeurNormDirFace * glm::vec3(constanteRotation * glm::vec2(-face.y, face.x), L);
@@ -202,6 +221,8 @@ void genererSolenoide(Model* const model, const uint32_t nbTriangles, const floa
 			normales[i * nbPointCirconference + j] = normale;
 		}
 	}
+
+	// Tresselation des faces à l'aide des points générés précédement
 
 	m.nbTriangle = (nbTranches - 1) * nbTriSurface + nbPointCirconference * 2;
 	m.triangles = new Triangle[m.nbTriangle];
@@ -232,6 +253,8 @@ void genererSolenoide(Model* const model, const uint32_t nbTriangles, const floa
 			tri2.verts[2] = { points[i1 * nbPointCirconference + j12], glm::vec2(j12, i1), normales[i1 * nbPointCirconference + j12] };
 		}
 	}
+
+	// Tresselation des faces des deux extrémités
 
 	for (int i = 0; i < 2; i++)
 	{
@@ -367,7 +390,6 @@ void Application::initialiserMoteurGraphique(Application* const app)
 	triangles[3] = { glm::vec3( 1,  1, 0), glm::vec2(1, 1), glm::vec3(0, 0, 0) };
 	triangles[4] = { glm::vec3( 1, -1, 0), glm::vec2(1, 0), glm::vec3(0, 0, 0) };
 	triangles[5] = { glm::vec3(-1, -1, 0), glm::vec2(0, 0), glm::vec3(0, 0, 0) };
-
 	
 	MoteurPhysique::Solenoide solenoide = app->moteurPhysique.info.solenoides[0];
 	Model model;
@@ -385,6 +407,8 @@ void Application::initialiserMoteurGraphique(Application* const app)
 	decoderOBJ(ADDRESSE("Mesh/Sphere.obj"), &model);
 	mgx::Mesh::chargerModel<Vertex>(&sphere, &app->moteurGX, model.nbTriangle * 3, model.triangles);
 	delete[] model.triangles;
+
+	// Chargment du skybox à l'aide d'une cubemap
 
 	int32_t skyboxX, skyboxY, skyboxCanaux;
 	std::string dossier = ADDRESSE("Skybox/Machine shop/1k/");
@@ -449,7 +473,7 @@ void Application::initialiserInterfaceUtilisateur(Application* const app)
 	//ImFont* dfont = io->Fonts->AddFontDefault();
 	app->police = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\micross.ttf", 18.0f);
 
-	// Style
+	// Style + Divers paramètres
 
 	ImGuiStyle* style = &ImGui::GetStyle();
 
@@ -523,14 +547,13 @@ void Application::initialiserInterfaceUtilisateur(Application* const app)
 	style->Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
 }
 
+/** Permet d'obtenir un vecteur 3d en fonction de coordonées (angles) planétaires (lacet/longitude, tanguage/lattitude) */
 glm::vec3 orientation(float yaw, float pitch) {
 	float yawR = glm::radians(yaw);
 	float pitchR = glm::radians(pitch);
 
 	return glm::vec3(sin(yawR) * cos(pitchR), sin(pitchR), cos(yawR) * cos(pitchR));
 }
-
-
 
 void Application::executerEntrees(Application* const app, const float dt)
 {
@@ -539,11 +562,18 @@ void Application::executerEntrees(Application* const app, const float dt)
 	float& lacetCam = app->donnesOperation.lacetCam;
 	float& distanceCam = app->donnesOperation.distanceCam;
 
+	// Actualisation de l'angle et la direction de la camera
+
 	glm::vec3& camPos = app->donnesOperation.camPos;
 
 	lacetCam += (glfwGetKey(fenetre, GLFW_KEY_RIGHT) - glfwGetKey(fenetre, GLFW_KEY_LEFT)) * dt * 100;
 	tangageCam += (glfwGetKey(fenetre, GLFW_KEY_UP) - glfwGetKey(fenetre, GLFW_KEY_DOWN)) * dt * 100;
 	distanceCam += (glfwGetKey(fenetre, GLFW_KEY_L) - glfwGetKey(fenetre, GLFW_KEY_O)) * dt * 30;
+
+	// Actualisation de la position de la camera
+	// Les déplacements se font en fonciton de la direction de celle-ci
+	// Ex : Peser sur W fait avancer la camera dans la direction qu'elle point et S l'inverse.
+	// A/D pour gauche/droite et shift/espace pour haut/bas
 
 	glm::vec3 dirCam = orientation(lacetCam, tangageCam);
 	glm::vec3 coteCam = orientation(lacetCam - 90.0f, 0.0f);
@@ -565,6 +595,8 @@ void Application::executerRendu(Application* const app)
 
 	const float projFOV = 70.0f;
 	const float aspectRatio = 1.5f;
+
+	// Calcul des matrices de projections
 
 	glm::vec3 camDir = orientation(lacetCam, tangageCam) * glm::vec3(1, 1, 1);
 	glm::vec3 camPos = app->donnesOperation.camPos;
@@ -633,6 +665,8 @@ void Application::executerRendu(Application* const app)
 	Shader::pousserConstanteMat4(shaderPlan, "u_cam", vueCam * matricePlan);
 	Shader::pousserConstanteVec3(shaderPlan, "u_couleur", glm::vec3(0, 1, 1));
 	MoteurGX::executerProgramme(app->moteurGX, 2, 1);
+
+	// À retirer les // si on veut dessiner directement à l'écran sans passer par ImGUI
 
 	//MoteurGX::copierRenduBackbuffer(app->moteurGX, glm::uvec2(800, 600));
 }

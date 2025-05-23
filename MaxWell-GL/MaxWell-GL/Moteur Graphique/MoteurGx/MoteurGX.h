@@ -12,6 +12,8 @@
 
 namespace mgx
 {
+
+	/** Contient les paramètres nécessaire à un drawcall */
 	struct Pipeline {
 		Ressource fbo;
 		Ressource shader;
@@ -40,8 +42,10 @@ namespace mgx
 
 		static void init(const Pipeline& pipeline, const Framebuffer& fbo, const Shader& shader);
 
+		/** Transmet au GPU le drawcall */
 		static void dessiner(const Pipeline& pipeline, const Vertexarray vao);
-
+	
+		/** Initialise avec des paramètres standard (blend, depth, ...) */
 		static constexpr void renduStandard(Pipeline* const pipelinePtr, const bool nettoyerCible)
 		{
 			using namespace Operation;

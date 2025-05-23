@@ -50,10 +50,18 @@ $$ \vec{B} = {\mu_0 i \over 2 \pi} \int\limits_0^{2 \pi L \over N} {{{\mathrm d 
 [![Watch the video](https://img.youtube.com/vi/CFjZAVqjIHM/hqdefault.jpg)](https://www.youtube.com/embed/CFjZAVqjIHM)
 
 ## Les difficultés
-Bien que nous avions de l'expérience avec les outils que nous avons utilisés, nous avons tout de même fait face à des difficultés. La majorité étaient en lien direct avec OpenGL. Les outils de déboguage sont limités. Il est donc du devoir du codeur d'avoir une compréhension assez appronfie de son programme et de la  manière avec laquelle fonctionne OpenGL. 
+Bien que nous avions de l'expérience avec les outils que nous avons utilisés, nous avons tout de même fait face à des difficultés. La majorité étaient en lien direct avec OpenGL. Des outils de déboguage sont disponible. [RenderDoc](https://renderdoc.org/) est libre de droits et nous l'avons utilisé. 
+
+|       |       |
+| :---: | :---: |
+| ![]() | ![]() |
+
+Il est donc du devoir du progammeur d'avoir une compréhension assez appronfie de son programme et de la  manière avec laquelle fonctionne OpenGL. 
 
 ## L'échéancier
 Bien que nous n'ayons pas pu paufiner le projet comme nous le voulions, nous avons tout de même atteints la majorité de nos objectifs. Certaines parties de l'échéancier ont pris un peu de retard en cours de chemin: principalement l'interface fonctionnelle, mais incomplète et la simulation. Toutefois, les simulations des solénoïdes et des fils sont présentes et fonctionnelles dans le projet, il est seulement arrivé que nous n'avons pas eu la détermination d'ajuster la fonction qui crée le solénoïde pour qu'elle crée un fil à la place. Ainsi, sans modèle et interface pour facilement aller d'un à l'autre, nous avons inclus qu'un solénoïde.
+
+<img src="RessourceReadme/Capture d’écran 2025-05-22 220136.png" width="1000" height="400" />
 
 ## La structure UML
 Pour ce projet, nous n'avons pas formellement utilisé de programmation orientée objet. Cela implique que nous n'avons pas utilisé de polyformisme ni d'héritage. Les données sont plutôt assemblés en structures dans lesquelles sont aussi définies des fonctions statiques. Ces fonctions statiques prennent en paramètre la structure dont elles font partie. Ces définitions peuvent s'apparenter à des namespaces. Le graphique ci-dessous, fait par l'outil de documentation [Doxygen](https://www.doxygen.nl/) indique les liens de dépendance entre nos structures.

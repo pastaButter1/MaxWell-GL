@@ -28,16 +28,18 @@ struct Shader
 
 	static void pousserConstanteMat3(const Shader& shader, const std::string& name, const glm::mat3& matrix);
 
-	static void pousserConstanteVec3(const Shader& shader, const std::string& name, glm::vec3 v);
+	static void pousserConstanteVec3(const Shader& shader, const std::string& name, const glm::vec3 v);
 
-	static void pousserConstanteVec2(const Shader& shader, const std::string& name, glm::vec2 v);
+	static void pousserConstanteVec4(const Shader& shader, const std::string& name, const glm::vec4 v);
 
-	static void pousserConstanteUVec2(const Shader& shader, const std::string& name, glm::uvec2 v);
+	static void pousserConstanteVec2(const Shader& shader, const std::string& name, const glm::vec2 v);
 
-	static void pousserConstanteIVec2(const Shader& shader, const std::string& name, glm::ivec2 v);
+	static void pousserConstanteUVec2(const Shader& shader, const std::string& name, const glm::uvec2 v);
 
-	static void pousserConstanteVirgule(const Shader& shader, const std::string& name, float f);
+	static void pousserConstanteIVec2(const Shader& shader, const std::string& name, const glm::ivec2 v);
 
-	static void pousserTexture(const Shader& shader, const std::string& name, const Texture& tex, GLuint unite);
+	static void pousserConstanteVirgule(const Shader& shader, const std::string& name, const float f);
+
+	static void pousserTexture(const Shader& shader, const std::string& name, const Texture& tex, const GLuint unite);
 };
 

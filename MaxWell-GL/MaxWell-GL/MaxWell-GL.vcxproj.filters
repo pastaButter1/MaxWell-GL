@@ -27,6 +27,7 @@
     <ClCompile Include="Moteur Graphique\Vertexbuffer\Vertexbuffer.cpp" />
     <ClCompile Include="MoteurPhysique\Espace\Espace.cpp" />
     <ClCompile Include="MoteurPhysique\MoteurPhysique\MoteurPhysique.cpp" />
+    <ClCompile Include="Application\fdm.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Application.h" />
@@ -72,18 +73,12 @@
     <None Include="Shaders\Simple\vertex.glsl" />
     <None Include="Shaders\Skybox\vertex.glsl" />
     <None Include="Shaders\Tesselation surface\Surface fragment.glsl" />
-    <None Include="Shaders\Tesselation surface\Surface geometrie.glsl" />
     <None Include="Shaders\Tesselation surface\Surface tessControle.glsl" />
-    <None Include="Shaders\Tesselation surface\Surface tessEval.glsl" />
     <None Include="Shaders\Physique\ChampMagnetique.glsl" />
     <None Include="Shaders\Physique\DessinerVecteurChamp.glsl" />
     <None Include="Shaders\Physique\Coordonnees.glsl" />
     <None Include="Shaders\Plan\Fragment.glsl" />
     <None Include="Shaders\Plan\Geometry.glsl" />
     <None Include="Shaders\Plan\Vertex.glsl" />
-  </ItemGroup>
-  <ItemGroup>
-    <Object Include="Mesh\Cube.obj" />
-    <Object Include="Mesh\Sphere.obj" />
   </ItemGroup>
 </Project>

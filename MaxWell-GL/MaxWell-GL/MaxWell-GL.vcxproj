@@ -136,6 +136,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Application\Application.cpp" />
+    <ClCompile Include="Application\fdm.cpp" />
     <ClCompile Include="Application\Fenetre\Fenetre.cpp" />
     <ClCompile Include="Application\Souris\Souris.cpp" />
     <ClCompile Include="Application\Utilitaire.cpp" />
@@ -209,12 +210,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </None>
-    <None Include="Shaders\Tesselation surface\Surface geometrie.glsl" />
     <None Include="Shaders\Tesselation surface\Surface tessControle.glsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </None>
-    <None Include="Shaders\Tesselation surface\Surface tessEval.glsl" />
     <None Include="Shaders\Physique\ChampMagnetique.glsl" />
     <None Include="Shaders\Physique\DessinerVecteurChamp.glsl" />
     <None Include="Shaders\Physique\Coordonnees.glsl" />

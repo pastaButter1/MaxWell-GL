@@ -98,7 +98,15 @@ void mgx::Pipeline::init(const Pipeline& pipeline, const Framebuffer& fbo, const
 void mgx::Pipeline::dessiner(const Pipeline& pipeline, const Vertexarray vao)
 {
 	Vertexarray::lier(vao);
-	APPEL_GX(glDrawArrays((EnumGX)pipeline.modeDessin, 0, vao.nbTriangles * 3));
+
+	uint32_t nbVertex = vao.nbTriangles * 3;
+
+	if (pipeline.modeDessin == Operation::Dessin::PATCH)
+	{
+		nbVertex = 4;
+	}
+
+	APPEL_GX(glDrawArrays((EnumGX)pipeline.modeDessin, 0, nbVertex));
 }
 
 void MoteurGX::init(MoteurGX* const mGX)
@@ -114,8 +122,8 @@ void MoteurGX::init(MoteurGX* const mGX)
 	MoteurGX::creerTexture(mGX, &texCoulIU);
 	Texture& texProfondeur = MoteurGX::creerTexture(mGX, &texProfIU);
 	Texture& texCouleur = MoteurGX::retTexture(*mGX, texCoulIU);
-	Framebuffer::addAttachment(&fbo, &texCouleur, 800, 600, Tex::FormatInterne::RVBA, Tex::Format::RVBA, Donnee::Type::U32, Tex::Filtre::PROCHE, Tex::Filtre::PROCHE);
-	Framebuffer::addAttachment(&fbo, &texProfondeur, 800, 600, Tex::FormatInterne::COMPOSANT_PROFONDEUR, Tex::Format::COMPOSANT_PROFONDEUR, Donnee::Type::U32, Tex::Filtre::PROCHE, Tex::Filtre::PROCHE);
+	Framebuffer::addAttachment(&fbo, &texCouleur, 1200, 800, Tex::FormatInterne::RVBA, Tex::Format::RVBA, Donnee::Type::U32, Tex::Filtre::PROCHE, Tex::Filtre::PROCHE);
+	Framebuffer::addAttachment(&fbo, &texProfondeur, 1200, 800, Tex::FormatInterne::COMPOSANT_PROFONDEUR, Tex::Format::COMPOSANT_PROFONDEUR, Donnee::Type::U32, Tex::Filtre::PROCHE, Tex::Filtre::PROCHE);
 }
 
 Pipeline& MoteurGX::creerPipeline(MoteurGX* const mGX, Ressource* const res)

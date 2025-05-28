@@ -32,6 +32,8 @@ using Ressource = MoteurGX::Ressource;
 
 void genererSolenoide(Model* const model, const uint32_t nbTriangles, const float R, const float r, const float l, const float rot);
 
+void fdm2d(const uint32_t N, std::vector<float>* const carte, const float vin, const float vout, const float c);
+
 void Application::initialiser(Application* const app, glm::uvec2 tailleFenetre)
 {
 	// Permet de connaître le dossier d'éxécution pour faciliter le débogage dans le cas où le programme n'arrive pas à trouver les fichiers requis
@@ -104,7 +106,7 @@ void Application::executer(Application* const app)
 
 		ImGui::Begin("Edition");
 
-		ImGui::SliderFloat("Dis Z", &app->donnesOperation.disZ, -10.0f, 10.0f);
+		/*ImGui::SliderFloat("Dis Z", &app->donnesOperation.disZ, -10.0f, 10.0f);
 		ImGui::SliderFloat("Lumiere Y", &app->donnesOperation.angleLumiere.x, 0.0f, 360.0f);
 		ImGui::SliderFloat("Lumiere Z", &app->donnesOperation.angleLumiere.y, -90.0f, 90.0f);
 
@@ -138,7 +140,28 @@ void Application::executer(Application* const app)
 		ImGui::SliderFloat("Diffuse", &app->donnesOperation.kDiffuse, 0.0f, 1.0f);
 		ImGui::SliderFloat("Speculaire", &app->donnesOperation.kSpeculaire, 0.0f, 1.0f);
 		ImGui::SliderFloat("Exposant", &app->donnesOperation.esposantSpec, 0.0f, 1.0f);
-		ImGui::ColorEdit3("Couleur", (float*)&app->donnesOperation.couleur);
+		ImGui::ColorEdit3("Couleur", (float*)&app->donnesOperation.couleur);*/
+		{
+			float& vin = app->donnesOperation.fdm.vin;
+			float& vout = app->donnesOperation.fdm.vout;
+			float& c = app->donnesOperation.fdm.c;
+
+			bool changements = false;
+			changements |= ImGui::SliderFloat("Vin", &vin, 0, 3);
+			changements |= ImGui::SliderFloat("Vout", &vout, 0, 3);
+			changements |= ImGui::SliderFloat("Courbature", &c, -0.01, 0.01);
+
+			if (changements)
+			{
+				std::vector<float> carte;
+				carte.resize(20 * 20);
+
+				fdm2d(20, &carte, vin, vout, c);
+
+				Texture& carte1 = MoteurGX::retTexture(app->moteurGX, app->donnesOperation.fdm.carte1IU);
+				Texture::soumettre2D(&carte1, 0, glm::ivec2(0, 0), glm::ivec2(20, 20), carte.data());
+			}
+		}
 
 		ImGui::End();
 
@@ -147,7 +170,7 @@ void Application::executer(Application* const app)
 		static glm::vec4 couleur;
 
 		//ImGui::ColorEdit4("Couleur", (float*)&couleur);
-		ImGui::Image((void*)MoteurGX::retTexture(app->moteurGX, 0).id, ImVec2(800, 600), ImVec2(1, 1), ImVec2(0, 0));
+		ImGui::Image((void*)MoteurGX::retTexture(app->moteurGX, 0).id, ImVec2(800, 600), ImVec2(0, 1), ImVec2(1, 0));
 
 		ImGui::End();
 
@@ -458,6 +481,56 @@ void Application::initialiserMoteurGraphique(Application* const app)
 	decoderOBJ(ADDRESSE("Mesh/Cube.obj"), &model);
 	mgx::Mesh::chargerModel<Vertex>(&cube, &app->moteurGX, model.nbTriangle * 3, model.triangles);
 	delete[] model.triangles;
+
+	{
+		Ressource shaderIU, pipelineIU, vaoIU;
+		Shader& shader = MoteurGX::creerShader(&app->moteurGX, &shaderIU);
+		mgx::Pipeline& pipeline = MoteurGX::creerPipeline(&app->moteurGX, &pipelineIU);
+		mgx::Pipeline::renduStandard(&pipeline, false);
+		pipeline.tailleFenetre = glm::uvec2(app->fenetre.dimension.x, app->fenetre.dimension.y);
+		pipeline.fbo = 0;
+		pipeline.shader = shaderIU;
+		pipeline.modeCulling = Operation::Culling::DESACTIVER;
+		pipeline.testProfondeur = Operation::Profondeur::MOINS_EGAL;
+		pipeline.modeDessin = Operation::Dessin::PATCH;
+		pipeline.stencilFunc = Operation::Stencil::DESACTIVER;
+
+		{
+			std::string shaderRaw;
+
+			chargerFichier(ADDRESSE("Shaders/Tesselation surface/Surface vertex.glsl"), &shaderRaw);
+			Shader::loadSubShader(shader, shaderRaw, TypeShader::VERTEX);
+
+			shaderRaw.clear();
+			chargerFichier(ADDRESSE("Shaders/Tesselation surface/Surface geometrie.glsl"), &shaderRaw);
+			Shader::loadSubShader(shader, shaderRaw, TypeShader::GEOMETRIE);
+
+			shaderRaw.clear();
+			chargerFichier(ADDRESSE("Shaders/Tesselation surface/Surface tessEval.glsl"), &shaderRaw);
+			Shader::loadSubShader(shader, shaderRaw, TypeShader::EVAL_TESSELATION);
+			
+			shaderRaw.clear();
+			chargerFichier(ADDRESSE("Shaders/Tesselation surface/Surface tessControle.glsl"), &shaderRaw);
+			Shader::loadSubShader(shader, shaderRaw, TypeShader::CONTROLE_TESSELATION);
+
+			shaderRaw.clear();
+			chargerFichier(ADDRESSE("Shaders/Tesselation surface/Surface fragment.glsl"), &shaderRaw);
+			Shader::loadSubShader(shader, shaderRaw, TypeShader::FRAGMENT);
+		}
+		Shader::assembler(shader);
+		Shader::delier();
+
+		Texture& carte1 = MoteurGX::creerTexture(&app->moteurGX, &app->donnesOperation.fdm.carte1IU);
+		Texture::allouer2D(&carte1, 0, glm::ivec2(20, 20), Tex::FormatInterne::R32F, Tex::Format::ROUGE, Donnee::Type::VIRGULE, 0);
+		Texture::specifierFiltre(carte1, Tex::Filtre::LINEAIRE, Tex::Filtre::LINEAIRE);
+		Texture::specifierEtirement(carte1, Tex::Emballage::LIMITER_BORD, Tex::Emballage::LIMITER_BORD, Tex::Emballage::LIMITER_BORDURE);
+
+		std::vector<float> carte;
+		carte.resize(20 * 20);
+		fdm2d(20, &carte, 1, 0, 0);
+
+		Texture::soumettre2D(&carte1, 0, glm::ivec2(0), glm::ivec2(20, 20), carte.data());
+	}
 }
 
 void Application::initialiserInterfaceUtilisateur(Application* const app)
@@ -566,8 +639,8 @@ void Application::executerEntrees(Application* const app, const float dt)
 
 	glm::vec3& camPos = app->donnesOperation.camPos;
 
-	lacetCam += (glfwGetKey(fenetre, GLFW_KEY_RIGHT) - glfwGetKey(fenetre, GLFW_KEY_LEFT)) * dt * 100;
-	tangageCam += (glfwGetKey(fenetre, GLFW_KEY_UP) - glfwGetKey(fenetre, GLFW_KEY_DOWN)) * dt * 100;
+	lacetCam += (glfwGetKey(fenetre, GLFW_KEY_LEFT) - glfwGetKey(fenetre, GLFW_KEY_RIGHT)) * dt * 50;
+	tangageCam += (glfwGetKey(fenetre, GLFW_KEY_UP) - glfwGetKey(fenetre, GLFW_KEY_DOWN)) * dt * 50;
 	distanceCam += (glfwGetKey(fenetre, GLFW_KEY_L) - glfwGetKey(fenetre, GLFW_KEY_O)) * dt * 30;
 
 	// Actualisation de la position de la camera
@@ -576,12 +649,12 @@ void Application::executerEntrees(Application* const app, const float dt)
 	// A/D pour gauche/droite et shift/espace pour haut/bas
 
 	glm::vec3 dirCam = orientation(lacetCam, tangageCam);
-	glm::vec3 coteCam = orientation(lacetCam - 90.0f, 0.0f);
+	glm::vec3 coteCam = orientation(lacetCam + 90.0f, 0.0f);
 	glm::vec3 hautCam = glm::cross(dirCam, coteCam);
 
-	camPos += dirCam * (float)((glfwGetKey(fenetre, GLFW_KEY_W) - glfwGetKey(fenetre, GLFW_KEY_S)) * dt * 30.0f);
-	camPos += coteCam * (float)((glfwGetKey(fenetre, GLFW_KEY_A) - glfwGetKey(fenetre, GLFW_KEY_D)) * dt * 30.0f);
-	camPos -= hautCam * (float)((glfwGetKey(fenetre, GLFW_KEY_SPACE) - glfwGetKey(fenetre, GLFW_KEY_LEFT_SHIFT)) * dt * 30.0f);
+	camPos += dirCam * (float)((glfwGetKey(fenetre, GLFW_KEY_W) - glfwGetKey(fenetre, GLFW_KEY_S)) * dt * 3.0f);
+	camPos += coteCam * (float)((glfwGetKey(fenetre, GLFW_KEY_A) - glfwGetKey(fenetre, GLFW_KEY_D)) * dt * 3.0f);
+	camPos += hautCam * (float)((glfwGetKey(fenetre, GLFW_KEY_SPACE) - glfwGetKey(fenetre, GLFW_KEY_LEFT_SHIFT)) * dt * 3.0f);
 	
 }
 
@@ -601,7 +674,7 @@ void Application::executerRendu(Application* const app)
 	glm::vec3 camDir = orientation(lacetCam, tangageCam) * glm::vec3(1, 1, 1);
 	glm::vec3 camPos = app->donnesOperation.camPos;
 
-	glm::mat4 proj = glm::perspective(projFOV, aspectRatio, 1.0f, -1.0f);
+	glm::mat4 proj = glm::perspective(projFOV, aspectRatio, 0.1f, -1.0f);
 	glm::mat4 rotationCam = glm::lookAt(glm::vec3(0.0f), camDir, glm::vec3(0, 1, 0));
 	glm::mat4 vueCam = proj * rotationCam * glm::translate(glm::mat4(1.0f), -app->donnesOperation.camPos);
 
@@ -627,7 +700,7 @@ void Application::executerRendu(Application* const app)
 		Shader::pousserConstanteVirgule(shader, "u_kd", app->donnesOperation.kDiffuse);
 		Shader::pousserConstanteVirgule(shader, "u_exposantSpec", app->donnesOperation.esposantSpec);
 		Shader::pousserTexture(shader, "u_skybox", MoteurGX::retTexture(app->moteurGX, 0), 0);
-		MoteurGX::executerProgramme(app->moteurGX, 0, 0);
+		//MoteurGX::executerProgramme(app->moteurGX, 0, 0);
 	}
 
 	// Dessiner le skybox
@@ -649,22 +722,35 @@ void Application::executerRendu(Application* const app)
 		0, 10, 0, 0,
 		1, 0, 0, 0,
 		0, 0, 0, 1
-		);
+	);
 
-	glm::mat4 matricePlan = glm::translate(glm::mat4(1.0f), glm::vec3(app->donnesOperation.disZ, 0, 5)) * matriceModel;
+	{
+		glm::mat4 matricePlan = glm::translate(glm::mat4(1.0f), glm::vec3(app->donnesOperation.disZ, 0, 5)) * matriceModel;
 
-	const Shader& shaderPlan = MoteurGX::demarerProgramme(app->moteurGX, 2);
-	Shader::pousserConstanteVec3(shaderPlan, "u_dirLumiere", posLumiere);
-	Shader::pousserConstanteVec3(shaderPlan, "u_posCam", camPos);
-	Shader::pousserTexture(shaderPlan, "u_framebuffer", MoteurGX::retTexture(app->moteurGX, app->moteurPhysique.texFbo), 0);
+		const Shader& shaderPlan = MoteurGX::demarerProgramme(app->moteurGX, 2);
+		Shader::pousserConstanteVec3(shaderPlan, "u_dirLumiere", posLumiere);
+		Shader::pousserConstanteVec3(shaderPlan, "u_posCam", camPos);
+		Shader::pousserTexture(shaderPlan, "u_framebuffer", MoteurGX::retTexture(app->moteurGX, app->moteurPhysique.texFbo), 0);
 
-	//Shader::pousserConstanteMat4(shaderPlan, "u_cam", vueCam * glm::translate(glm::mat4(1.0f), 20.0f * posLumiere));
-	//Shader::pousserConstanteVec3(shaderPlan, "u_couleur", glm::vec3(1, 1, 1));
-	//MoteurGX::executerProgramme(app->moteurGX, 2, 2);
+		//Shader::pousserConstanteMat4(shaderPlan, "u_cam", vueCam * glm::translate(glm::mat4(1.0f), 20.0f * posLumiere));
+		//Shader::pousserConstanteVec3(shaderPlan, "u_couleur", glm::vec3(1, 1, 1));
+		//MoteurGX::executerProgramme(app->moteurGX, 2, 2);
 
-	Shader::pousserConstanteMat4(shaderPlan, "u_cam", vueCam * matricePlan);
-	Shader::pousserConstanteVec3(shaderPlan, "u_couleur", glm::vec3(0, 1, 1));
-	MoteurGX::executerProgramme(app->moteurGX, 2, 1);
+		Shader::pousserConstanteMat4(shaderPlan, "u_cam", vueCam * matricePlan);
+		Shader::pousserConstanteVec3(shaderPlan, "u_couleur", glm::vec3(0, 1, 1));
+		//MoteurGX::executerProgramme(app->moteurGX, 2, 1);
+	}
+
+	{
+		const Shader& shader = MoteurGX::demarerProgramme(app->moteurGX, 4);
+		Shader::pousserConstanteUVec2(shader, "u_tailleCarte", glm::uvec2(50, 50));
+		Shader::pousserConstanteVec4(shader, "u_normaleTransformee", vueCam * glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
+		Shader::pousserConstanteMat4(shader, "u_cam", vueCam);
+		Shader::pousserTexture(shader, "u_carteHauteur", MoteurGX::retTexture(app->moteurGX, app->donnesOperation.fdm.carte1IU), 0);
+		Shader::pousserConstanteVec3(shader, "u_posCamera", app->donnesOperation.camPos);
+		APPEL_GX(glPatchParameteri(GL_PATCH_VERTICES, 4));
+		MoteurGX::executerProgramme(app->moteurGX, 4, 1);
+	}
 
 	// À retirer les // si on veut dessiner directement à l'écran sans passer par ImGUI
 
@@ -755,5 +841,5 @@ void Application::executerSimulation(Application* const app)
 	Shader::pousserTexture(shader, "carte", app->moteurPhysique.champMagnetique.tex, 0);
 	Shader::pousserTexture(shader, "gradient", MoteurGX::retTexture(app->moteurGX, app->moteurPhysique.texGradient), 1);
 
-	MoteurGX::executerProgramme(app->moteurGX, app->moteurPhysique.pipeline, app->moteurPhysique.vao);
+	//MoteurGX::executerProgramme(app->moteurGX, app->moteurPhysique.pipeline, app->moteurPhysique.vao);
 }

@@ -13,3 +13,4 @@
 MaxWell-GL/MaxWell-GL/Mesh/Cube.obj
 MaxWell-GL/MaxWell-GL/Mesh/Sphere.obj
 !RessourceReadme/
+/MaxWell-GL/MaxWell-GL/Shaders/Tesselation surface/Surface tessEval_exemple.glsl

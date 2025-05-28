@@ -34,7 +34,7 @@ struct Application {
 		/** Distance du plan par rapport au plan ZY(oui le nom de la variable est mauvais) */
 		float disZ = 0.0f;
 
-		glm::vec3 camPos = glm::vec3(0.0f);
+		glm::vec3 camPos = glm::vec3(0.0f, 0.0f, -1.0f);
 		glm::vec2 angleLumiere = glm::vec2(325.0f, 44.0f);
 
 
@@ -56,6 +56,12 @@ struct Application {
 		glm::vec3 couleur = glm::vec3(1.0f, 0.230f, 0.020f);
 
 		mgx::Ressource skyboxIU;
+
+		struct FDM
+		{
+			mgx::Ressource carte1IU;
+			float vin = 1, vout = 0, c = 0;
+		} fdm;
 
 	} donnesOperation;
 
